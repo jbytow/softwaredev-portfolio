@@ -1,0 +1,121 @@
+spring:
+  application:
+    name: dev-portfolio
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/devportfolio}
+    username: ${SPRING_DATASOURCE_USERNAME:devportfolio}
+    password: ${SPRING_DATASOURCE_PASSWORD:portfolio123}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_FILE_SIZE:50MB}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:}
+            client-secret: ${GOOGLE_CLIENT_SECRET:}
+            scope: openid, profile, email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://openidconnect.googleapis.com/v1/userinfo
+            user-name-attribute: email
+
+  messages:
+    basename: messages
+    encoding: UTF-8
+
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  forward-headers-strategy: framework
+
+# Application specific configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:dev_jwt_secret_key_minimum_32_characters_long_here}
+    expiration: 86400000  # 24 hours in milliseconds
+
+  admin:
+    emails: ${ADMIN_EMAILS:admin@example.com}
+
+  upload:
+    path: ${UPLOAD_PATH:./uploads}
+    allowed-types: image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,application/pdf
+
+  frontend:
+    url: ${FRONTEND_URL:http://localhost:5173}
+
+  cors:
+    allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+
+  contact:
+    recipient: ${CONTACT_EMAIL:admin@example.com}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: when_authorized
+
+logging:
+  level:
+    com.portfolio: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  jpa:
+    show-sql: false
+
+logging:
+  level:
+    com.portfolio: INFO
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN

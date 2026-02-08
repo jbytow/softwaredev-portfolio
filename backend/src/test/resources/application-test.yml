@@ -1,0 +1,30 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+app:
+  jwt:
+    secret: test-secret-key-minimum-32-characters-long-for-testing
+    expiration: 86400000
+  admin:
+    emails: admin@test.com,test@example.com
+  frontend:
+    url: http://localhost:3000
+  cors:
+    allowed-origins: http://localhost:3000
+  upload:
+    path: ./test-uploads
+    allowed-types: image/jpeg,image/png,image/gif,image/webp,video/mp4,video/webm,application/pdf
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.portfolio: DEBUG

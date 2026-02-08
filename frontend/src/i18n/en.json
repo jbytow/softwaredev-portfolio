@@ -1,0 +1,202 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "published": "Published",
+    "draft": "Draft",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "back": "Back",
+    "backTo": "Back to",
+    "next": "Next",
+    "previous": "Previous",
+    "viewMore": "View More",
+    "readMore": "Read More",
+    "learnMore": "Learn More",
+    "contactMe": "Contact Me",
+    "downloadCV": "Download CV",
+    "optional": "optional"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "experience": "Experience",
+    "projects": "Projects",
+    "skills": "Skills",
+    "contact": "Contact",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero": {
+      "greeting": "Hello, I'm",
+      "tagline": "Building robust applications with clean code and modern technologies",
+      "cta": "View My Projects"
+    },
+    "featured": {
+      "title": "Featured Projects",
+      "subtitle": "A selection of my recent software projects"
+    },
+    "stats": {
+      "projects": "Projects",
+      "technologies": "Technologies",
+      "commits": "Commits",
+      "experience": "Years Experience"
+    },
+    "cta": {
+      "title": "Have a project in mind?",
+      "subtitle": "Let's discuss how I can help bring your ideas to life with solid engineering."
+    }
+  },
+  "about": {
+    "title": "About Me",
+    "subtitle": "Get to know me better",
+    "interests": {
+      "title": "My Interests",
+      "subtitle": "What I'm passionate about outside of work"
+    }
+  },
+  "experience": {
+    "title": "Experience",
+    "subtitle": "My professional journey",
+    "present": "Present"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "Software projects I've built and contributed to",
+    "viewProject": "View Project"
+  },
+  "caseStudy": {
+    "title": "Technical Details",
+    "challenge": "Problem",
+    "solution": "Solution",
+    "results": "Results",
+    "testimonial": "Key Decisions"
+  },
+  "skills": {
+    "title": "Skills",
+    "subtitle": "Technologies and tools I work with"
+  },
+  "contact": {
+    "title": "Get in Touch",
+    "subtitle": "Interested in working together? Let's connect",
+    "form": {
+      "name": "Your Name",
+      "email": "Your Email",
+      "subject": "Subject",
+      "message": "Your Message",
+      "send": "Send Message",
+      "sending": "Sending...",
+      "success": "Message sent successfully!",
+      "error": "Failed to send message. Please try again."
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Phone",
+      "location": "Location",
+      "social": "Follow Me"
+    }
+  },
+  "categories": {
+    "PERSONAL_PROJECT": "Personal Project",
+    "PROFESSIONAL_PROJECT": "Professional"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Dashboard",
+      "welcome": "Welcome back",
+      "totalPosts": "Total Posts",
+      "publishedPosts": "Published",
+      "draftPosts": "Drafts",
+      "totalMedia": "Media Files",
+      "recentActivity": "Recent Activity"
+    },
+    "posts": {
+      "title": "Posts",
+      "newPost": "New Post",
+      "editPost": "Edit Post",
+      "noPostsYet": "No posts yet",
+      "createFirst": "Create your first post",
+      "githubUrl": "GitHub URL",
+      "liveUrl": "Live Demo URL",
+      "caseStudy": {
+        "title": "Technical Details",
+        "description": "Add detailed technical information (optional)",
+        "hasContent": "Has content"
+      }
+    },
+    "softSkills": {
+      "title": "Skills",
+      "subtitle": "Manage your skills",
+      "newSkill": "New Skill",
+      "editSkill": "Edit Skill",
+      "noSkillsYet": "No skills yet",
+      "createFirst": "Create your first skill"
+    },
+    "skillCategories": {
+      "title": "Skill Categories",
+      "subtitle": "Manage skill categories",
+      "newCategory": "New Category",
+      "editCategory": "Edit Category",
+      "noCategoriesYet": "No categories yet",
+      "createFirst": "Create your first category",
+      "skillCount": "skills"
+    },
+    "experiences": {
+      "title": "Experiences",
+      "subtitle": "Manage your work experiences",
+      "newExperience": "New Experience",
+      "editExperience": "Edit Experience",
+      "noExperiencesYet": "No experiences yet",
+      "createFirst": "Create your first experience"
+    },
+    "interests": {
+      "title": "Interests",
+      "subtitle": "Manage your personal interests",
+      "newInterest": "New Interest",
+      "editInterest": "Edit Interest",
+      "noInterestsYet": "No interests yet",
+      "createFirst": "Create your first interest"
+    },
+    "media": {
+      "title": "Media Library",
+      "upload": "Upload Media",
+      "dragDrop": "Drag and drop files here",
+      "or": "or",
+      "browse": "Browse Files",
+      "noMedia": "No media files yet"
+    },
+    "settings": {
+      "title": "Site Settings",
+      "general": "General",
+      "hero": "Hero Section",
+      "stats": "Stats Section",
+      "about": "About Section",
+      "contact": "Contact Information",
+      "social": "Social Links",
+      "footer": "Footer Section",
+      "seo": "SEO Settings"
+    },
+    "auth": {
+      "login": "Login",
+      "logout": "Logout",
+      "loginWith": "Login with",
+      "google": "Google",
+      "github": "GitHub",
+      "notAuthorized": "You are not authorized to access the admin panel"
+    }
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "quickLinks": "Quick Links",
+    "tagline": "Building software solutions with Java, Spring Boot, React, and more."
+  }
+}

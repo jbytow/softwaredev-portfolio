@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: devportfolio-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-devportfolio}
+      POSTGRES_USER: ${POSTGRES_USER:-devportfolio}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devportfolio123}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-devportfolio}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devportfolio-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: devportfolio-backend
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-dev}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-devportfolio}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-devportfolio}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-devportfolio123}
+      JWT_SECRET: ${JWT_SECRET:-dev_jwt_secret_key_minimum_32_characters}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:-admin@example.com}
+      UPLOAD_PATH: /app/uploads
+      FRONTEND_URL: http://localhost:5173
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-admin@example.com}
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devportfolio-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080/api}
+    container_name: devportfolio-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - devportfolio-network
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  devportfolio-network:
+    driver: bridge

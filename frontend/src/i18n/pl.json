@@ -1,0 +1,202 @@
+{
+  "common": {
+    "loading": "Ładowanie...",
+    "error": "Wystąpił błąd",
+    "retry": "Spróbuj ponownie",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "delete": "Usuń",
+    "edit": "Edytuj",
+    "create": "Utwórz",
+    "search": "Szukaj",
+    "filter": "Filtruj",
+    "all": "Wszystkie",
+    "published": "Opublikowane",
+    "draft": "Szkic",
+    "actions": "Akcje",
+    "confirm": "Potwierdź",
+    "back": "Wstecz",
+    "backTo": "Powrót do",
+    "next": "Dalej",
+    "previous": "Poprzedni",
+    "viewMore": "Zobacz więcej",
+    "readMore": "Czytaj więcej",
+    "learnMore": "Dowiedz się więcej",
+    "contactMe": "Skontaktuj się",
+    "downloadCV": "Pobierz CV",
+    "optional": "opcjonalne"
+  },
+  "nav": {
+    "home": "Strona główna",
+    "about": "O mnie",
+    "experience": "Doświadczenie",
+    "projects": "Projekty",
+    "skills": "Umiejętności",
+    "contact": "Kontakt",
+    "admin": "Admin"
+  },
+  "home": {
+    "hero": {
+      "greeting": "Cześć, jestem",
+      "tagline": "Tworzenie solidnych aplikacji z czystym kodem i nowoczesnymi technologiami",
+      "cta": "Zobacz moje projekty"
+    },
+    "featured": {
+      "title": "Wyróżnione projekty",
+      "subtitle": "Wybór moich ostatnich projektów programistycznych"
+    },
+    "stats": {
+      "projects": "Projektów",
+      "technologies": "Technologii",
+      "commits": "Commitów",
+      "experience": "Lat doświadczenia"
+    },
+    "cta": {
+      "title": "Masz pomysł na projekt?",
+      "subtitle": "Porozmawiajmy o tym, jak mogę pomóc w realizacji Twoich pomysłów z solidną inżynierią."
+    }
+  },
+  "about": {
+    "title": "O mnie",
+    "subtitle": "Poznaj mnie bliżej",
+    "interests": {
+      "title": "Moje zainteresowania",
+      "subtitle": "Czym pasjonuję się poza pracą"
+    }
+  },
+  "experience": {
+    "title": "Doświadczenie",
+    "subtitle": "Moja ścieżka zawodowa",
+    "present": "Obecnie"
+  },
+  "projects": {
+    "title": "Projekty",
+    "subtitle": "Projekty programistyczne, które stworzyłem",
+    "viewProject": "Zobacz projekt"
+  },
+  "caseStudy": {
+    "title": "Szczegóły Techniczne",
+    "challenge": "Problem",
+    "solution": "Rozwiązanie",
+    "results": "Rezultaty",
+    "testimonial": "Kluczowe Decyzje"
+  },
+  "skills": {
+    "title": "Umiejętności",
+    "subtitle": "Technologie i narzędzia, z którymi pracuję"
+  },
+  "contact": {
+    "title": "Skontaktuj się",
+    "subtitle": "Zainteresowany współpracą? Porozmawiajmy",
+    "form": {
+      "name": "Twoje imię",
+      "email": "Twój email",
+      "subject": "Temat",
+      "message": "Twoja wiadomość",
+      "send": "Wyślij wiadomość",
+      "sending": "Wysyłanie...",
+      "success": "Wiadomość wysłana pomyślnie!",
+      "error": "Nie udało się wysłać wiadomości. Spróbuj ponownie."
+    },
+    "info": {
+      "email": "Email",
+      "phone": "Telefon",
+      "location": "Lokalizacja",
+      "social": "Obserwuj mnie"
+    }
+  },
+  "categories": {
+    "PERSONAL_PROJECT": "Projekt Osobisty",
+    "PROFESSIONAL_PROJECT": "Profesjonalny"
+  },
+  "admin": {
+    "dashboard": {
+      "title": "Panel",
+      "welcome": "Witaj ponownie",
+      "totalPosts": "Wszystkie posty",
+      "publishedPosts": "Opublikowane",
+      "draftPosts": "Szkice",
+      "totalMedia": "Pliki mediów",
+      "recentActivity": "Ostatnia aktywność"
+    },
+    "posts": {
+      "title": "Posty",
+      "newPost": "Nowy post",
+      "editPost": "Edytuj post",
+      "noPostsYet": "Brak postów",
+      "createFirst": "Utwórz swój pierwszy post",
+      "githubUrl": "GitHub URL",
+      "liveUrl": "Live Demo URL",
+      "caseStudy": {
+        "title": "Szczegóły Techniczne",
+        "description": "Dodaj szczegółowe informacje techniczne (opcjonalne)",
+        "hasContent": "Zawiera treść"
+      }
+    },
+    "softSkills": {
+      "title": "Umiejętności",
+      "subtitle": "Zarządzaj umiejętnościami",
+      "newSkill": "Nowa umiejętność",
+      "editSkill": "Edytuj umiejętność",
+      "noSkillsYet": "Brak umiejętności",
+      "createFirst": "Utwórz pierwszą umiejętność"
+    },
+    "skillCategories": {
+      "title": "Kategorie umiejętności",
+      "subtitle": "Zarządzaj kategoriami umiejętności",
+      "newCategory": "Nowa kategoria",
+      "editCategory": "Edytuj kategorię",
+      "noCategoriesYet": "Brak kategorii",
+      "createFirst": "Utwórz pierwszą kategorię",
+      "skillCount": "umiejętności"
+    },
+    "experiences": {
+      "title": "Doświadczenie",
+      "subtitle": "Zarządzaj doświadczeniem zawodowym",
+      "newExperience": "Nowe doświadczenie",
+      "editExperience": "Edytuj doświadczenie",
+      "noExperiencesYet": "Brak doświadczeń",
+      "createFirst": "Utwórz pierwsze doświadczenie"
+    },
+    "interests": {
+      "title": "Zainteresowania",
+      "subtitle": "Zarządzaj swoimi zainteresowaniami",
+      "newInterest": "Nowe zainteresowanie",
+      "editInterest": "Edytuj zainteresowanie",
+      "noInterestsYet": "Brak zainteresowań",
+      "createFirst": "Utwórz pierwsze zainteresowanie"
+    },
+    "media": {
+      "title": "Biblioteka mediów",
+      "upload": "Prześlij media",
+      "dragDrop": "Przeciągnij i upuść pliki tutaj",
+      "or": "lub",
+      "browse": "Przeglądaj pliki",
+      "noMedia": "Brak plików mediów"
+    },
+    "settings": {
+      "title": "Ustawienia strony",
+      "general": "Ogólne",
+      "hero": "Sekcja Hero",
+      "stats": "Sekcja Statystyk",
+      "about": "Sekcja O mnie",
+      "contact": "Dane kontaktowe",
+      "social": "Linki społecznościowe",
+      "footer": "Sekcja Stopki",
+      "seo": "Ustawienia SEO"
+    },
+    "auth": {
+      "login": "Zaloguj się",
+      "logout": "Wyloguj się",
+      "loginWith": "Zaloguj przez",
+      "google": "Google",
+      "github": "GitHub",
+      "notAuthorized": "Nie masz uprawnień do panelu administracyjnego"
+    }
+  },
+  "footer": {
+    "rights": "Wszelkie prawa zastrzeżone",
+    "quickLinks": "Szybkie linki",
+    "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej."
+  }
+}

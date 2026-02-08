@@ -1,0 +1,71 @@
+#!/bin/sh
+# Maven Wrapper script
+# This script downloads and runs the Maven wrapper
+
+set -e
+
+# Resolve project home
+PRG="$0"
+while [ -h "$PRG" ]; do
+  ls=$(ls -ld "$PRG")
+  link=$(expr "$ls" : '.*-> \(.*\)$')
+  if expr "$link" : '/.*' > /dev/null; then
+    PRG="$link"
+  else
+    PRG=$(dirname "$PRG")/"$link"
+  fi
+done
+PRGDIR=$(dirname "$PRG")
+BASEDIR=$(cd "$PRGDIR" && pwd)
+
+WRAPPER_JAR="$BASEDIR/.mvn/wrapper/maven-wrapper.jar"
+WRAPPER_PROPERTIES="$BASEDIR/.mvn/wrapper/maven-wrapper.properties"
+
+# Download wrapper if not present
+if [ ! -f "$WRAPPER_JAR" ]; then
+  if [ -f "$WRAPPER_PROPERTIES" ]; then
+    WRAPPER_URL=$(grep 'wrapperUrl' "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
+    echo "Downloading Maven Wrapper from $WRAPPER_URL"
+    mkdir -p "$(dirname "$WRAPPER_JAR")"
+    if command -v wget > /dev/null 2>&1; then
+      wget -q -O "$WRAPPER_JAR" "$WRAPPER_URL"
+    elif command -v curl > /dev/null 2>&1; then
+      curl -s -o "$WRAPPER_JAR" "$WRAPPER_URL"
+    else
+      echo "Error: wget or curl is required to download the Maven Wrapper"
+      exit 1
+    fi
+  fi
+fi
+
+# Download Maven distribution
+if [ -f "$WRAPPER_PROPERTIES" ]; then
+  MAVEN_URL=$(grep 'distributionUrl' "$WRAPPER_PROPERTIES" | cut -d'=' -f2-)
+  MAVEN_VERSION=$(echo "$MAVEN_URL" | sed 's/.*apache-maven-\([0-9.]*\).*/\1/')
+  MAVEN_HOME="$HOME/.m2/wrapper/dists/apache-maven-$MAVEN_VERSION"
+
+  if [ ! -d "$MAVEN_HOME" ]; then
+    echo "Downloading Maven $MAVEN_VERSION"
+    mkdir -p "$MAVEN_HOME"
+    if command -v wget > /dev/null 2>&1; then
+      wget -q -O "/tmp/maven.zip" "$MAVEN_URL"
+    elif command -v curl > /dev/null 2>&1; then
+      curl -s -o "/tmp/maven.zip" "$MAVEN_URL"
+    fi
+    unzip -q "/tmp/maven.zip" -d "$MAVEN_HOME"
+    rm "/tmp/maven.zip"
+  fi
+
+  MAVEN_BIN="$MAVEN_HOME/apache-maven-$MAVEN_VERSION/bin/mvn"
+  if [ -f "$MAVEN_BIN" ]; then
+    exec "$MAVEN_BIN" "$@"
+  fi
+fi
+
+# Fallback to system Maven
+if command -v mvn > /dev/null 2>&1; then
+  exec mvn "$@"
+else
+  echo "Error: Maven is not installed and wrapper could not be downloaded"
+  exit 1
+fi
