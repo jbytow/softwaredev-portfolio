@@ -61,7 +61,7 @@ export default function Experience() {
           <div className="max-w-3xl mx-auto">
             <div className="relative">
               {/* Timeline line */}
-              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 via-accent-lime to-primary-300" />
+              <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 via-accent to-primary-300" />
 
               <div className="space-y-8">
                 {experiences.map((exp, index) => (

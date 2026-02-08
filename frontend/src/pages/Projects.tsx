@@ -138,7 +138,7 @@ export default function Projects() {
                         href={project.liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1.5 text-dark-400 hover:text-accent-lime bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
+                        className="p-1.5 text-dark-400 hover:text-accent bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
                         title="Live Demo"
                       >
                         <ExternalLink className="w-4 h-4" />

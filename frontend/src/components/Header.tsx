@@ -3,9 +3,10 @@ import { Link, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Globe } from 'lucide-react';
+import { Menu, X, Globe, Palette } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { settingsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 
@@ -21,6 +22,7 @@ const navItems = [
 export default function Header() {
   const { t } = useTranslation();
   const { language, toggleLanguage } = useLanguage();
+  const { cycleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const { data: settingsData } = useQuery({
@@ -61,6 +63,15 @@ export default function Header() {
 
           {/* Right side actions */}
           <div className="flex items-center space-x-2">
+            {/* Theme Toggle */}
+            <button
+              onClick={cycleTheme}
+              className="flex items-center px-3 py-2 text-sm font-medium text-dark-300 hover:text-dark-100 rounded-lg hover:bg-dark-800 transition-colors"
+              aria-label="Cycle color theme"
+            >
+              <Palette className="w-4 h-4" />
+            </button>
+
             {/* Language Toggle */}
             <button
               onClick={toggleLanguage}
