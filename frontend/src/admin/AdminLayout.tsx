@@ -13,6 +13,8 @@ import {
   Lightbulb,
   FolderTree,
   Heart,
+  Trophy,
+  Dices,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,6 +26,8 @@ const navItems = [
   { path: '/admin/soft-skills', icon: Lightbulb, labelKey: 'admin.softSkills.title' },
   { path: '/admin/skill-categories', icon: FolderTree, labelKey: 'admin.skillCategories.title' },
   { path: '/admin/interests', icon: Heart, labelKey: 'admin.interests.title' },
+  { path: '/admin/achievements', icon: Trophy, labelKey: 'admin.achievements.title' },
+  { path: '/admin/rpg-stats', icon: Dices, labelKey: 'admin.rpgStats.title' },
   { path: '/admin/media', icon: Image, labelKey: 'admin.media.title' },
   { path: '/admin/settings', icon: Settings, labelKey: 'admin.settings.title' },
 ];

@@ -38,7 +38,7 @@
   "home": {
     "hero": {
       "greeting": "Cześć, jestem",
-      "tagline": "Tworzenie solidnych aplikacji z czystym kodem i nowoczesnymi technologiami",
+      "tagline": "Finansista przekwalifikowany na inżyniera oprogramowania. Buduję rzeczy, które rozwiązują realne problemy.",
       "cta": "Zobacz moje projekty"
     },
     "featured": {
@@ -51,6 +51,10 @@
       "commits": "Commitów",
       "experience": "Lat doświadczenia"
     },
+    "achievements": {
+      "title": "Odblokowane Osiągnięcia",
+      "subtitle": "Kamienie milowe z dziennika zadań"
+    },
     "cta": {
       "title": "Masz pomysł na projekt?",
       "subtitle": "Porozmawiajmy o tym, jak mogę pomóc w realizacji Twoich pomysłów z solidną inżynierią."
@@ -62,6 +66,18 @@
     "interests": {
       "title": "Moje zainteresowania",
       "subtitle": "Czym pasjonuję się poza pracą"
+    },
+    "rpg": {
+      "toggle": "Karta Postaci",
+      "classTitle": "Poziom 12 Czarodziej Finansów przekwalifikowany na Rycerza Kodu",
+      "statsTitle": "Atrybuty",
+      "questsTitle": "Ukończone Questy",
+      "str": "Java / Spring",
+      "int": "Python / Dane",
+      "wis": "Finanse i Analiza",
+      "dex": "React / Frontend",
+      "con": "DevOps / Infra",
+      "cha": "Nauczanie / Komunikacja"
     }
   },
   "experience": {
@@ -83,7 +99,9 @@
   },
   "skills": {
     "title": "Umiejętności",
-    "subtitle": "Technologie i narzędzia, z którymi pracuję"
+    "subtitle": "Technologie i narzędzia, z którymi pracuję",
+    "xpToggle": "Tryb XP",
+    "levelLabel": "POZ"
   },
   "contact": {
     "title": "Skontaktuj się",
@@ -165,6 +183,22 @@
       "editInterest": "Edytuj zainteresowanie",
       "noInterestsYet": "Brak zainteresowań",
       "createFirst": "Utwórz pierwsze zainteresowanie"
+    },
+    "achievements": {
+      "title": "Osiągnięcia",
+      "subtitle": "Zarządzaj osiągnięciami / questami",
+      "newAchievement": "Nowe osiągnięcie",
+      "editAchievement": "Edytuj osiągnięcie",
+      "noAchievementsYet": "Brak osiągnięć",
+      "createFirst": "Utwórz pierwsze osiągnięcie"
+    },
+    "rpgStats": {
+      "title": "Statystyki RPG",
+      "subtitle": "Zarządzaj atrybutami karty postaci",
+      "newStat": "Nowa statystyka",
+      "editStat": "Edytuj statystykę",
+      "noStatsYet": "Brak statystyk RPG",
+      "createFirst": "Utwórz pierwszą statystykę RPG"
     },
     "media": {
       "title": "Biblioteka mediów",

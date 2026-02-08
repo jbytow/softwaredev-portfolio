@@ -13,6 +13,8 @@ export const queryKeys = {
   skillCategoriesWithSkills: (lang: string) => ['skillCategoriesWithSkills', lang] as const,
   experiences: (lang: string) => ['experiences', lang] as const,
   interests: (lang: string) => ['interests', lang] as const,
+  achievements: (lang: string) => ['achievements', lang] as const,
+  rpgStats: (lang: string) => ['rpgStats', lang] as const,
   hashtags: () => ['hashtags'] as const,
 
   // Admin queries (language-independent, manages all languages)
@@ -29,5 +31,9 @@ export const queryKeys = {
     experience: (id: string) => ['admin', 'experience', id] as const,
     interests: () => ['admin', 'interests'] as const,
     interest: (id: string) => ['admin', 'interest', id] as const,
+    achievements: () => ['admin', 'achievements'] as const,
+    achievement: (id: string) => ['admin', 'achievement', id] as const,
+    rpgStats: () => ['admin', 'rpgStats'] as const,
+    rpgStat: (id: string) => ['admin', 'rpgStat', id] as const,
   },
 };

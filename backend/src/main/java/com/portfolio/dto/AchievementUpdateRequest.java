@@ -5,21 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SoftSkillUpdateRequest {
-    private String nameEn;
-    private String namePl;
+public class AchievementUpdateRequest {
+    private String titleEn;
+    private String titlePl;
     private String descriptionEn;
     private String descriptionPl;
-    private String professionalUsageEn;
-    private String professionalUsagePl;
     private String icon;
-    private Integer level;
+    private String year;
     private Integer displayOrder;
-    private UUID categoryId;
 }

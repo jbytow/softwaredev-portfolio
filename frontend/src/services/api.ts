@@ -27,6 +27,12 @@ import {
   Interest,
   InterestCreateRequest,
   InterestUpdateRequest,
+  Achievement,
+  AchievementCreateRequest,
+  AchievementUpdateRequest,
+  RpgStat,
+  RpgStatCreateRequest,
+  RpgStatUpdateRequest,
 } from '@/types';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -173,6 +179,30 @@ export const interestsApi = {
 
   getById: async (id: string): Promise<ApiResponse<Interest>> => {
     const { data } = await api.get(`/interests/${id}`);
+    return data;
+  },
+};
+
+export const achievementsApi = {
+  getAll: async (): Promise<ApiResponse<Achievement[]>> => {
+    const { data } = await api.get('/achievements');
+    return data;
+  },
+
+  getById: async (id: string): Promise<ApiResponse<Achievement>> => {
+    const { data } = await api.get(`/achievements/${id}`);
+    return data;
+  },
+};
+
+export const rpgStatsApi = {
+  getAll: async (): Promise<ApiResponse<RpgStat[]>> => {
+    const { data } = await api.get('/rpg-stats');
+    return data;
+  },
+
+  getById: async (id: string): Promise<ApiResponse<RpgStat>> => {
+    const { data } = await api.get(`/rpg-stats/${id}`);
     return data;
   },
 };
@@ -417,6 +447,70 @@ export const adminInterestsApi = {
 
   reorder: async (items: ReorderItem[]): Promise<ApiResponse<void>> => {
     const { data } = await api.patch('/admin/interests/reorder', { items });
+    return data;
+  },
+};
+
+export const adminRpgStatsApi = {
+  getAll: async (): Promise<ApiResponse<RpgStat[]>> => {
+    const { data } = await api.get('/admin/rpg-stats');
+    return data;
+  },
+
+  getById: async (id: string): Promise<ApiResponse<RpgStat>> => {
+    const { data } = await api.get(`/admin/rpg-stats/${id}`);
+    return data;
+  },
+
+  create: async (stat: RpgStatCreateRequest): Promise<ApiResponse<RpgStat>> => {
+    const { data } = await api.post('/admin/rpg-stats', stat);
+    return data;
+  },
+
+  update: async (id: string, stat: RpgStatUpdateRequest): Promise<ApiResponse<RpgStat>> => {
+    const { data } = await api.put(`/admin/rpg-stats/${id}`, stat);
+    return data;
+  },
+
+  delete: async (id: string): Promise<ApiResponse<void>> => {
+    const { data } = await api.delete(`/admin/rpg-stats/${id}`);
+    return data;
+  },
+
+  reorder: async (items: ReorderItem[]): Promise<ApiResponse<void>> => {
+    const { data } = await api.patch('/admin/rpg-stats/reorder', { items });
+    return data;
+  },
+};
+
+export const adminAchievementsApi = {
+  getAll: async (): Promise<ApiResponse<Achievement[]>> => {
+    const { data } = await api.get('/admin/achievements');
+    return data;
+  },
+
+  getById: async (id: string): Promise<ApiResponse<Achievement>> => {
+    const { data } = await api.get(`/admin/achievements/${id}`);
+    return data;
+  },
+
+  create: async (achievement: AchievementCreateRequest): Promise<ApiResponse<Achievement>> => {
+    const { data } = await api.post('/admin/achievements', achievement);
+    return data;
+  },
+
+  update: async (id: string, achievement: AchievementUpdateRequest): Promise<ApiResponse<Achievement>> => {
+    const { data } = await api.put(`/admin/achievements/${id}`, achievement);
+    return data;
+  },
+
+  delete: async (id: string): Promise<ApiResponse<void>> => {
+    const { data } = await api.delete(`/admin/achievements/${id}`);
+    return data;
+  },
+
+  reorder: async (items: ReorderItem[]): Promise<ApiResponse<void>> => {
+    const { data } = await api.patch('/admin/achievements/reorder', { items });
     return data;
   },
 };

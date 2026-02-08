@@ -28,6 +28,10 @@ const AdminExperiences = lazy(() => import('./admin/AdminExperiences'));
 const AdminExperienceForm = lazy(() => import('./admin/AdminExperienceForm'));
 const AdminInterests = lazy(() => import('./admin/AdminInterests'));
 const AdminInterestForm = lazy(() => import('./admin/AdminInterestForm'));
+const AdminAchievements = lazy(() => import('./admin/AdminAchievements'));
+const AdminAchievementForm = lazy(() => import('./admin/AdminAchievementForm'));
+const AdminRpgStats = lazy(() => import('./admin/AdminRpgStats'));
+const AdminRpgStatForm = lazy(() => import('./admin/AdminRpgStatForm'));
 const AdminMedia = lazy(() => import('./admin/AdminMedia'));
 const AdminSettings = lazy(() => import('./admin/AdminSettings'));
 
@@ -73,6 +77,12 @@ function App() {
           <Route path="interests" element={<AdminInterests />} />
           <Route path="interests/new" element={<AdminInterestForm />} />
           <Route path="interests/:id/edit" element={<AdminInterestForm />} />
+          <Route path="achievements" element={<AdminAchievements />} />
+          <Route path="achievements/new" element={<AdminAchievementForm />} />
+          <Route path="achievements/:id/edit" element={<AdminAchievementForm />} />
+          <Route path="rpg-stats" element={<AdminRpgStats />} />
+          <Route path="rpg-stats/new" element={<AdminRpgStatForm />} />
+          <Route path="rpg-stats/:id/edit" element={<AdminRpgStatForm />} />
           <Route path="media" element={<AdminMedia />} />
           <Route path="settings" element={<AdminSettings />} />
         </Route>

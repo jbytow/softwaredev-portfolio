@@ -24,6 +24,7 @@ public class SoftSkillDto {
     private String professionalUsageEn;
     private String professionalUsagePl;
     private String icon;
+    private Integer level;
     private Integer displayOrder;
     private UUID categoryId;
     private String categoryName;

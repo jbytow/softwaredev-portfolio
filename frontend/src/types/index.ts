@@ -62,6 +62,7 @@ export interface SoftSkill {
   professionalUsageEn: string;
   professionalUsagePl: string;
   icon: string | null;
+  level: number;
   displayOrder: number;
   categoryId: string | null;
   categoryName: string | null;
@@ -230,6 +231,7 @@ export interface SoftSkillCreateRequest {
   professionalUsageEn?: string;
   professionalUsagePl?: string;
   icon?: string;
+  level?: number;
   displayOrder?: number;
   categoryId?: string;
 }
@@ -325,3 +327,56 @@ export interface InterestCreateRequest {
 }
 
 export type InterestUpdateRequest = Partial<InterestCreateRequest>;
+
+export interface Achievement {
+  id: string;
+  title: string;
+  titleEn: string;
+  titlePl: string;
+  description: string;
+  descriptionEn: string;
+  descriptionPl: string;
+  icon: string | null;
+  year: string | null;
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AchievementCreateRequest {
+  titleEn: string;
+  titlePl: string;
+  descriptionEn?: string;
+  descriptionPl?: string;
+  icon?: string;
+  year?: string;
+  displayOrder?: number;
+}
+
+export type AchievementUpdateRequest = Partial<AchievementCreateRequest>;
+
+export interface RpgStat {
+  id: string;
+  attr: string;
+  label: string;
+  labelEn: string;
+  labelPl: string;
+  level: number;
+  maxLevel: number;
+  skills: string[];
+  displayOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RpgStatCreateRequest {
+  attr: string;
+  labelEn: string;
+  labelPl: string;
+  level?: number;
+  maxLevel?: number;
+  skills?: string[];
+  displayOrder?: number;
+}
+
+export type RpgStatUpdateRequest = Partial<RpgStatCreateRequest>;

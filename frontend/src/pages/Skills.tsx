@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import {
@@ -23,12 +24,14 @@ import {
   Monitor,
   Cloud,
   Lock,
+  Swords,
 } from 'lucide-react';
 import { skillCategoriesApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
 import { SkillCategoryWithSkills } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+const MAX_LEVEL = 10;
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   lightbulb: Lightbulb,
@@ -58,6 +61,13 @@ const defaultIcons = [Code, Terminal, Database, Monitor, GitBranch, Server];
 export default function Skills() {
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const [xpMode, setXpMode] = useState(() => {
+    return localStorage.getItem('xpMode') === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('xpMode', String(xpMode));
+  }, [xpMode]);
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.skillCategoriesWithSkills(language),
@@ -90,79 +100,162 @@ export default function Skills() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <h1 className="section-heading">{t('skills.title')}</h1>
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <h1 className="section-heading !mb-0">{t('skills.title')}</h1>
+              <button
+                onClick={() => setXpMode(!xpMode)}
+                className={`rpg-toggle ${xpMode ? 'active' : ''}`}
+                title={t('skills.xpToggle')}
+              >
+                <Swords className="w-5 h-5" />
+                <span className="hidden sm:inline">{t('skills.xpToggle')}</span>
+              </button>
+            </div>
             <p className="section-subheading mx-auto">{t('skills.subtitle')}</p>
           </motion.div>
 
-          {categories.filter(cat => cat.skills.length > 0).map((category, categoryIndex) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: categoryIndex * 0.15 }}
-              className="mb-12"
-            >
-              <h2 className="text-2xl font-display font-bold text-dark-100 mb-6 pb-2 border-b border-dark-700">
-                {category.name}
-              </h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {category.skills.map((skill, skillIndex) => {
-                  const IconComponent = getIcon(skill.icon, skillIndex);
-                  return (
-                    <motion.div
-                      key={skill.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: categoryIndex * 0.15 + skillIndex * 0.05 }}
-                      className="card-hover text-center"
-                    >
-                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-6">
-                        <IconComponent className="w-8 h-8 text-primary-400" />
-                      </div>
-
-                      <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.name}</h3>
-
-                      <p className="text-dark-400 mb-4">{skill.description}</p>
-
-                      {skill.professionalUsage && (
-                        <p className="text-dark-500 text-sm italic">{skill.professionalUsage}</p>
-                      )}
-                    </motion.div>
-                  );
-                })}
-              </div>
-            </motion.div>
-          ))}
-
-          {categories.every(cat => cat.skills.length === 0) && (
-            <div className="text-center">
-              {/* Default skills when no skills exist */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[
-                  { icon: Code, title: 'Java', desc: 'Core language for backend development' },
-                  { icon: Terminal, title: 'Spring Boot', desc: 'Building robust REST APIs and microservices' },
-                  { icon: Database, title: 'PostgreSQL', desc: 'Relational database design and optimization' },
-                  { icon: Monitor, title: 'React', desc: 'Building modern, responsive user interfaces' },
-                  { icon: GitBranch, title: 'Git', desc: 'Version control and collaborative workflows' },
-                  { icon: Server, title: 'Docker', desc: 'Containerization and deployment' },
-                ].map((skill, index) => (
+          <AnimatePresence mode="wait">
+            {xpMode ? (
+              <motion.div
+                key="xp"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {categories.filter(cat => cat.skills.length > 0).map((category, categoryIndex) => (
                   <motion.div
-                    key={skill.title}
+                    key={category.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="card-hover text-center"
+                    transition={{ delay: categoryIndex * 0.15 }}
+                    className="mb-10"
                   >
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-6">
-                      <skill.icon className="w-8 h-8 text-primary-400" />
+                    <h2 className="text-2xl font-display font-bold text-dark-100 mb-4 pb-2 border-b border-dark-700">
+                      {category.name}
+                    </h2>
+                    <div className="space-y-3">
+                      {category.skills.map((skill, skillIndex) => {
+                        const IconComponent = getIcon(skill.icon, skillIndex);
+                        const level = skill.level ?? 5;
+                        const pct = (level / MAX_LEVEL) * 100;
+                        return (
+                          <motion.div
+                            key={skill.id}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: categoryIndex * 0.15 + skillIndex * 0.05 }}
+                            className="xp-skill-row"
+                          >
+                            <div className="flex items-center gap-3 min-w-0 w-48 flex-shrink-0">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-500/20 to-accent/20 flex items-center justify-center flex-shrink-0">
+                                <IconComponent className="w-4 h-4 text-primary-400" />
+                              </div>
+                              <span className="text-dark-100 font-medium truncate">{skill.name}</span>
+                            </div>
+                            <div className="xp-bar-container">
+                              <motion.div
+                                className="xp-bar-fill"
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{ duration: 1.2, delay: categoryIndex * 0.15 + skillIndex * 0.05 }}
+                              />
+                            </div>
+                            <span className="xp-level-badge">
+                              {t('skills.levelLabel')} {level} / {MAX_LEVEL}
+                            </span>
+                          </motion.div>
+                        );
+                      })}
                     </div>
-                    <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.title}</h3>
-                    <p className="text-dark-400">{skill.desc}</p>
                   </motion.div>
                 ))}
-              </div>
-            </div>
-          )}
+
+                {categories.every(cat => cat.skills.length === 0) && (
+                  <div className="text-center text-dark-400 py-12">
+                    {t('admin.softSkills.noSkillsYet')}
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="normal"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {categories.filter(cat => cat.skills.length > 0).map((category, categoryIndex) => (
+                  <motion.div
+                    key={category.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: categoryIndex * 0.15 }}
+                    className="mb-12"
+                  >
+                    <h2 className="text-2xl font-display font-bold text-dark-100 mb-6 pb-2 border-b border-dark-700">
+                      {category.name}
+                    </h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {category.skills.map((skill, skillIndex) => {
+                        const IconComponent = getIcon(skill.icon, skillIndex);
+                        return (
+                          <motion.div
+                            key={skill.id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: categoryIndex * 0.15 + skillIndex * 0.05 }}
+                            className="card-hover text-center"
+                          >
+                            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-6">
+                              <IconComponent className="w-8 h-8 text-primary-400" />
+                            </div>
+
+                            <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.name}</h3>
+
+                            <p className="text-dark-400 mb-4">{skill.description}</p>
+
+                            {skill.professionalUsage && (
+                              <p className="text-dark-500 text-sm italic">{skill.professionalUsage}</p>
+                            )}
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </motion.div>
+                ))}
+
+                {categories.every(cat => cat.skills.length === 0) && (
+                  <div className="text-center">
+                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[
+                        { icon: Code, title: 'Java', desc: 'Core language for backend development' },
+                        { icon: Terminal, title: 'Spring Boot', desc: 'Building robust REST APIs and microservices' },
+                        { icon: Database, title: 'PostgreSQL', desc: 'Relational database design and optimization' },
+                        { icon: Monitor, title: 'React', desc: 'Building modern, responsive user interfaces' },
+                        { icon: GitBranch, title: 'Git', desc: 'Version control and collaborative workflows' },
+                        { icon: Server, title: 'Docker', desc: 'Containerization and deployment' },
+                      ].map((skill, index) => (
+                        <motion.div
+                          key={skill.title}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="card-hover text-center"
+                        >
+                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-6">
+                            <skill.icon className="w-8 h-8 text-primary-400" />
+                          </div>
+                          <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.title}</h3>
+                          <p className="text-dark-400">{skill.desc}</p>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </section>
     </>

@@ -1,0 +1,1 @@
+ALTER TABLE soft_skills ADD COLUMN level INTEGER DEFAULT 5;

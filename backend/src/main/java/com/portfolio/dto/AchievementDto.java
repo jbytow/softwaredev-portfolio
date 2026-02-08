@@ -5,21 +5,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SoftSkillUpdateRequest {
-    private String nameEn;
-    private String namePl;
+public class AchievementDto {
+    private UUID id;
+    private String title;
+    private String titleEn;
+    private String titlePl;
+    private String description;
     private String descriptionEn;
     private String descriptionPl;
-    private String professionalUsageEn;
-    private String professionalUsagePl;
     private String icon;
-    private Integer level;
+    private String year;
     private Integer displayOrder;
-    private UUID categoryId;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }

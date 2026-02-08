@@ -7,27 +7,23 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
-@NamedEntityGraph(
-    name = "SoftSkill.withCategory",
-    attributeNodes = @NamedAttributeNode("category")
-)
-@Table(name = "soft_skills")
+@Table(name = "achievements")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SoftSkill {
+public class Achievement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name_en", nullable = false)
-    private String nameEn;
+    @Column(name = "title_en", nullable = false)
+    private String titleEn;
 
-    @Column(name = "name_pl", nullable = false)
-    private String namePl;
+    @Column(name = "title_pl", nullable = false)
+    private String titlePl;
 
     @Column(name = "description_en", columnDefinition = "TEXT")
     private String descriptionEn;
@@ -35,26 +31,15 @@ public class SoftSkill {
     @Column(name = "description_pl", columnDefinition = "TEXT")
     private String descriptionPl;
 
-    @Column(name = "professional_usage_en", columnDefinition = "TEXT")
-    private String professionalUsageEn;
-
-    @Column(name = "professional_usage_pl", columnDefinition = "TEXT")
-    private String professionalUsagePl;
-
     @Column(name = "icon")
     private String icon;
 
-    @Column(name = "level")
-    @Builder.Default
-    private Integer level = 5;
+    @Column(name = "year")
+    private String year;
 
     @Column(name = "display_order")
     @Builder.Default
     private Integer displayOrder = 0;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private SkillCategory category;
 
     @Column(name = "created_at")
     private OffsetDateTime createdAt;
@@ -73,15 +58,11 @@ public class SoftSkill {
         updatedAt = OffsetDateTime.now();
     }
 
-    public String getName(String locale) {
-        return "pl".equalsIgnoreCase(locale) ? namePl : nameEn;
+    public String getTitle(String locale) {
+        return "pl".equalsIgnoreCase(locale) ? titlePl : titleEn;
     }
 
     public String getDescription(String locale) {
         return "pl".equalsIgnoreCase(locale) ? descriptionPl : descriptionEn;
-    }
-
-    public String getProfessionalUsage(String locale) {
-        return "pl".equalsIgnoreCase(locale) ? professionalUsagePl : professionalUsageEn;
     }
 }

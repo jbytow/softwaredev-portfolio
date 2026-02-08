@@ -52,6 +52,7 @@ public class SoftSkillService {
                 .professionalUsageEn(request.getProfessionalUsageEn())
                 .professionalUsagePl(request.getProfessionalUsagePl())
                 .icon(request.getIcon())
+                .level(request.getLevel() != null ? request.getLevel() : 5)
                 .displayOrder(request.getDisplayOrder() != null ? request.getDisplayOrder() :
                         softSkillRepository.getMaxDisplayOrder() + 1)
                 .category(category)
@@ -86,6 +87,9 @@ public class SoftSkillService {
         }
         if (request.getIcon() != null) {
             skill.setIcon(request.getIcon());
+        }
+        if (request.getLevel() != null) {
+            skill.setLevel(request.getLevel());
         }
         if (request.getDisplayOrder() != null) {
             skill.setDisplayOrder(request.getDisplayOrder());
@@ -128,6 +132,7 @@ public class SoftSkillService {
                 .professionalUsageEn(skill.getProfessionalUsageEn())
                 .professionalUsagePl(skill.getProfessionalUsagePl())
                 .icon(skill.getIcon())
+                .level(skill.getLevel())
                 .displayOrder(skill.getDisplayOrder())
                 .categoryId(skill.getCategory() != null ? skill.getCategory().getId() : null)
                 .categoryName(skill.getCategory() != null ? skill.getCategory().getName(locale) : null)

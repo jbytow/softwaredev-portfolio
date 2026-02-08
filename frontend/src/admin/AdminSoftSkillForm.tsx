@@ -24,6 +24,7 @@ export default function AdminSoftSkillForm() {
     professionalUsageEn: '',
     professionalUsagePl: '',
     icon: '',
+    level: 5,
     categoryId: '',
   });
 
@@ -51,6 +52,7 @@ export default function AdminSoftSkillForm() {
         professionalUsageEn: skill.professionalUsageEn || '',
         professionalUsagePl: skill.professionalUsagePl || '',
         icon: skill.icon || '',
+        level: skill.level ?? 5,
         categoryId: skill.categoryId || '',
       });
     }
@@ -212,10 +214,10 @@ export default function AdminSoftSkillForm() {
           </div>
         </div>
 
-        {/* Category & Icon */}
+        {/* Category, Icon & Level */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Category & Icon</h3>
-          <div className="grid md:grid-cols-2 gap-4">
+          <h3 className="text-lg font-semibold text-dark-100">Category, Icon & Level</h3>
+          <div className="grid md:grid-cols-3 gap-4">
             <div>
               <label className="label">Category</label>
               <select
@@ -244,6 +246,26 @@ export default function AdminSoftSkillForm() {
               />
               <p className="text-sm text-dark-500 mt-2">
                 lightbulb, users, message, target, clock, heart, zap, brain, handshake, rocket, sparkles, award
+              </p>
+            </div>
+            <div>
+              <label className="label">XP Level (1-10)</label>
+              <input
+                type="number"
+                name="level"
+                value={formData.level}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    level: Math.max(1, Math.min(10, parseInt(e.target.value) || 5)),
+                  }))
+                }
+                className="input"
+                min={1}
+                max={10}
+              />
+              <p className="text-sm text-dark-500 mt-2">
+                Skill level shown in XP mode (1-10)
               </p>
             </div>
           </div>

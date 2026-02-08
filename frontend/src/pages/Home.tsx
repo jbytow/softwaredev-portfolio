@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
+import { useRef, useEffect, useState } from 'react';
 import {
   ArrowRight,
   Sparkles,
@@ -30,7 +31,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { settingsApi, postsApi } from '@/services/api';
+import { settingsApi, postsApi, achievementsApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
 import { getMediaUrl } from '@/lib/mediaUrl';
@@ -62,9 +63,47 @@ const iconMap: Record<string, LucideIcon> = {
   monitor: Monitor,
 };
 
+function AnimatedCounter({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    const duration = 1500;
+    const startTime = performance.now();
+
+    function tick(now: number) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(eased * value));
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
+  }, [isInView, value]);
+
+  return (
+    <span ref={ref}>
+      {display}{suffix}
+    </span>
+  );
+}
+
+function parseStatValue(val: string): { num: number; suffix: string } {
+  const match = val.match(/^(\d+)(.*)$/);
+  if (match) return { num: parseInt(match[1], 10), suffix: match[2] };
+  return { num: 0, suffix: val };
+}
+
 export default function Home() {
   const { t } = useTranslation();
   const { language } = useLanguage();
+
+  const { scrollY } = useScroll();
+  const mountainBackY = useTransform(scrollY, [0, 600], [0, 60]);
+  const mountainFrontY = useTransform(scrollY, [0, 600], [0, 100]);
 
   const { data: settingsData, isLoading: settingsLoading } = useQuery({
     queryKey: queryKeys.settings(language),
@@ -76,8 +115,14 @@ export default function Home() {
     queryFn: () => postsApi.getAll(),
   });
 
+  const { data: achievementsData } = useQuery({
+    queryKey: queryKeys.achievements(language),
+    queryFn: () => achievementsApi.getAll(),
+  });
+
   const settings = settingsData?.data;
   const featuredPosts = postsData?.data?.slice(0, 6) || [];
+  const achievements = achievementsData?.data || [];
 
   if (settingsLoading) {
     return <LoadingSpinner fullScreen />;
@@ -98,6 +143,38 @@ export default function Home() {
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl animate-pulse-slow" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/20 rounded-full blur-3xl animate-pulse-slow delay-1000" />
         </div>
+
+        {/* Mountain Silhouettes */}
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 z-[1]"
+          style={{ y: mountainBackY }}
+        >
+          <svg
+            viewBox="0 0 1440 320"
+            className="w-full h-auto"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,320 L0,220 Q120,120 240,180 Q360,240 480,160 Q540,120 600,140 Q720,200 840,130 Q960,60 1080,140 Q1200,220 1320,170 Q1380,140 1440,160 L1440,320 Z"
+              className="fill-dark-900/20"
+            />
+          </svg>
+        </motion.div>
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 z-[2]"
+          style={{ y: mountainFrontY }}
+        >
+          <svg
+            viewBox="0 0 1440 240"
+            className="w-full h-auto"
+            preserveAspectRatio="none"
+          >
+            <path
+              d="M0,240 L0,180 Q180,100 360,160 Q480,200 600,140 Q720,80 840,120 Q960,160 1080,100 Q1200,40 1320,100 Q1380,130 1440,120 L1440,240 Z"
+              className="fill-dark-900/30"
+            />
+          </svg>
+        </motion.div>
 
         <div className="container relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -158,7 +235,7 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10"
         >
           <div className="w-6 h-10 rounded-full border-2 border-dark-600 flex justify-center pt-2">
             <motion.div
@@ -170,29 +247,94 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Stats Section */}
+      {/* Stats Section with HUD Frame */}
       {settings?.statsItems && settings.statsItems.length > 0 && (
         <section className="py-20 bg-dark-800/50">
           <div className="container">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-              {settings.statsItems.map((stat, index) => {
-                const Icon = iconMap[stat.icon] || Target;
+            <div className="hud-frame hud-frame-bottom">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                {settings.statsItems.map((stat, index) => {
+                  const Icon = iconMap[stat.icon] || Target;
+                  const { num, suffix } = parseStatValue(stat.value);
+                  const barWidth = Math.min((num / 100) * 100, 100);
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.1 }}
+                      className="text-center"
+                    >
+                      <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-4">
+                        <Icon className="w-7 h-7 text-primary-400" />
+                      </div>
+                      <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
+                        {num > 0 ? <AnimatedCounter value={num} suffix={suffix} /> : stat.value}
+                      </div>
+                      <div className="text-dark-400 text-sm">{stat.label}</div>
+                      <div className="hud-stat-bar">
+                        <motion.div
+                          className="hud-stat-bar-fill"
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${barWidth}%` }}
+                          viewport={{ once: true }}
+                          transition={{ duration: 1.5, delay: index * 0.1 }}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Achievements Section */}
+      {achievements.length > 0 && (
+        <section className="py-20">
+          <div className="container">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="section-heading">{t('home.achievements.title')}</h2>
+              <p className="section-subheading mx-auto">{t('home.achievements.subtitle')}</p>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {achievements.map((achievement, index) => {
+                const Icon = iconMap[achievement.icon || ''] || Trophy;
                 return (
                   <motion.div
-                    key={index}
+                    key={achievement.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1 }}
-                    className="text-center"
+                    className="achievement-card"
                   >
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-4">
-                      <Icon className="w-7 h-7 text-primary-400" />
+                    <div className="flex items-start gap-4">
+                      <div className="achievement-badge flex-shrink-0">
+                        <Icon className="w-7 h-7 text-primary-400 relative z-10" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-lg font-semibold text-dark-100 mb-1">
+                          {achievement.title}
+                        </h3>
+                        <p className="text-dark-400 text-sm">
+                          {achievement.description}
+                        </p>
+                        {achievement.year && (
+                          <span className="inline-block mt-2 text-xs text-primary-400 font-mono">
+                            {achievement.year}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
-                      {stat.value}
-                    </div>
-                    <div className="text-dark-400 text-sm">{stat.label}</div>
                   </motion.div>
                 );
               })}
@@ -202,7 +344,7 @@ export default function Home() {
       )}
 
       {/* Featured Work Section */}
-      <section className="py-20">
+      <section className="py-20 bg-dark-800/50">
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

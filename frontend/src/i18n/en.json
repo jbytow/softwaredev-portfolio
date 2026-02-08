@@ -38,7 +38,7 @@
   "home": {
     "hero": {
       "greeting": "Hello, I'm",
-      "tagline": "Building robust applications with clean code and modern technologies",
+      "tagline": "Finance professional turned software engineer. I build things that solve real problems.",
       "cta": "View My Projects"
     },
     "featured": {
@@ -51,6 +51,10 @@
       "commits": "Commits",
       "experience": "Years Experience"
     },
+    "achievements": {
+      "title": "Achievements Unlocked",
+      "subtitle": "Milestones from the quest log"
+    },
     "cta": {
       "title": "Have a project in mind?",
       "subtitle": "Let's discuss how I can help bring your ideas to life with solid engineering."
@@ -62,6 +66,18 @@
     "interests": {
       "title": "My Interests",
       "subtitle": "What I'm passionate about outside of work"
+    },
+    "rpg": {
+      "toggle": "Character Sheet",
+      "classTitle": "Level 12 Finance Wizard turned Code Knight",
+      "statsTitle": "Attributes",
+      "questsTitle": "Quests Completed",
+      "str": "Java / Spring",
+      "int": "Python / Data",
+      "wis": "Finance & Analysis",
+      "dex": "React / Frontend",
+      "con": "DevOps / Infra",
+      "cha": "Teaching / Comm"
     }
   },
   "experience": {
@@ -83,7 +99,9 @@
   },
   "skills": {
     "title": "Skills",
-    "subtitle": "Technologies and tools I work with"
+    "subtitle": "Technologies and tools I work with",
+    "xpToggle": "XP Mode",
+    "levelLabel": "LVL"
   },
   "contact": {
     "title": "Get in Touch",
@@ -165,6 +183,22 @@
       "editInterest": "Edit Interest",
       "noInterestsYet": "No interests yet",
       "createFirst": "Create your first interest"
+    },
+    "achievements": {
+      "title": "Achievements",
+      "subtitle": "Manage your achievements / quests",
+      "newAchievement": "New Achievement",
+      "editAchievement": "Edit Achievement",
+      "noAchievementsYet": "No achievements yet",
+      "createFirst": "Create your first achievement"
+    },
+    "rpgStats": {
+      "title": "RPG Stats",
+      "subtitle": "Manage character sheet attributes",
+      "newStat": "New Stat",
+      "editStat": "Edit Stat",
+      "noStatsYet": "No RPG stats yet",
+      "createFirst": "Create your first RPG stat"
     },
     "media": {
       "title": "Media Library",
