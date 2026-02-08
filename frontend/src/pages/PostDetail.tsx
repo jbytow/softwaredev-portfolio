@@ -110,7 +110,7 @@ export default function PostDetail() {
                     href={post.liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg text-dark-200 hover:text-accent-teal transition-colors text-sm"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-dark-800 hover:bg-dark-700 border border-dark-600 rounded-lg text-dark-200 hover:text-accent-lime transition-colors text-sm"
                   >
                     <ExternalLink className="w-4 h-4" />
                     Live Demo
@@ -181,7 +181,7 @@ export default function PostDetail() {
               {/* Expandable Header */}
               <button
                 onClick={() => setCaseStudyExpanded(!caseStudyExpanded)}
-                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary-500/10 to-accent-teal/10 border border-primary-500/20 rounded-xl hover:border-primary-500/40 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary-500/10 to-accent-lime/10 border border-primary-500/20 rounded-xl hover:border-primary-500/40 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center">
@@ -268,7 +268,7 @@ export default function PostDetail() {
 
                       {/* Testimonial */}
                       {post.caseStudyTestimonial && (
-                        <div className="card bg-gradient-to-br from-primary-500/5 to-accent-teal/5 border border-primary-500/20">
+                        <div className="card bg-gradient-to-br from-primary-500/5 to-accent-lime/5 border border-primary-500/20">
                           <div className="flex items-start gap-4">
                             <div className="w-10 h-10 rounded-lg bg-primary-500/20 flex items-center justify-center flex-shrink-0">
                               <Quote className="w-5 h-5 text-primary-400" />

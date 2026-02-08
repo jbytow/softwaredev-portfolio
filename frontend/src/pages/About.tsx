@@ -55,7 +55,7 @@ export default function About() {
             >
               {settings?.profileImage ? (
                 <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-teal rounded-2xl transform rotate-3" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent-lime rounded-2xl transform rotate-3" />
                   <img
                     src={settings.profileImage}
                     alt="Profile"
@@ -63,7 +63,7 @@ export default function About() {
                   />
                 </div>
               ) : (
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-teal/20 flex items-center justify-center">
+                <div className="aspect-square rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-lime/20 flex items-center justify-center">
                   <span className="text-6xl">👋</span>
                 </div>
               )}

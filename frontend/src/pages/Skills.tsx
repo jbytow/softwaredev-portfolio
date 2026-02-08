@@ -116,7 +116,7 @@ export default function Skills() {
                       transition={{ delay: categoryIndex * 0.15 + skillIndex * 0.05 }}
                       className="card-hover text-center"
                     >
-                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-teal/20 mb-6">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-lime/20 mb-6">
                         <IconComponent className="w-8 h-8 text-primary-400" />
                       </div>
 
@@ -153,7 +153,7 @@ export default function Skills() {
                     transition={{ delay: index * 0.1 }}
                     className="card-hover text-center"
                   >
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-teal/20 mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent-lime/20 mb-6">
                       <skill.icon className="w-8 h-8 text-primary-400" />
                     </div>
                     <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.title}</h3>

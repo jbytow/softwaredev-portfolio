@@ -93,10 +93,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-[calc(100vh-5rem)] flex items-center overflow-hidden">
         {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-dark-900 to-accent-teal/10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-dark-900 to-accent-lime/10" />
         <div className="absolute inset-0">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl animate-pulse-slow" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-teal/20 rounded-full blur-3xl animate-pulse-slow delay-1000" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent-lime/20 rounded-full blur-3xl animate-pulse-slow delay-1000" />
         </div>
 
         <div className="container relative z-10">
@@ -186,7 +186,7 @@ export default function Home() {
                     transition={{ delay: index * 0.1 }}
                     className="text-center"
                   >
-                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-teal/20 mb-4">
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/20 to-accent-lime/20 mb-4">
                       <Icon className="w-7 h-7 text-primary-400" />
                     </div>
                     <div className="text-3xl md:text-4xl font-bold gradient-text mb-2">
@@ -268,7 +268,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-900/50 to-accent-teal/30">
+      <section className="py-20 bg-gradient-to-r from-primary-900/50 to-accent-lime/30">
         <div className="container text-center">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}

@@ -46,7 +46,7 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-primary-400 via-primary-300 to-accent-teal bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-400 via-primary-300 to-accent-lime bg-clip-text text-transparent;
   }
 
   .section-heading {
@@ -78,7 +78,7 @@
   }
 
   .badge-accent {
-    @apply badge bg-accent-teal/20 text-teal-300 border border-accent-teal/30;
+    @apply badge bg-accent-lime/20 text-lime-300 border border-accent-lime/30;
   }
 }
 

@@ -76,8 +76,8 @@ export default function AdminDashboard() {
 
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-accent-teal/20 flex items-center justify-center">
-              <Image className="w-6 h-6 text-accent-teal" />
+            <div className="w-12 h-12 rounded-xl bg-accent-lime/20 flex items-center justify-center">
+              <Image className="w-6 h-6 text-accent-lime" />
             </div>
           </div>
           <div className="text-3xl font-bold text-dark-100">{totalMedia}</div>
