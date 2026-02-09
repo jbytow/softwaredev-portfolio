@@ -84,6 +84,12 @@ public class SiteSettingsService {
         if (request.getSiteName() != null) {
             settings.setSiteName(request.getSiteName());
         }
+        if (request.getRpgClassTitleEn() != null) {
+            settings.setRpgClassTitleEn(request.getRpgClassTitleEn());
+        }
+        if (request.getRpgClassTitlePl() != null) {
+            settings.setRpgClassTitlePl(request.getRpgClassTitlePl());
+        }
         if (request.getAboutTagsEn() != null) {
             settings.setAboutTagsEn(request.getAboutTagsEn());
         }
@@ -133,6 +139,9 @@ public class SiteSettingsService {
                 .footerTaglinePl(settings.getFooterTaglinePl())
                 .ownerName(settings.getOwnerName())
                 .siteName(settings.getSiteName())
+                .rpgClassTitle(settings.getRpgClassTitle(locale))
+                .rpgClassTitleEn(settings.getRpgClassTitleEn())
+                .rpgClassTitlePl(settings.getRpgClassTitlePl())
                 .aboutTags(settings.getAboutTags(locale))
                 .aboutTagsEn(settings.getAboutTagsEn())
                 .aboutTagsPl(settings.getAboutTagsPl())

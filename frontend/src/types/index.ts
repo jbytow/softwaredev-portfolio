@@ -154,6 +154,9 @@ export interface SiteSettings {
   footerTaglinePl: string;
   ownerName: string;
   siteName: string;
+  rpgClassTitle: string;
+  rpgClassTitleEn: string;
+  rpgClassTitlePl: string;
   aboutTags: string[];
   aboutTagsEn: string[];
   aboutTagsPl: string[];
@@ -285,6 +288,8 @@ export interface SiteSettingsUpdateRequest {
   footerTaglinePl?: string;
   ownerName?: string;
   siteName?: string;
+  rpgClassTitleEn?: string;
+  rpgClassTitlePl?: string;
   aboutTagsEn?: string[];
   aboutTagsPl?: string[];
   statsItems?: StatItemInput[];

@@ -15,6 +15,8 @@ export default function AdminSettings() {
   const [formData, setFormData] = useState<SiteSettingsUpdateRequest>({
     heroTitleEn: '',
     heroTitlePl: '',
+    rpgClassTitleEn: '',
+    rpgClassTitlePl: '',
     heroSubtitleEn: '',
     heroSubtitlePl: '',
     aboutTextEn: '',
@@ -47,6 +49,8 @@ export default function AdminSettings() {
       setFormData({
         heroTitleEn: settings.heroTitleEn || '',
         heroTitlePl: settings.heroTitlePl || '',
+        rpgClassTitleEn: settings.rpgClassTitleEn || '',
+        rpgClassTitlePl: settings.rpgClassTitlePl || '',
         heroSubtitleEn: settings.heroSubtitleEn || '',
         heroSubtitlePl: settings.heroSubtitlePl || '',
         aboutTextEn: settings.aboutTextEn || '',
@@ -431,6 +435,40 @@ export default function AdminSettings() {
               >
                 Add Tag
               </button>
+            </div>
+          </div>
+        </div>
+
+        {/* RPG / Character Sheet */}
+        <div className="card space-y-4">
+          <h2 className="text-xl font-semibold text-dark-100">
+            RPG / Character Sheet
+          </h2>
+          <p className="text-sm text-dark-400">
+            The class title shown below the character name in RPG mode on the About page.
+          </p>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="label">Class Title (English)</label>
+              <input
+                type="text"
+                name="rpgClassTitleEn"
+                value={formData.rpgClassTitleEn}
+                onChange={handleChange}
+                className="input"
+                placeholder="Level 12 Finance Wizard turned Code Knight"
+              />
+            </div>
+            <div>
+              <label className="label">Class Title (Polish)</label>
+              <input
+                type="text"
+                name="rpgClassTitlePl"
+                value={formData.rpgClassTitlePl}
+                onChange={handleChange}
+                className="input"
+                placeholder="Poziom 12 Czarodziej Finansów przekwalifikowany na Rycerza Kodu"
+              />
             </div>
           </div>
         </div>

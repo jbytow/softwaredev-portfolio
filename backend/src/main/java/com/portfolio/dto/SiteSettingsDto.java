@@ -37,6 +37,9 @@ public class SiteSettingsDto {
     private String footerTaglinePl;
     private String ownerName;
     private String siteName;
+    private String rpgClassTitle;
+    private String rpgClassTitleEn;
+    private String rpgClassTitlePl;
     private String[] aboutTags;
     private String[] aboutTagsEn;
     private String[] aboutTagsPl;

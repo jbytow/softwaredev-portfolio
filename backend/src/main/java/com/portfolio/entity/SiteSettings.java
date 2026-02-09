@@ -86,6 +86,12 @@ public class SiteSettings {
     @JdbcTypeCode(SqlTypes.ARRAY)
     private String[] aboutTagsPl;
 
+    @Column(name = "rpg_class_title_en", columnDefinition = "TEXT")
+    private String rpgClassTitleEn;
+
+    @Column(name = "rpg_class_title_pl", columnDefinition = "TEXT")
+    private String rpgClassTitlePl;
+
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "stats_items", columnDefinition = "jsonb")
     private List<Map<String, String>> statsItems;
@@ -120,6 +126,10 @@ public class SiteSettings {
 
     public String getFooterTagline(String locale) {
         return "pl".equalsIgnoreCase(locale) ? footerTaglinePl : footerTaglineEn;
+    }
+
+    public String getRpgClassTitle(String locale) {
+        return "pl".equalsIgnoreCase(locale) ? rpgClassTitlePl : rpgClassTitleEn;
     }
 
     public String[] getAboutTags(String locale) {

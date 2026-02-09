@@ -31,6 +31,8 @@ public class SiteSettingsUpdateRequest {
     private String footerTaglinePl;
     private String ownerName;
     private String siteName;
+    private String rpgClassTitleEn;
+    private String rpgClassTitlePl;
     private String[] aboutTagsEn;
     private String[] aboutTagsPl;
     private List<StatItemDto> statsItems;

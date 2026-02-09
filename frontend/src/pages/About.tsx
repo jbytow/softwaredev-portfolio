@@ -111,7 +111,7 @@ export default function About() {
                       {settings?.heroTitle || 'Jakub Bytow'}
                     </h2>
                     <p className="text-dark-400 italic text-lg">
-                      {t('about.rpg.classTitle')}
+                      {settings?.rpgClassTitle || t('about.rpg.classTitle')}
                     </p>
                   </div>
 
