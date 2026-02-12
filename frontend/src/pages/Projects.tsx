@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -12,7 +12,7 @@ import LoadingSpinner from '@/components/LoadingSpinner';
 import HashtagList from '@/components/HashtagList';
 
 export default function Projects() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language } = useLanguage();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();

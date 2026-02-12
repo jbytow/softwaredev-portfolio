@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -29,7 +29,7 @@ const questIconMap: Record<string, LucideIcon> = {
 };
 
 export default function About() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language } = useLanguage();
   const [rpgMode, setRpgMode] = useState(() => {
     return localStorage.getItem('rpgMode') === 'true';

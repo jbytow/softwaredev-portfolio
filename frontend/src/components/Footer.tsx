@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { useQuery } from '@tanstack/react-query';
 import { Linkedin, Instagram, Facebook, Mail, Github } from 'lucide-react';
 import { settingsApi } from '@/services/api';
@@ -23,7 +23,7 @@ const footerLinks = [
 ];
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language } = useLanguage();
   const currentYear = new Date().getFullYear();
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -59,7 +59,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 const defaultIcons = [Code, Terminal, Database, Monitor, GitBranch, Server];
 
 export default function Skills() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language } = useLanguage();
   const [xpMode, setXpMode] = useState(() => {
     return localStorage.getItem('xpMode') === 'true';

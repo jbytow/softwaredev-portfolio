@@ -20,30 +20,44 @@
     "next": "Dalej",
     "previous": "Poprzedni",
     "viewMore": "Zobacz więcej",
+    "viewMore_nerd": "Załaduj kolejny obszar",
     "readMore": "Czytaj więcej",
+    "readMore_nerd": "Zbadaj łup",
     "learnMore": "Dowiedz się więcej",
     "contactMe": "Skontaktuj się",
+    "contactMe_nerd": "Przywołaj mnie",
     "downloadCV": "Pobierz CV",
     "optional": "opcjonalne"
   },
   "nav": {
     "home": "Strona główna",
+    "home_nerd": "Obóz bazowy",
     "about": "O mnie",
+    "about_nerd": "Karta postaci",
     "experience": "Doświadczenie",
+    "experience_nerd": "Dziennik questów",
     "projects": "Projekty",
+    "projects_nerd": "Lochy",
     "skills": "Umiejętności",
+    "skills_nerd": "Drzewko umiejętności",
     "contact": "Kontakt",
+    "contact_nerd": "Przywołanie",
     "admin": "Admin"
   },
   "home": {
     "hero": {
       "greeting": "Cześć, jestem",
+      "greeting_nerd": "Gracz dołączył do serwera:",
       "tagline": "Finansista przekwalifikowany na inżyniera oprogramowania. Buduję rzeczy, które rozwiązują realne problemy.",
-      "cta": "Zobacz moje projekty"
+      "tagline_nerd": "Klasa finansowa przekwalifikowana na Inżynierię Oprogramowania. Craftuję full-stackowe buildy i pushuję na proda.",
+      "cta": "Zobacz moje projekty",
+      "cta_nerd": "Przeglądaj ukończone lochy"
     },
     "featured": {
       "title": "Wyróżnione projekty",
-      "subtitle": "Wybór moich ostatnich projektów programistycznych"
+      "title_nerd": "Legendarny łup",
+      "subtitle": "Wybór moich ostatnich projektów programistycznych",
+      "subtitle_nerd": "Rzadkie dropy z ostatnich wypraw do lochów"
     },
     "stats": {
       "projects": "Projektów",
@@ -53,19 +67,27 @@
     },
     "achievements": {
       "title": "Odblokowane Osiągnięcia",
-      "subtitle": "Kamienie milowe z dziennika zadań"
+      "title_nerd": "Odblokowane osiągnięcia",
+      "subtitle": "Kamienie milowe z dziennika zadań",
+      "subtitle_nerd": "Pokonani bossowie i ukończone zadania poboczne"
     },
     "cta": {
       "title": "Masz pomysł na projekt?",
-      "subtitle": "Porozmawiajmy o tym, jak mogę pomóc w realizacji Twoich pomysłów z solidną inżynierią."
+      "title_nerd": "Masz nowego questa?",
+      "subtitle": "Porozmawiajmy o tym, jak mogę pomóc w realizacji Twoich pomysłów z solidną inżynierią.",
+      "subtitle_nerd": "Wyślij zaproszenie do grupy i raidujmy razem kod."
     }
   },
   "about": {
     "title": "O mnie",
+    "title_nerd": "Karta postaci",
     "subtitle": "Poznaj mnie bliżej",
+    "subtitle_nerd": "Staty, lore i pasywne zdolności",
     "interests": {
       "title": "Moje zainteresowania",
-      "subtitle": "Czym pasjonuję się poza pracą"
+      "title_nerd": "Zadania poboczne",
+      "subtitle": "Czym pasjonuję się poza pracą",
+      "subtitle_nerd": "Aktywności eksplorowane poza główną fabułą"
     },
     "rpg": {
       "toggle": "Karta Postaci",
@@ -82,45 +104,72 @@
   },
   "experience": {
     "title": "Doświadczenie",
+    "title_nerd": "Dziennik questów",
     "subtitle": "Moja ścieżka zawodowa",
-    "present": "Obecnie"
+    "subtitle_nerd": "Ukończone kampanie i trwające rajdy",
+    "present": "Obecnie",
+    "present_nerd": "Aktywny quest"
   },
   "projects": {
     "title": "Projekty",
+    "title_nerd": "Ukończone lochy",
     "subtitle": "Projekty programistyczne, które stworzyłem",
-    "viewProject": "Zobacz projekt"
+    "subtitle_nerd": "Instancje zbudowane, zraidowane i wdrożone na produkcję",
+    "viewProject": "Zobacz projekt",
+    "viewProject_nerd": "Wejdź do lochu"
   },
   "caseStudy": {
     "title": "Szczegóły Techniczne",
+    "title_nerd": "Notatki Mistrza Gry",
     "challenge": "Problem",
+    "challenge_nerd": "Mechanika bossa",
     "solution": "Rozwiązanie",
+    "solution_nerd": "Użyta strategia",
     "results": "Rezultaty",
-    "testimonial": "Kluczowe Decyzje"
+    "results_nerd": "Zdobyty łup",
+    "testimonial": "Kluczowe Decyzje",
+    "testimonial_nerd": "Notatki lidera grupy"
   },
   "skills": {
     "title": "Umiejętności",
+    "title_nerd": "Drzewko umiejętności",
     "subtitle": "Technologie i narzędzia, z którymi pracuję",
+    "subtitle_nerd": "Odblokowane zdolności i zainwestowane punkty talentów",
     "xpToggle": "Tryb XP",
     "levelLabel": "POZ"
   },
   "contact": {
     "title": "Skontaktuj się",
+    "title_nerd": "Przywołaj dewelopera",
     "subtitle": "Zainteresowany współpracą? Porozmawiajmy",
+    "subtitle_nerd": "Wyślij wiadomość przez eteryczną płaszczyznę",
     "form": {
       "name": "Twoje imię",
+      "name_nerd": "Nazwa twojej postaci",
       "email": "Twój email",
+      "email_nerd": "Skrzynka (slot AH)",
       "subject": "Temat",
+      "subject_nerd": "Tytuł questa",
       "message": "Twoja wiadomość",
+      "message_nerd": "Opis questa",
       "send": "Wyślij wiadomość",
+      "send_nerd": "Wyślij zwój",
       "sending": "Wysyłanie...",
+      "sending_nerd": "Rzucam zaklęcie...",
       "success": "Wiadomość wysłana pomyślnie!",
-      "error": "Nie udało się wysłać wiadomości. Spróbuj ponownie."
+      "success_nerd": "Zwój dostarczony! Oczekuj odpowiedzi o świcie.",
+      "error": "Nie udało się wysłać wiadomości. Spróbuj ponownie.",
+      "error_nerd": "Zaklęcie nie zadziałało. Spróbuj rzucić ponownie."
     },
     "info": {
       "email": "Email",
+      "email_nerd": "Poczta gołębia",
       "phone": "Telefon",
+      "phone_nerd": "Kamień ogniskowy",
       "location": "Lokalizacja",
-      "social": "Obserwuj mnie"
+      "location_nerd": "Punkt spawnu",
+      "social": "Obserwuj mnie",
+      "social_nerd": "Linki gildii"
     }
   },
   "categories": {
@@ -231,6 +280,8 @@
   "footer": {
     "rights": "Wszelkie prawa zastrzeżone",
     "quickLinks": "Szybkie linki",
-    "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej."
+    "quickLinks_nerd": "Punkty nawigacyjne",
+    "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej.",
+    "tagline_nerd": "Craftowanie artefaktów programistycznych z użyciem tajemnych narzędzi."
   }
 }

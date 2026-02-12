@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -98,7 +98,7 @@ function parseStatValue(val: string): { num: number; suffix: string } {
 }
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language } = useLanguage();
 
   const { scrollY } = useScroll();

@@ -1,4 +1,5 @@
-import { useTranslation } from 'react-i18next';
+import { useState, useEffect, useRef } from 'react';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
@@ -23,8 +24,51 @@ function calculateMonthsDuration(startDate: string, endDate: string | null): num
   return Math.max(1, months + 1); // At least 1 month
 }
 
+function FatigueCheck({ nerdMode }: { nerdMode: boolean }) {
+  const [timeSpent, setTimeSpent] = useState(0);
+  const [atBottom, setAtBottom] = useState(false);
+  const [revealed, setRevealed] = useState(false);
+  const mountTime = useRef(Date.now());
+
+  useEffect(() => {
+    if (!nerdMode) return;
+    const interval = setInterval(() => {
+      setTimeSpent(Math.floor((Date.now() - mountTime.current) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [nerdMode]);
+
+  useEffect(() => {
+    if (!nerdMode) return;
+    const onScroll = () => {
+      const scrollBottom = window.innerHeight + window.scrollY;
+      const docHeight = document.documentElement.scrollHeight;
+      setAtBottom(docHeight - scrollBottom < 80);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [nerdMode]);
+
+  useEffect(() => {
+    if (timeSpent >= 60 && atBottom && nerdMode) {
+      setRevealed(true);
+    }
+  }, [timeSpent, atBottom, nerdMode]);
+
+  if (!revealed) return null;
+
+  return (
+    <div className="text-center mt-16 mb-4">
+      <p className="fatigue-check text-xs text-dark-600 font-mono italic transition-all duration-700 animate-fade-in">
+        <span className="fatigue-default">Fatigue check passed. Still reading.</span>
+        <span className="fatigue-hover">Endurance matters.</span>
+      </p>
+    </div>
+  );
+}
+
 export default function Experience() {
-  const { t } = useTranslation();
+  const { t, nerdMode } = useNerdTranslation();
   const { language } = useLanguage();
 
   const { data, isLoading } = useQuery({
@@ -123,6 +167,8 @@ export default function Experience() {
               </div>
             )}
           </div>
+
+          <FatigueCheck nerdMode={nerdMode} />
         </div>
       </section>
     </>

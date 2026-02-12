@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, ChevronDown, ChevronUp, Target, Lightbulb, TrendingUp, Quote, Github, ExternalLink } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { postsApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
@@ -17,7 +17,7 @@ import RichTextContent from '@/components/RichTextContent';
 export default function PostDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const [caseStudyExpanded, setCaseStudyExpanded] = useState(false);
 
   const backPath = '/projects';

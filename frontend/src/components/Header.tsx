@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, Palette } from 'lucide-react';
 import { clsx } from 'clsx';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useNerdMode } from '@/contexts/NerdModeContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { settingsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 
@@ -20,8 +21,9 @@ const navItems = [
 ];
 
 export default function Header() {
-  const { t } = useTranslation();
+  const { t } = useNerdTranslation();
   const { language, toggleLanguage } = useLanguage();
+  const { nerdMode, toggleNerdMode } = useNerdMode();
   const { cycleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -70,6 +72,17 @@ export default function Header() {
               aria-label="Cycle color theme"
             >
               <Palette className="w-4 h-4" />
+            </button>
+
+            {/* Nerd Mode Toggle */}
+            <button
+              onClick={toggleNerdMode}
+              className={clsx('nerd-toggle-pill', nerdMode && 'active')}
+              aria-label="Toggle nerd mode"
+            >
+              <span className={clsx('nerd-toggle-label', !nerdMode && 'active')}>PRO</span>
+              <span className={clsx('nerd-toggle-label', nerdMode && 'active')}>NERD</span>
+              <div className={clsx('nerd-toggle-thumb', nerdMode && 'nerd')} />
             </button>
 
             {/* Language Toggle */}

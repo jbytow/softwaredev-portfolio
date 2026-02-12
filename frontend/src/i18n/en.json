@@ -20,30 +20,44 @@
     "next": "Next",
     "previous": "Previous",
     "viewMore": "View More",
+    "viewMore_nerd": "Load Next Area",
     "readMore": "Read More",
+    "readMore_nerd": "Inspect Loot",
     "learnMore": "Learn More",
     "contactMe": "Contact Me",
+    "contactMe_nerd": "Summon Me",
     "downloadCV": "Download CV",
     "optional": "optional"
   },
   "nav": {
     "home": "Home",
+    "home_nerd": "Base Camp",
     "about": "About",
+    "about_nerd": "Character Sheet",
     "experience": "Experience",
+    "experience_nerd": "Quest Log",
     "projects": "Projects",
+    "projects_nerd": "Dungeons",
     "skills": "Skills",
+    "skills_nerd": "Skill Tree",
     "contact": "Contact",
+    "contact_nerd": "Summon",
     "admin": "Admin"
   },
   "home": {
     "hero": {
       "greeting": "Hello, I'm",
+      "greeting_nerd": "Player joined the server:",
       "tagline": "Finance professional turned software engineer. I build things that solve real problems.",
-      "cta": "View My Projects"
+      "tagline_nerd": "Finance class respec'd into Software Engineering. Now crafting full-stack builds and pushing to prod.",
+      "cta": "View My Projects",
+      "cta_nerd": "Browse Completed Dungeons"
     },
     "featured": {
       "title": "Featured Projects",
-      "subtitle": "A selection of my recent software projects"
+      "title_nerd": "Legendary Loot",
+      "subtitle": "A selection of my recent software projects",
+      "subtitle_nerd": "Rare drops from recent dungeon runs"
     },
     "stats": {
       "projects": "Projects",
@@ -53,19 +67,27 @@
     },
     "achievements": {
       "title": "Achievements Unlocked",
-      "subtitle": "Milestones from the quest log"
+      "title_nerd": "Achievements Unlocked",
+      "subtitle": "Milestones from the quest log",
+      "subtitle_nerd": "Boss fights won and side quests cleared"
     },
     "cta": {
       "title": "Have a project in mind?",
-      "subtitle": "Let's discuss how I can help bring your ideas to life with solid engineering."
+      "title_nerd": "Got a new quest?",
+      "subtitle": "Let's discuss how I can help bring your ideas to life with solid engineering.",
+      "subtitle_nerd": "Send a party invite and let's raid some code together."
     }
   },
   "about": {
     "title": "About Me",
+    "title_nerd": "Character Sheet",
     "subtitle": "Get to know me better",
+    "subtitle_nerd": "Stats, lore, and passive abilities",
     "interests": {
       "title": "My Interests",
-      "subtitle": "What I'm passionate about outside of work"
+      "title_nerd": "Side Quests",
+      "subtitle": "What I'm passionate about outside of work",
+      "subtitle_nerd": "Activities explored outside the main storyline"
     },
     "rpg": {
       "toggle": "Character Sheet",
@@ -82,45 +104,72 @@
   },
   "experience": {
     "title": "Experience",
+    "title_nerd": "Quest Log",
     "subtitle": "My professional journey",
-    "present": "Present"
+    "subtitle_nerd": "Completed campaigns and ongoing raids",
+    "present": "Present",
+    "present_nerd": "Active Quest"
   },
   "projects": {
     "title": "Projects",
+    "title_nerd": "Dungeons Cleared",
     "subtitle": "Software projects I've built and contributed to",
-    "viewProject": "View Project"
+    "subtitle_nerd": "Instances built, raided, and deployed to production",
+    "viewProject": "View Project",
+    "viewProject_nerd": "Enter Dungeon"
   },
   "caseStudy": {
     "title": "Technical Details",
+    "title_nerd": "Dungeon Master's Notes",
     "challenge": "Problem",
+    "challenge_nerd": "The Boss Mechanic",
     "solution": "Solution",
+    "solution_nerd": "Strategy Used",
     "results": "Results",
-    "testimonial": "Key Decisions"
+    "results_nerd": "Loot Dropped",
+    "testimonial": "Key Decisions",
+    "testimonial_nerd": "Party Leader's Notes"
   },
   "skills": {
     "title": "Skills",
+    "title_nerd": "Skill Tree",
     "subtitle": "Technologies and tools I work with",
+    "subtitle_nerd": "Abilities unlocked and talent points invested",
     "xpToggle": "XP Mode",
     "levelLabel": "LVL"
   },
   "contact": {
     "title": "Get in Touch",
+    "title_nerd": "Summon Developer",
     "subtitle": "Interested in working together? Let's connect",
+    "subtitle_nerd": "Send a message through the ethereal plane",
     "form": {
       "name": "Your Name",
+      "name_nerd": "Your Character Name",
       "email": "Your Email",
+      "email_nerd": "Mailbox (AH slot)",
       "subject": "Subject",
+      "subject_nerd": "Quest Title",
       "message": "Your Message",
+      "message_nerd": "Quest Description",
       "send": "Send Message",
+      "send_nerd": "Send Scroll",
       "sending": "Sending...",
+      "sending_nerd": "Casting...",
       "success": "Message sent successfully!",
-      "error": "Failed to send message. Please try again."
+      "success_nerd": "Scroll delivered! Expect a response by next dawn.",
+      "error": "Failed to send message. Please try again.",
+      "error_nerd": "Spell fizzled. Try casting again."
     },
     "info": {
       "email": "Email",
+      "email_nerd": "Pigeon Mail",
       "phone": "Phone",
+      "phone_nerd": "Hearthstone",
       "location": "Location",
-      "social": "Follow Me"
+      "location_nerd": "Spawn Point",
+      "social": "Follow Me",
+      "social_nerd": "Guild Links"
     }
   },
   "categories": {
@@ -231,6 +280,8 @@
   "footer": {
     "rights": "All rights reserved",
     "quickLinks": "Quick Links",
-    "tagline": "Building software solutions with Java, Spring Boot, React, and more."
+    "quickLinks_nerd": "Waypoints",
+    "tagline": "Building software solutions with Java, Spring Boot, React, and more.",
+    "tagline_nerd": "Crafting software artifacts with arcane tools."
   }
 }
