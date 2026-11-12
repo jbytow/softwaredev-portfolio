@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -47,7 +50,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/soft-skills/**").permitAll()
                         .requestMatchers("/api/skill-categories/**").permitAll()
                         .requestMatchers("/api/experiences/**").permitAll()
-                        .requestMatchers("/api/newsletters/**").permitAll()
                         .requestMatchers("/api/interests/**").permitAll()
                         .requestMatchers("/api/achievements/**").permitAll()
                         .requestMatchers("/api/rpg-stats/**").permitAll()
@@ -56,9 +58,16 @@ public class SecurityConfig {
                         // OAuth endpoints
                         .requestMatchers("/oauth2/**").permitAll()
                         .requestMatchers("/login/oauth2/**").permitAll()
+                        // Clearing the auth cookie must work even when the token has already expired
+                        .requestMatchers(HttpMethod.POST, "/api/admin/auth/logout").permitAll()
                         // Admin endpoints require authentication
                         .requestMatchers("/api/admin/**").authenticated()
                         .anyRequest().permitAll())
+                // Without this, oauth2Login makes every unauthenticated XHR a 302 to Google
+                .exceptionHandling(exceptions -> exceptions
+                        .defaultAuthenticationEntryPointFor(
+                                new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
+                                new AntPathRequestMatcher("/api/**")))
                 .oauth2Login(oauth2 -> oauth2
                         .successHandler(oAuth2SuccessHandler))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
