@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -40,9 +41,10 @@ class JwtAuthenticationFilterTest {
 
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
+        jwtService = new JwtService(new MockEnvironment());
         ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", 60_000L);
+        jwtService.init();
         filter = new JwtAuthenticationFilter(jwtService, userService);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();

@@ -16,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -54,9 +55,10 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
+        jwtService = new JwtService(new MockEnvironment());
         ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
         ReflectionTestUtils.setField(jwtService, "jwtExpiration", EXPIRATION_MS);
+        jwtService.init();
         handler = new OAuth2AuthenticationSuccessHandler(jwtService, userService);
         ReflectionTestUtils.setField(handler, "frontendUrl", "http://localhost:3000");
         request = new MockHttpServletRequest("GET", "/login/oauth2/code/google");
@@ -156,7 +158,7 @@ class OAuth2AuthenticationSuccessHandlerTest {
             assertThat(response.getRedirectedUrl()).isEqualTo("http://localhost:3000/admin");
             String cookie = response.getHeader(HttpHeaders.SET_COOKIE);
             assertThat(cookie).startsWith("auth_token=")
-                    .contains("HttpOnly", "SameSite=Lax", "Path=/")
+                    .contains("HttpOnly", "SameSite=Lax", "Path=/", "Max-Age=3600")
                     .doesNotContain("Secure");
             String token = cookie.substring("auth_token=".length(), cookie.indexOf(';'));
             assertThat(jwtService.extractEmail(token)).isEqualTo("admin@test.com");

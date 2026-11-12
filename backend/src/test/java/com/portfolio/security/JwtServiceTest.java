@@ -1,14 +1,27 @@
 package com.portfolio.security;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.slf4j.LoggerFactory;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("JwtService")
@@ -21,9 +34,82 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        jwtService = new JwtService();
-        ReflectionTestUtils.setField(jwtService, "secretKey", SECRET_KEY);
-        ReflectionTestUtils.setField(jwtService, "jwtExpiration", EXPIRATION);
+        jwtService = newService(SECRET_KEY, new MockEnvironment());
+        jwtService.init();
+    }
+
+    private static JwtService newService(String secret, MockEnvironment environment) {
+        JwtService service = new JwtService(environment);
+        ReflectionTestUtils.setField(service, "secretKey", secret);
+        ReflectionTestUtils.setField(service, "jwtExpiration", EXPIRATION);
+        return service;
+    }
+
+    private static MockEnvironment prodEnvironment() {
+        MockEnvironment environment = new MockEnvironment();
+        environment.setActiveProfiles("prod");
+        return environment;
+    }
+
+    @Nested
+    @DisplayName("init")
+    class Init {
+
+        @Test
+        @DisplayName("rejects a secret shorter than 32 bytes at startup")
+        void rejectsShortSecret() {
+            JwtService service = newService("a".repeat(31), new MockEnvironment());
+
+            assertThatThrownBy(service::init).isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("rejects an empty secret at startup")
+        void rejectsEmptySecret() {
+            JwtService service = newService("", new MockEnvironment());
+
+            assertThatThrownBy(service::init).isInstanceOf(IllegalStateException.class);
+        }
+
+        @Test
+        @DisplayName("counts UTF-8 bytes, not characters: 16 two-byte characters are enough")
+        void countsUtf8Bytes() {
+            JwtService service = newService("ż".repeat(16), new MockEnvironment());
+
+            assertThatCode(service::init).doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("rejects the committed development secret in the prod profile")
+        void rejectsDevDefaultInProd() {
+            JwtService service = newService(JwtService.DEV_DEFAULT_SECRET, prodEnvironment());
+
+            assertThatThrownBy(service::init)
+                    .isInstanceOf(IllegalStateException.class)
+                    .hasMessageNotContaining(JwtService.DEV_DEFAULT_SECRET);
+        }
+
+        @Test
+        @DisplayName("accepts the development secret outside the prod profile")
+        void acceptsDevDefaultOutsideProd() {
+            JwtService service = newService(JwtService.DEV_DEFAULT_SECRET, new MockEnvironment());
+
+            assertThatCode(service::init).doesNotThrowAnyException();
+        }
+
+        @Test
+        @DisplayName("accepts a long custom secret in the prod profile")
+        void acceptsCustomSecretInProd() {
+            JwtService service = newService(SECRET_KEY, prodEnvironment());
+
+            assertThatCode(service::init).doesNotThrowAnyException();
+        }
+    }
+
+    @Test
+    @DisplayName("getExpiration returns the configured lifetime")
+    void expirationMatchesConfiguration() {
+        assertThat(jwtService.getExpiration()).isEqualTo(Duration.ofMillis(EXPIRATION));
     }
 
     @Nested
@@ -138,12 +224,10 @@ class JwtServiceTest {
         @Test
         @DisplayName("should return false for token signed with different key")
         void shouldReturnFalseForTokenWithDifferentKey() {
-            // Create a token with current key
-            String token = jwtService.generateToken("test@example.com", "Test", false);
-
-            // Change the secret key
-            ReflectionTestUtils.setField(jwtService, "secretKey",
-                    "different-secret-key-also-32-chars-minimum");
+            // The key is built once at startup, so sign with a second service instead of swapping the secret
+            JwtService otherService = newService("different-secret-key-also-32-chars-minimum", new MockEnvironment());
+            otherService.init();
+            String token = otherService.generateToken("test@example.com", "Test", false);
 
             assertThat(jwtService.isTokenValid(token)).isFalse();
         }
@@ -159,6 +243,73 @@ class JwtServiceTest {
             ReflectionTestUtils.setField(jwtService, "jwtExpiration", EXPIRATION);
 
             assertThat(jwtService.isTokenValid(token)).isFalse();
+        }
+    }
+
+    @Nested
+    @DisplayName("isTokenValid logging")
+    class IsTokenValidLogging {
+
+        private final Logger jwtLogger = (Logger) LoggerFactory.getLogger(JwtService.class);
+        private final ListAppender<ILoggingEvent> logEvents = new ListAppender<>();
+        private Level previousLevel;
+
+        @BeforeEach
+        void attachAppender() {
+            previousLevel = jwtLogger.getLevel();
+            jwtLogger.setLevel(Level.DEBUG);
+            logEvents.start();
+            jwtLogger.addAppender(logEvents);
+        }
+
+        @AfterEach
+        void detachAppender() {
+            jwtLogger.detachAppender(logEvents);
+            jwtLogger.setLevel(previousLevel);
+        }
+
+        private String tokenSignedWith(String secret, Date expiration) {
+            return Jwts.builder()
+                    .subject("admin@test.com")
+                    .expiration(expiration)
+                    .signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                    .compact();
+        }
+
+        @Test
+        @DisplayName("forged signature leaves one INFO line with the exception class and no token")
+        void forgedSignatureIsInfo() {
+            String forged = tokenSignedWith("another-secret-key-that-is-at-least-32-bytes-long",
+                    new Date(System.currentTimeMillis() + 60_000));
+
+            assertThat(jwtService.isTokenValid(forged)).isFalse();
+
+            assertThat(logEvents.list).singleElement().satisfies(event -> {
+                assertThat(event.getLevel()).isEqualTo(Level.INFO);
+                assertThat(event.getFormattedMessage()).contains("SignatureException").doesNotContain(forged);
+            });
+        }
+
+        @Test
+        @DisplayName("expired token leaves one DEBUG line")
+        void expiredIsDebug() {
+            String expired = tokenSignedWith(SECRET_KEY, new Date(System.currentTimeMillis() - 60_000));
+
+            assertThat(jwtService.isTokenValid(expired)).isFalse();
+
+            assertThat(logEvents.list).singleElement().satisfies(event -> {
+                assertThat(event.getLevel()).isEqualTo(Level.DEBUG);
+                assertThat(event.getFormattedMessage()).contains("ExpiredJwtException").doesNotContain(expired);
+            });
+        }
+
+        @Test
+        @DisplayName("malformed token leaves one DEBUG line")
+        void malformedIsDebug() {
+            assertThat(jwtService.isTokenValid("not.a.valid.jwt")).isFalse();
+
+            assertThat(logEvents.list).singleElement()
+                    .satisfies(event -> assertThat(event.getLevel()).isEqualTo(Level.DEBUG));
         }
     }
 

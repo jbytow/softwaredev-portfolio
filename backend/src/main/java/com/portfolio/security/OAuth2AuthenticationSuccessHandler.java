@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Duration;
 
 @Component
 @RequiredArgsConstructor
@@ -70,7 +69,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/")
-                .maxAge(Duration.ofHours(24))
+                .maxAge(jwtService.getExpiration())
                 .sameSite("Lax")  // Lax allows the cookie on OAuth redirects
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
