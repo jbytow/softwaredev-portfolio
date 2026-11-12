@@ -16,8 +16,6 @@ import java.util.UUID;
 @Repository
 public interface MediaRepository extends JpaRepository<Media, UUID> {
 
-    List<Media> findByPostIdOrderByDisplayOrderAsc(UUID postId);
-
     Page<Media> findByPostIdIsNull(Pageable pageable);
 
     Page<Media> findByType(MediaType type, Pageable pageable);

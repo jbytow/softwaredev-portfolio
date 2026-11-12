@@ -43,7 +43,7 @@ public class AdminSkillCategoryController {
 
         SkillCategoryDto category = skillCategoryService.createCategory(request, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(category, "Skill category created successfully"));
+                .body(ApiResponse.success(category));
     }
 
     @PutMapping("/{id}")
@@ -53,18 +53,18 @@ public class AdminSkillCategoryController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         SkillCategoryDto category = skillCategoryService.updateCategory(id, request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(category, "Skill category updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(category));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable UUID id) {
         skillCategoryService.deleteCategory(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Skill category deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<ApiResponse<Void>> reorderCategories(@RequestBody ReorderRequest request) {
+    public ResponseEntity<ApiResponse<Void>> reorderCategories(@Valid @RequestBody ReorderRequest request) {
         skillCategoryService.reorderCategories(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Skill categories reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

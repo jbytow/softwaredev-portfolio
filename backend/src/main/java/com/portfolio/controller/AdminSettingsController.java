@@ -5,6 +5,7 @@ import com.portfolio.dto.SiteSettingsDto;
 import com.portfolio.dto.SiteSettingsUpdateRequest;
 import com.portfolio.service.SiteSettingsService;
 import com.portfolio.util.LocaleUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +27,10 @@ public class AdminSettingsController {
 
     @PutMapping
     public ResponseEntity<ApiResponse<SiteSettingsDto>> updateSettings(
-            @RequestBody SiteSettingsUpdateRequest request,
+            @Valid @RequestBody SiteSettingsUpdateRequest request,
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         SiteSettingsDto settings = siteSettingsService.updateSettings(request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(settings, "Settings updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(settings));
     }
 }

@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -219,6 +220,73 @@ class AdminPostControllerTest {
                             .contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value(true));
+        }
+    }
+
+    @Nested
+    @DisplayName("PATCH /api/admin/posts/reorder")
+    class Reorder {
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("should return 400 for an empty item list")
+        void shouldRejectEmptyList() throws Exception {
+            mockMvc.perform(patch("/api/admin/posts/reorder")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"items\":[]}"))
+                    .andExpect(status().isBadRequest());
+
+            verifyNoInteractions(postService);
+        }
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("should return 400 when an item has no id")
+        void shouldRejectItemWithoutId() throws Exception {
+            mockMvc.perform(patch("/api/admin/posts/reorder")
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"items\":[{\"displayOrder\":1}]}"))
+                    .andExpect(status().isBadRequest());
+
+            verifyNoInteractions(postService);
+        }
+    }
+
+    @Nested
+    @DisplayName("PUT /api/admin/posts/{id} (slug)")
+    class UpdateSlug {
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("should return 400 when the slug belongs to another post")
+        void shouldReturn400ForDuplicateSlug() throws Exception {
+            UUID postId = UUID.randomUUID();
+            given(postService.updatePost(eq(postId), any(), eq("en")))
+                    .willThrow(new IllegalArgumentException("Slug already in use"));
+
+            mockMvc.perform(put("/api/admin/posts/" + postId)
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"slug\":\"taken\"}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Slug already in use"));
+        }
+    }
+
+    @Nested
+    @DisplayName("success envelopes")
+    class SuccessEnvelope {
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("should return a delete response without a message")
+        void shouldOmitMessageOnDelete() throws Exception {
+            mockMvc.perform(delete("/api/admin/posts/" + UUID.randomUUID()).with(csrf()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.success").value(true))
+                    .andExpect(jsonPath("$.message").doesNotExist());
         }
     }
 }

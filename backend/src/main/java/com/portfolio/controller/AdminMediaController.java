@@ -6,6 +6,7 @@ import com.portfolio.dto.ReorderRequest;
 import com.portfolio.entity.MediaType;
 import com.portfolio.service.MediaService;
 import com.portfolio.util.LocaleUtils;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +61,7 @@ public class AdminMediaController {
 
         MediaDto media = mediaService.uploadMedia(file, postId, altTextEn, altTextPl, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(media, "Media uploaded successfully"));
+                .body(ApiResponse.success(media));
     }
 
     @PutMapping("/{id}")
@@ -72,13 +73,13 @@ public class AdminMediaController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         MediaDto media = mediaService.updateMedia(id, altTextEn, altTextPl, postId, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(media, "Media updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(media));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteMedia(@PathVariable UUID id) throws IOException {
         mediaService.deleteMedia(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Media deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PostMapping("/youtube")
@@ -91,15 +92,15 @@ public class AdminMediaController {
 
         MediaDto media = mediaService.createYouTubeMedia(postId, videoUrl, altTextEn, altTextPl, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(media, "YouTube media created successfully"));
+                .body(ApiResponse.success(media));
     }
 
     @PatchMapping("/reorder")
     public ResponseEntity<ApiResponse<Void>> reorderMedia(
             @RequestParam UUID postId,
-            @RequestBody ReorderRequest request) {
+            @Valid @RequestBody ReorderRequest request) {
 
         mediaService.reorderMedia(postId, request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Media reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

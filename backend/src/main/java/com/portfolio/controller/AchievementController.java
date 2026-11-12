@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/achievements")
@@ -24,14 +23,5 @@ public class AchievementController {
 
         List<AchievementDto> achievements = achievementService.getAll(LocaleUtils.extractLocale(locale));
         return ResponseEntity.ok(ApiResponse.success(achievements));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<AchievementDto>> getById(
-            @PathVariable UUID id,
-            @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
-
-        AchievementDto achievement = achievementService.getById(id, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(achievement));
     }
 }

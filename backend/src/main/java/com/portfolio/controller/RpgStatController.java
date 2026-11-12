@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/rpg-stats")
@@ -24,14 +23,5 @@ public class RpgStatController {
 
         List<RpgStatDto> stats = rpgStatService.getAll(LocaleUtils.extractLocale(locale));
         return ResponseEntity.ok(ApiResponse.success(stats));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<RpgStatDto>> getById(
-            @PathVariable UUID id,
-            @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
-
-        RpgStatDto stat = rpgStatService.getById(id, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(stat));
     }
 }

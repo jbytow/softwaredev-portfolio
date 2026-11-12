@@ -43,7 +43,7 @@ public class AdminExperienceController {
 
         ExperienceDto experience = experienceService.createExperience(request, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(experience, "Experience created successfully"));
+                .body(ApiResponse.success(experience));
     }
 
     @PutMapping("/{id}")
@@ -53,18 +53,18 @@ public class AdminExperienceController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         ExperienceDto experience = experienceService.updateExperience(id, request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(experience, "Experience updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(experience));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteExperience(@PathVariable UUID id) {
         experienceService.deleteExperience(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Experience deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<ApiResponse<Void>> reorderExperiences(@RequestBody ReorderRequest request) {
+    public ResponseEntity<ApiResponse<Void>> reorderExperiences(@Valid @RequestBody ReorderRequest request) {
         experienceService.reorderExperiences(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Experiences reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

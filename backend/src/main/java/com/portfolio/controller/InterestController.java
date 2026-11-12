@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/interests")
@@ -24,14 +23,5 @@ public class InterestController {
 
         List<InterestDto> interests = interestService.getAll(LocaleUtils.extractLocale(locale));
         return ResponseEntity.ok(ApiResponse.success(interests));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<InterestDto>> getById(
-            @PathVariable UUID id,
-            @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
-
-        InterestDto interest = interestService.getById(id, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(interest));
     }
 }

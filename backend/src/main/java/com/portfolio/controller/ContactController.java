@@ -24,10 +24,10 @@ public class ContactController {
         // Same answer as a real submission, so a bot cannot tell it was caught
         if (request.getWebsite() != null && !request.getWebsite().isBlank()) {
             log.warn("Contact honeypot triggered from {}", clientAddress(httpRequest));
-            return ResponseEntity.ok(ApiResponse.success(null, "Message sent successfully"));
+            return ResponseEntity.ok(ApiResponse.success(null));
         }
         contactService.sendContactEmail(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Message sent successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     // Same rule as GlobalExceptionHandler: CF-Connecting-IP is set by Cloudflare, not by the client

@@ -51,7 +51,7 @@ public class AdminPostController {
 
         PostDto post = postService.createPost(request, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(post, "Post created successfully"));
+                .body(ApiResponse.success(post));
     }
 
     @PutMapping("/{id}")
@@ -61,13 +61,13 @@ public class AdminPostController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         PostDto post = postService.updatePost(id, request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(post, "Post updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(post));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable UUID id) {
         postService.deletePost(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Post deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/{id}/publish")
@@ -76,13 +76,12 @@ public class AdminPostController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         PostDto post = postService.togglePublish(id, LocaleUtils.extractLocale(locale));
-        String message = post.getPublished() ? "Post published successfully" : "Post unpublished successfully";
-        return ResponseEntity.ok(ApiResponse.success(post, message));
+        return ResponseEntity.ok(ApiResponse.success(post));
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<ApiResponse<Void>> reorderPosts(@RequestBody ReorderRequest request) {
+    public ResponseEntity<ApiResponse<Void>> reorderPosts(@Valid @RequestBody ReorderRequest request) {
         postService.reorderPosts(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Posts reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

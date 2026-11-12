@@ -1,5 +1,7 @@
 package com.portfolio.dto;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,8 +15,14 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ExperienceUpdateRequest {
+    @Size(max = 255, message = "English title must not exceed 255 characters")
+    @Pattern(regexp = "(?s).*\\S.*", message = "English title must not be blank")
     private String titleEn;
+    @Size(max = 255, message = "Polish title must not exceed 255 characters")
+    @Pattern(regexp = "(?s).*\\S.*", message = "Polish title must not be blank")
     private String titlePl;
+    @Size(max = 255, message = "Company must not exceed 255 characters")
+    @Pattern(regexp = "(?s).*\\S.*", message = "Company must not be blank")
     private String company;
     private LocalDate startDate;
     private LocalDate endDate;

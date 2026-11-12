@@ -6,9 +6,6 @@ import com.portfolio.entity.Category;
 import com.portfolio.service.PostService;
 import com.portfolio.util.LocaleUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,28 +31,6 @@ public class PostController {
             posts = postService.getPostsByCategory(category, LocaleUtils.extractLocale(locale));
         } else {
             posts = postService.getAllPublishedPosts(LocaleUtils.extractLocale(locale));
-        }
-
-        return ResponseEntity.ok(ApiResponse.success(posts));
-    }
-
-    @GetMapping("/hashtags")
-    public ResponseEntity<ApiResponse<List<String>>> getAllHashtags() {
-        List<String> hashtags = postService.getAllHashtags();
-        return ResponseEntity.ok(ApiResponse.success(hashtags));
-    }
-
-    @GetMapping("/paged")
-    public ResponseEntity<ApiResponse<Page<PostDto>>> getPostsPaged(
-            @RequestParam(required = false) Category category,
-            @PageableDefault(size = 10) Pageable pageable,
-            @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
-
-        Page<PostDto> posts;
-        if (category != null) {
-            posts = postService.getPostsByCategory(category, pageable, LocaleUtils.extractLocale(locale));
-        } else {
-            posts = postService.getPublishedPosts(pageable, LocaleUtils.extractLocale(locale));
         }
 
         return ResponseEntity.ok(ApiResponse.success(posts));

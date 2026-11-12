@@ -25,6 +25,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -90,5 +91,15 @@ class AdminMediaControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(mediaRepository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("PATCH /api/admin/media/reorder returns 400 for an empty item list without reordering")
+    void reorderRejectsEmptyList() throws Exception {
+        mockMvc.perform(patch("/api/admin/media/reorder").param("postId", UUID.randomUUID().toString())
+                        .contentType("application/json").content("{\"items\":[]}"))
+                .andExpect(status().isBadRequest());
+
+        verifyNoInteractions(mediaRepository);
     }
 }

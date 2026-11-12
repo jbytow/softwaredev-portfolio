@@ -15,8 +15,6 @@ public interface ExperienceRepository extends JpaRepository<Experience, UUID> {
 
     List<Experience> findAllByOrderByDisplayOrderAsc();
 
-    List<Experience> findAllByOrderByStartDateDesc();
-
     @Query("SELECT COALESCE(MAX(e.displayOrder), 0) FROM Experience e")
     int getMaxDisplayOrder();
 

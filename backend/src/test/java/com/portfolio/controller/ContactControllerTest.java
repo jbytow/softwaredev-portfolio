@@ -96,7 +96,7 @@ class ContactControllerTest {
                             .content(bodyWithWebsite(website)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.success").value(true))
-                    .andExpect(jsonPath("$.message").value("Message sent successfully"))
+                    .andExpect(jsonPath("$.message").doesNotExist())
                     .andExpect(jsonPath("$.errors").doesNotExist());
 
             verify(contactService, never()).sendContactEmail(any());
