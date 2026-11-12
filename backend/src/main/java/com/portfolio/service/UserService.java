@@ -34,31 +34,28 @@ public class UserService {
         return getAdminEmails().contains(email.toLowerCase());
     }
 
+    /**
+     * Upserts an allowlisted account and returns it; any other account is rejected (empty) before
+     * the repository is touched, so strangers' e-mails, names and avatars are never stored.
+     */
     @Transactional
-    public User processOAuthUser(String email, String name, String avatarUrl, String provider, String providerId) {
-        Optional<User> existingUser = userRepository.findByEmail(email);
-
-        User user;
-        if (existingUser.isPresent()) {
-            user = existingUser.get();
-            user.setName(name);
-            user.setAvatarUrl(avatarUrl);
-            user.setLastLoginAt(OffsetDateTime.now());
-        } else {
-            user = User.builder()
-                    .email(email)
-                    .name(name)
-                    .avatarUrl(avatarUrl)
-                    .provider(provider)
-                    .providerId(providerId)
-                    .isAdmin(isAdmin(email))
-                    .build();
+    public Optional<User> processOAuthUser(String email, String name, String avatarUrl, String provider, String providerId) {
+        if (!isAdmin(email)) {
+            return Optional.empty();
         }
 
-        // Always check admin status in case whitelist changed
-        user.setIsAdmin(isAdmin(email));
+        User user = userRepository.findByEmail(email)
+                .orElseGet(() -> User.builder()
+                        .email(email)
+                        .provider(provider)
+                        .providerId(providerId)
+                        .build());
+        user.setName(name);
+        user.setAvatarUrl(avatarUrl);
+        user.setLastLoginAt(OffsetDateTime.now());
+        user.setIsAdmin(true);
 
-        return userRepository.save(user);
+        return Optional.of(userRepository.save(user));
     }
 
     public Optional<UserDto> findByEmail(String email) {

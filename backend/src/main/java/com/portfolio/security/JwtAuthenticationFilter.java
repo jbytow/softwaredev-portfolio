@@ -1,5 +1,6 @@
 package com.portfolio.security;
 
+import com.portfolio.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -23,6 +24,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(
@@ -35,10 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (jwt != null && jwtService.isTokenValid(jwt)) {
             String email = jwtService.extractEmail(jwt);
-            boolean isAdmin = jwtService.extractIsAdmin(jwt);
             String name = jwtService.extractName(jwt);
 
             if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                // Re-check the allowlist per request: removing an e-mail from ADMIN_EMAILS
+                // must revoke access before the token expires
+                boolean isAdmin = jwtService.extractIsAdmin(jwt) && userService.isAdmin(email);
                 List<SimpleGrantedAuthority> authorities = new ArrayList<>();
                 authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
                 if (isAdmin) {

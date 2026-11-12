@@ -5,6 +5,7 @@ import com.portfolio.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -15,10 +16,11 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Duration;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtService jwtService;
@@ -36,20 +38,28 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         OAuth2User oAuth2User = oauthToken.getPrincipal();
         String provider = oauthToken.getAuthorizedClientRegistrationId();
+        String email = oAuth2User.getAttribute("email");
 
-        String email = extractEmail(oAuth2User, provider);
-        String name = extractName(oAuth2User, provider);
-        String avatarUrl = extractAvatarUrl(oAuth2User, provider);
-        String providerId = extractProviderId(oAuth2User, provider);
-
-        // Create or update user and check if admin
-        User user = userService.processOAuthUser(email, name, avatarUrl, provider, providerId);
-
-        if (!user.getIsAdmin()) {
-            // User is not an admin, redirect with error
+        // The allowlist matches on the e-mail string, which Google may return unverified
+        if (!Boolean.TRUE.equals(oAuth2User.getAttribute("email_verified"))) {
+            log.warn("Rejected admin login (unverified e-mail): {}", email);
             response.sendRedirect(frontendUrl + "/admin/login?error=not_authorized");
             return;
         }
+
+        Optional<User> admin = userService.processOAuthUser(
+                email,
+                oAuth2User.getAttribute("name"),
+                oAuth2User.getAttribute("picture"),
+                provider,
+                oAuth2User.getAttribute("sub"));
+
+        if (admin.isEmpty()) {
+            log.warn("Rejected admin login: {}", email);
+            response.sendRedirect(frontendUrl + "/admin/login?error=not_authorized");
+            return;
+        }
+        User user = admin.get();
 
         // Generate JWT token
         String jwt = jwtService.generateToken(user.getEmail(), user.getName(), user.getIsAdmin());
@@ -61,49 +71,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .httpOnly(true)
                 .secure(isSecure)
                 .path("/")
-                .maxAge(Duration.ofHours(24))
+                .maxAge(jwtService.getExpiration())
                 .sameSite("Lax")  // Lax allows the cookie on OAuth redirects
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
+        log.info("Admin login: {}", user.getEmail());
         // Redirect to admin dashboard (cookie-based auth, no token in URL)
         response.sendRedirect(frontendUrl + "/admin");
-    }
-
-    private String extractEmail(OAuth2User oAuth2User, String provider) {
-        if ("github".equals(provider)) {
-            // GitHub might not provide email directly
-            String email = oAuth2User.getAttribute("email");
-            if (email == null) {
-                // Use login as fallback
-                String login = oAuth2User.getAttribute("login");
-                return login + "@github.user";
-            }
-            return email;
-        }
-        return oAuth2User.getAttribute("email");
-    }
-
-    private String extractName(OAuth2User oAuth2User, String provider) {
-        if ("github".equals(provider)) {
-            String name = oAuth2User.getAttribute("name");
-            return name != null ? name : oAuth2User.getAttribute("login");
-        }
-        return oAuth2User.getAttribute("name");
-    }
-
-    private String extractAvatarUrl(OAuth2User oAuth2User, String provider) {
-        if ("github".equals(provider)) {
-            return oAuth2User.getAttribute("avatar_url");
-        }
-        return oAuth2User.getAttribute("picture");
-    }
-
-    private String extractProviderId(OAuth2User oAuth2User, String provider) {
-        if ("github".equals(provider)) {
-            Integer id = oAuth2User.getAttribute("id");
-            return id != null ? id.toString() : null;
-        }
-        return oAuth2User.getAttribute("sub");
     }
 }
