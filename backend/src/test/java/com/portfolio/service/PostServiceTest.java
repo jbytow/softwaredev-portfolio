@@ -801,4 +801,28 @@ class PostServiceTest {
                             "Challenge EN", "Wyzwanie PL", "Jane Doe"));
         }
     }
+
+    @Nested
+    @DisplayName("getPostsByHashtag")
+    class GetPostsByHashtag {
+
+        @Test
+        @DisplayName("should return the published posts the repository finds for the tag")
+        void shouldReturnPostsForTag() {
+            samplePost.setPublished(true);
+            given(postRepository.findByHashtagAndPublishedTrue("seo")).willReturn(List.of(samplePost));
+
+            List<PostDto> result = postService.getPostsByHashtag("seo", "en");
+
+            assertThat(result).extracting(PostDto::getSlug).containsExactly("test-title-en");
+        }
+
+        @Test
+        @DisplayName("should return an empty list for an unknown tag")
+        void shouldReturnEmptyForUnknownTag() {
+            given(postRepository.findByHashtagAndPublishedTrue("missing")).willReturn(List.of());
+
+            assertThat(postService.getPostsByHashtag("missing", "en")).isEmpty();
+        }
+    }
 }

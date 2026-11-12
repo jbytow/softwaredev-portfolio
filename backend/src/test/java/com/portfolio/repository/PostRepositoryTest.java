@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -19,6 +20,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -281,6 +283,86 @@ class PostRepositoryTest {
             Post updated = postRepository.findById(publishedPost1.getId()).orElseThrow();
 
             assertThat(updated.getDisplayOrder()).isEqualTo(99);
+        }
+    }
+
+    @Nested
+    @DisplayName("findByHashtagAndPublishedTrue")
+    class FindByHashtag {
+
+        @BeforeEach
+        void addTaggedPosts() {
+            entityManager.persist(taggedPost("tagged-published", true, 10, "seo", "ads"));
+            entityManager.persist(taggedPost("tagged-draft", false, 11, "seo"));
+            entityManager.persist(taggedPost("tagged-other", true, 12, "other"));
+            entityManager.flush();
+        }
+
+        @Test
+        @DisplayName("should return only published posts carrying the tag")
+        void shouldReturnOnlyPublishedPostsWithTag() {
+            List<Post> result = postRepository.findByHashtagAndPublishedTrue("seo");
+
+            assertThat(result).extracting(Post::getSlug).containsExactly("tagged-published");
+        }
+
+        @Test
+        @DisplayName("should match a tag that is not the first array element")
+        void shouldMatchAnyElement() {
+            List<Post> result = postRepository.findByHashtagAndPublishedTrue("ads");
+
+            assertThat(result).extracting(Post::getSlug).containsExactly("tagged-published");
+        }
+
+        @Test
+        @DisplayName("should return empty list for a tag no post carries")
+        void shouldReturnEmptyForUnknownTag() {
+            assertThat(postRepository.findByHashtagAndPublishedTrue("missing")).isEmpty();
+        }
+
+        @Test
+        @DisplayName("should be answerable from the GIN index on hashtags")
+        void shouldUseGinIndex() throws NoSuchMethodException {
+            String sql = PostRepository.class
+                    .getMethod("findByHashtagAndPublishedTrue", String.class)
+                    .getAnnotation(Query.class).value()
+                    .replace(":hashtag", "'seo'");
+            // The schema comes from Hibernate here (Flyway is off), so the V1 index is created by hand.
+            entityManager.getEntityManager().createNativeQuery(
+                    "CREATE INDEX idx_posts_hashtags ON posts USING GIN (hashtags)").executeUpdate();
+            // Give the planner realistic statistics (many published posts, few with the tag),
+            // otherwise it picks another index for any predicate; seq scan is disabled
+            // because on a small table it always wins and would hide whether GIN is usable.
+            entityManager.getEntityManager().createNativeQuery(
+                    "INSERT INTO posts (id, category, title_en, title_pl, slug, published, display_order, hashtags) "
+                            + "SELECT gen_random_uuid(), 'PERSONAL_PROJECT', 'filler', 'filler', 'filler-' || n, true, n, "
+                            + "ARRAY['filler'] FROM generate_series(1, 2000) AS n")
+                    .executeUpdate();
+            entityManager.getEntityManager().createNativeQuery("ANALYZE posts").executeUpdate();
+            entityManager.getEntityManager()
+                    .createNativeQuery("SELECT set_config('enable_seqscan', 'off', true)")
+                    .getSingleResult();
+
+            @SuppressWarnings("unchecked")
+            List<Object> plan = entityManager.getEntityManager()
+                    .createNativeQuery("EXPLAIN " + sql)
+                    .getResultList();
+
+            assertThat(plan.stream().map(String::valueOf).collect(Collectors.joining(System.lineSeparator())))
+                    .contains("idx_posts_hashtags");
+        }
+
+        private Post taggedPost(String slug, boolean published, int displayOrder, String... hashtags) {
+            Post post = Post.builder()
+                    .category(Category.PERSONAL_PROJECT)
+                    .titleEn(slug)
+                    .titlePl(slug)
+                    .slug(slug)
+                    .published(published)
+                    .displayOrder(displayOrder)
+                    .build();
+            post.setHashtags(hashtags);
+            return post;
         }
     }
 }

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,8 +24,13 @@ public class SkillCategoryService {
     private final SoftSkillRepository softSkillRepository;
 
     public List<SkillCategoryDto> getAllCategories(String locale) {
-        return skillCategoryRepository.findAllByOrderByDisplayOrderAsc().stream()
-                .map(category -> mapToDto(category, locale))
+        List<SkillCategory> categories = skillCategoryRepository.findAllByOrderByDisplayOrderAsc();
+        Map<UUID, Long> skillCounts = softSkillRepository.findAllByOrderByDisplayOrderAsc().stream()
+                .filter(skill -> skill.getCategory() != null)
+                .collect(Collectors.groupingBy(skill -> skill.getCategory().getId(), Collectors.counting()));
+
+        return categories.stream()
+                .map(category -> mapToDto(category, skillCounts.getOrDefault(category.getId(), 0L), locale))
                 .toList();
     }
 
@@ -56,7 +63,7 @@ public class SkillCategoryService {
     public SkillCategoryDto getCategoryById(UUID id, String locale) {
         SkillCategory category = skillCategoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Skill category not found: " + id));
-        return mapToDto(category, locale);
+        return mapToDto(category, softSkillRepository.countByCategoryId(category.getId()), locale);
     }
 
     @Transactional
@@ -69,7 +76,7 @@ public class SkillCategoryService {
                 .build();
 
         category = skillCategoryRepository.save(category);
-        return mapToDto(category, locale);
+        return mapToDto(category, softSkillRepository.countByCategoryId(category.getId()), locale);
     }
 
     @Transactional
@@ -88,7 +95,7 @@ public class SkillCategoryService {
         }
 
         category = skillCategoryRepository.save(category);
-        return mapToDto(category, locale);
+        return mapToDto(category, softSkillRepository.countByCategoryId(category.getId()), locale);
     }
 
     @Transactional
@@ -107,19 +114,14 @@ public class SkillCategoryService {
         }
     }
 
-    private SkillCategoryDto mapToDto(SkillCategory category, String locale) {
-        int skillCount = (int) softSkillRepository.findAllByOrderByDisplayOrderAsc().stream()
-                .filter(skill -> skill.getCategory() != null &&
-                        skill.getCategory().getId().equals(category.getId()))
-                .count();
-
+    private SkillCategoryDto mapToDto(SkillCategory category, long skillCount, String locale) {
         return SkillCategoryDto.builder()
                 .id(category.getId())
                 .name(category.getName(locale))
                 .nameEn(category.getNameEn())
                 .namePl(category.getNamePl())
                 .displayOrder(category.getDisplayOrder())
-                .skillCount(skillCount)
+                .skillCount((int) skillCount)
                 .createdAt(category.getCreatedAt())
                 .updatedAt(category.getUpdatedAt())
                 .build();

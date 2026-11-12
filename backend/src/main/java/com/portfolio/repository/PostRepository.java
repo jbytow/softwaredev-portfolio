@@ -45,6 +45,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
     void updateDisplayOrder(@Param("id") UUID id, @Param("displayOrder") int displayOrder);
 
     // Hashtag methods
-    @Query(value = "SELECT * FROM posts WHERE published = true AND :hashtag = ANY(hashtags) ORDER BY display_order", nativeQuery = true)
+    // "@>" rather than "= ANY": only the containment form can use the GIN index idx_posts_hashtags.
+    @Query(value = "SELECT * FROM posts WHERE published = true AND hashtags @> ARRAY[CAST(:hashtag AS text)] ORDER BY display_order", nativeQuery = true)
     List<Post> findByHashtagAndPublishedTrue(@Param("hashtag") String hashtag);
 }

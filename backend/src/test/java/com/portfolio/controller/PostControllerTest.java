@@ -89,6 +89,18 @@ class PostControllerTest {
         }
 
         @Test
+        @DisplayName("should look up posts by hashtag when the hashtag parameter is set")
+        void shouldFilterByHashtag() throws Exception {
+            given(postService.getPostsByHashtag("seo", "en")).willReturn(List.of(createSamplePostDto()));
+
+            mockMvc.perform(get("/api/posts").param("hashtag", "seo"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.data", hasSize(1)));
+
+            org.mockito.Mockito.verify(postService).getPostsByHashtag("seo", "en");
+        }
+
+        @Test
         @DisplayName("should return empty array when no posts")
         void shouldReturnEmptyArrayWhenNoPosts() throws Exception {
             given(postService.getAllPublishedPosts("en")).willReturn(Collections.emptyList());

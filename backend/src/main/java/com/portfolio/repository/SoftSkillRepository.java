@@ -1,6 +1,7 @@
 package com.portfolio.repository;
 
 import com.portfolio.entity.SoftSkill;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,7 +14,11 @@ import java.util.UUID;
 @Repository
 public interface SoftSkillRepository extends JpaRepository<SoftSkill, UUID> {
 
+    // Callers read each skill's category name; fetching it here avoids one lazy load per category.
+    @EntityGraph("SoftSkill.withCategory")
     List<SoftSkill> findAllByOrderByDisplayOrderAsc();
+
+    long countByCategoryId(UUID categoryId);
 
     @Query("SELECT COALESCE(MAX(s.displayOrder), 0) FROM SoftSkill s")
     int getMaxDisplayOrder();
