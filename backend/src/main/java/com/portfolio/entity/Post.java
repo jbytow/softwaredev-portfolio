@@ -62,7 +62,7 @@ public class Post {
     @Column(name = "live_url")
     private String liveUrl;
 
-    @Column(name = "published")
+    @Column(name = "published", nullable = false)
     @Builder.Default
     private Boolean published = false;
 
