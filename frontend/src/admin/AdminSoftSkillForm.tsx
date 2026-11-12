@@ -72,11 +72,11 @@ export default function AdminSoftSkillForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
-      toast.success('Soft skill created successfully');
+      toast.success(t('admin.softSkills.created'));
       navigate('/admin/soft-skills');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to create soft skill'));
+      toast.error(getApiErrorMessage(error, t('admin.softSkills.createFailed')));
     },
   });
 
@@ -88,11 +88,11 @@ export default function AdminSoftSkillForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkill(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
-      toast.success('Soft skill updated successfully');
+      toast.success(t('admin.softSkills.updated'));
       navigate('/admin/soft-skills');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update soft skill'));
+      toast.error(getApiErrorMessage(error, t('admin.softSkills.updateFailed')));
     },
   });
 
@@ -147,10 +147,12 @@ export default function AdminSoftSkillForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Names */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Names</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.softSkills.namesSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Name (English) *</label>
+              <label className="label">{t('admin.softSkills.nameEn')}</label>
               <input
                 type="text"
                 name="nameEn"
@@ -161,7 +163,7 @@ export default function AdminSoftSkillForm() {
               />
             </div>
             <div>
-              <label className="label">Name (Polish) *</label>
+              <label className="label">{t('admin.softSkills.namePl')}</label>
               <input
                 type="text"
                 name="namePl"
@@ -176,10 +178,12 @@ export default function AdminSoftSkillForm() {
 
         {/* Descriptions */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Descriptions</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.softSkills.descriptionsSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Description (English)</label>
+              <label className="label">{t('admin.softSkills.descriptionEn')}</label>
               <textarea
                 name="descriptionEn"
                 value={formData.descriptionEn}
@@ -189,7 +193,7 @@ export default function AdminSoftSkillForm() {
               />
             </div>
             <div>
-              <label className="label">Description (Polish)</label>
+              <label className="label">{t('admin.softSkills.descriptionPl')}</label>
               <textarea
                 name="descriptionPl"
                 value={formData.descriptionPl}
@@ -203,28 +207,30 @@ export default function AdminSoftSkillForm() {
 
         {/* Professional Usage */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Professional Usage</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.softSkills.professionalUsageSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Professional Usage (English)</label>
+              <label className="label">{t('admin.softSkills.professionalUsageEn')}</label>
               <textarea
                 name="professionalUsageEn"
                 value={formData.professionalUsageEn}
                 onChange={handleChange}
                 className="input"
                 rows={3}
-                placeholder="How do you apply this skill professionally?"
+                placeholder={t('admin.softSkills.professionalUsageEnPlaceholder')}
               />
             </div>
             <div>
-              <label className="label">Professional Usage (Polish)</label>
+              <label className="label">{t('admin.softSkills.professionalUsagePl')}</label>
               <textarea
                 name="professionalUsagePl"
                 value={formData.professionalUsagePl}
                 onChange={handleChange}
                 className="input"
                 rows={3}
-                placeholder="Jak stosujesz tę umiejętność zawodowo?"
+                placeholder={t('admin.softSkills.professionalUsagePlPlaceholder')}
               />
             </div>
           </div>
@@ -232,17 +238,19 @@ export default function AdminSoftSkillForm() {
 
         {/* Category, Icon & Level */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Category, Icon & Level</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.softSkills.categoryIconLevelSection')}
+          </h3>
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <label className="label">Category</label>
+              <label className="label">{t('admin.softSkills.categoryLabel')}</label>
               <select
                 name="categoryId"
                 value={formData.categoryId ?? ''}
                 onChange={handleChange}
                 className="input"
               >
-                <option value="">No category</option>
+                <option value="">{t('admin.softSkills.noCategory')}</option>
                 {categories.map((category) => (
                   <option key={category.id} value={category.id}>
                     {category.nameEn}
@@ -251,21 +259,21 @@ export default function AdminSoftSkillForm() {
               </select>
             </div>
             <div>
-              <label className="label">Icon Name</label>
+              <label className="label">{t('admin.softSkills.iconName')}</label>
               <input
                 type="text"
                 name="icon"
                 value={formData.icon}
                 onChange={handleChange}
                 className="input"
-                placeholder="e.g., lightbulb, users, target, brain, heart"
+                placeholder={t('admin.softSkills.iconPlaceholder')}
               />
               <p className="text-sm text-dark-500 mt-2">
                 lightbulb, users, message, target, clock, heart, zap, brain, handshake, rocket, sparkles, award
               </p>
             </div>
             <div>
-              <label className="label">XP Level (1-10)</label>
+              <label className="label">{t('admin.softSkills.xpLevel')}</label>
               <input
                 type="number"
                 name="level"
@@ -281,7 +289,7 @@ export default function AdminSoftSkillForm() {
                 max={10}
               />
               <p className="text-sm text-dark-500 mt-2">
-                Skill level shown in XP mode (1-10)
+                {t('admin.softSkills.xpLevelHint')}
               </p>
             </div>
           </div>

@@ -25,11 +25,11 @@ export default function AdminExperiences() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.experiences() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.experiences() });
-      toast.success('Experience deleted successfully');
+      toast.success(t('admin.experiences.deleted'));
       setDeleteId(null);
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete experience'));
+      toast.error(getApiErrorMessage(error, t('admin.experiences.deleteFailed')));
     },
   });
 
@@ -83,7 +83,7 @@ export default function AdminExperiences() {
                       </span>
                       <span className="flex items-center">
                         <Calendar className="w-3 h-3 mr-1" />
-                        {exp.startDate} - {exp.endDate || 'Present'}
+                        {exp.startDate} - {exp.endDate || t('admin.experiences.present')}
                       </span>
                     </div>
                   </div>
@@ -112,7 +112,7 @@ export default function AdminExperiences() {
       <ConfirmDeleteModal
         open={deleteId !== null}
         title={t('admin.common.confirmDelete')}
-        message="Are you sure you want to delete this experience? This action cannot be undone."
+        message={t('admin.experiences.confirmDeleteMessage')}
         isPending={deleteMutation.isPending}
         onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
         onCancel={() => setDeleteId(null)}

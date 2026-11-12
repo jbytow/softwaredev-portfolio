@@ -60,11 +60,11 @@ export default function AdminRpgStatForm() {
       setBaseline(JSON.stringify({ formData, skillsText }));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
-      toast.success('RPG stat created');
+      toast.success(t('admin.rpgStats.created'));
       navigate('/admin/rpg-stats');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to create RPG stat'));
+      toast.error(getApiErrorMessage(error, t('admin.rpgStats.createFailed')));
     },
   });
 
@@ -75,11 +75,11 @@ export default function AdminRpgStatForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStat(id!) });
-      toast.success('RPG stat updated');
+      toast.success(t('admin.rpgStats.updated'));
       navigate('/admin/rpg-stats');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update RPG stat'));
+      toast.error(getApiErrorMessage(error, t('admin.rpgStats.updateFailed')));
     },
   });
 
@@ -129,42 +129,44 @@ export default function AdminRpgStatForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Attribute & Labels */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Attribute</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.rpgStats.attributeHeading')}
+          </h3>
           <div className="grid md:grid-cols-3 gap-4">
             <div>
-              <label className="label">Attribute Code *</label>
+              <label className="label">{t('admin.rpgStats.attrCodeLabel')}</label>
               <input
                 type="text"
                 name="attr"
                 value={formData.attr}
                 onChange={handleChange}
                 className="input font-mono"
-                placeholder="e.g., STR, INT, WIS"
+                placeholder={t('admin.rpgStats.attrPlaceholder')}
                 required
                 maxLength={10}
               />
             </div>
             <div>
-              <label className="label">Label (English) *</label>
+              <label className="label">{t('admin.rpgStats.labelEnLabel')}</label>
               <input
                 type="text"
                 name="labelEn"
                 value={formData.labelEn}
                 onChange={handleChange}
                 className="input"
-                placeholder="e.g., Java / Spring"
+                placeholder={t('admin.rpgStats.labelPlaceholder')}
                 required
               />
             </div>
             <div>
-              <label className="label">Label (Polish) *</label>
+              <label className="label">{t('admin.rpgStats.labelPlLabel')}</label>
               <input
                 type="text"
                 name="labelPl"
                 value={formData.labelPl}
                 onChange={handleChange}
                 className="input"
-                placeholder="e.g., Java / Spring"
+                placeholder={t('admin.rpgStats.labelPlaceholder')}
                 required
               />
             </div>
@@ -173,10 +175,12 @@ export default function AdminRpgStatForm() {
 
         {/* Level */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Level</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.rpgStats.levelHeading')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Current Level</label>
+              <label className="label">{t('admin.rpgStats.currentLevel')}</label>
               <input
                 type="number"
                 name="level"
@@ -192,7 +196,7 @@ export default function AdminRpgStatForm() {
               />
             </div>
             <div>
-              <label className="label">Max Level</label>
+              <label className="label">{t('admin.rpgStats.maxLevel')}</label>
               <input
                 type="number"
                 name="maxLevel"
@@ -212,18 +216,20 @@ export default function AdminRpgStatForm() {
 
         {/* Skills */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Related Skills</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.rpgStats.skillsHeading')}
+          </h3>
           <div>
-            <label className="label">Skills (comma-separated)</label>
+            <label className="label">{t('admin.rpgStats.skillsLabel')}</label>
             <input
               type="text"
               value={skillsText}
               onChange={(e) => setSkillsText(e.target.value)}
               className="input"
-              placeholder="e.g., Spring Boot, Hibernate, REST API, JUnit"
+              placeholder={t('admin.rpgStats.skillsPlaceholder')}
             />
             <p className="text-sm text-dark-500 mt-2">
-              Enter skill names separated by commas
+              {t('admin.rpgStats.skillsHint')}
             </p>
           </div>
         </div>

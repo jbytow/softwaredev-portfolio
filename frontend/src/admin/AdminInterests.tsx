@@ -36,6 +36,8 @@ function SortableInterestItem({
   interest: Interest;
   onDelete: (id: string) => void;
 }) {
+  const { t } = useTranslation();
+
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: interest.id,
   });
@@ -72,7 +74,7 @@ function SortableInterestItem({
         ))}
         {images.length === 0 && (
           <div className="w-12 h-12 rounded bg-dark-600 flex items-center justify-center text-dark-400 text-xs">
-            No img
+            {t('admin.interests.noImage')}
           </div>
         )}
       </div>
@@ -129,10 +131,10 @@ export default function AdminInterests() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       setDeleteTarget(null);
-      toast.success('Interest deleted');
+      toast.success(t('admin.interests.deleted'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete interest'));
+      toast.error(getApiErrorMessage(error, t('admin.interests.deleteFailed')));
     },
   });
 
@@ -143,7 +145,7 @@ export default function AdminInterests() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to reorder'));
+      toast.error(getApiErrorMessage(error, t('admin.interests.reorderFailed')));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
     },
   });
@@ -166,7 +168,7 @@ export default function AdminInterests() {
   };
 
   const handleDelete = (id: string) => {
-    setDeleteTarget({ id, message: 'Are you sure you want to delete this interest?' });
+    setDeleteTarget({ id, message: t('admin.interests.confirmDeleteMessage') });
   };
 
   if (isLoading) {

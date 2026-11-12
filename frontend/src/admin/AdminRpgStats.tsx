@@ -117,10 +117,10 @@ export default function AdminRpgStats() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       setDeleteTarget(null);
-      toast.success('RPG stat deleted');
+      toast.success(t('admin.rpgStats.deleted'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete RPG stat'));
+      toast.error(getApiErrorMessage(error, t('admin.rpgStats.deleteFailed')));
     },
   });
 
@@ -131,7 +131,7 @@ export default function AdminRpgStats() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to reorder'));
+      toast.error(getApiErrorMessage(error, t('admin.rpgStats.reorderFailed')));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
     },
   });
@@ -154,7 +154,7 @@ export default function AdminRpgStats() {
   };
 
   const handleDelete = (id: string) => {
-    setDeleteTarget({ id, message: 'Are you sure you want to delete this RPG stat?' });
+    setDeleteTarget({ id, message: t('admin.rpgStats.confirmDeleteMessage') });
   };
 
   if (isLoading) {

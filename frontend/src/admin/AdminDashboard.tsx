@@ -88,7 +88,9 @@ export default function AdminDashboard() {
       {/* Quick Actions */}
       <div className="grid md:grid-cols-2 gap-6">
         <div className="card">
-          <h2 className="text-xl font-semibold text-dark-100 mb-4">Quick Actions</h2>
+          <h2 className="text-xl font-semibold text-dark-100 mb-4">
+            {t('admin.dashboard.quickActions')}
+          </h2>
           <div className="space-y-3">
             <Link
               to="/admin/posts/new"

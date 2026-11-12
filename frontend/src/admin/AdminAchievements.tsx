@@ -119,10 +119,10 @@ export default function AdminAchievements() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       setDeleteTarget(null);
-      toast.success('Achievement deleted');
+      toast.success(t('admin.achievements.deleted'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete achievement'));
+      toast.error(getApiErrorMessage(error, t('admin.achievements.deleteFailed')));
     },
   });
 
@@ -133,7 +133,7 @@ export default function AdminAchievements() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to reorder'));
+      toast.error(getApiErrorMessage(error, t('admin.achievements.reorderFailed')));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
     },
   });
@@ -156,7 +156,7 @@ export default function AdminAchievements() {
   };
 
   const handleDelete = (id: string) => {
-    setDeleteTarget({ id, message: 'Are you sure you want to delete this achievement?' });
+    setDeleteTarget({ id, message: t('admin.achievements.confirmDeleteMessage') });
   };
 
   if (isLoading) {

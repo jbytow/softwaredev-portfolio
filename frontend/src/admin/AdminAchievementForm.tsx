@@ -58,11 +58,11 @@ export default function AdminAchievementForm() {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
-      toast.success('Achievement created');
+      toast.success(t('admin.achievements.created'));
       navigate('/admin/achievements');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to create achievement'));
+      toast.error(getApiErrorMessage(error, t('admin.achievements.createFailed')));
     },
   });
 
@@ -73,11 +73,11 @@ export default function AdminAchievementForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievement(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
-      toast.success('Achievement updated');
+      toast.success(t('admin.achievements.updated'));
       navigate('/admin/achievements');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update achievement'));
+      toast.error(getApiErrorMessage(error, t('admin.achievements.updateFailed')));
     },
   });
 
@@ -122,10 +122,12 @@ export default function AdminAchievementForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Titles */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Titles</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.achievements.titlesSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Title (English) *</label>
+              <label className="label">{t('admin.achievements.titleEn')}</label>
               <input
                 type="text"
                 name="titleEn"
@@ -136,7 +138,7 @@ export default function AdminAchievementForm() {
               />
             </div>
             <div>
-              <label className="label">Title (Polish) *</label>
+              <label className="label">{t('admin.achievements.titlePl')}</label>
               <input
                 type="text"
                 name="titlePl"
@@ -151,10 +153,12 @@ export default function AdminAchievementForm() {
 
         {/* Descriptions */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Descriptions</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.achievements.descriptionsSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Description (English)</label>
+              <label className="label">{t('admin.achievements.descriptionEn')}</label>
               <textarea
                 name="descriptionEn"
                 value={formData.descriptionEn}
@@ -164,7 +168,7 @@ export default function AdminAchievementForm() {
               />
             </div>
             <div>
-              <label className="label">Description (Polish)</label>
+              <label className="label">{t('admin.achievements.descriptionPl')}</label>
               <textarea
                 name="descriptionPl"
                 value={formData.descriptionPl}
@@ -178,31 +182,33 @@ export default function AdminAchievementForm() {
 
         {/* Icon & Year */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Icon & Year</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.achievements.iconYearSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Icon Name</label>
+              <label className="label">{t('admin.achievements.iconName')}</label>
               <input
                 type="text"
                 name="icon"
                 value={formData.icon}
                 onChange={handleChange}
                 className="input"
-                placeholder="e.g., zap, rocket, award, trophy"
+                placeholder={t('admin.achievements.iconPlaceholder')}
               />
               <p className="text-sm text-dark-500 mt-2">
                 zap, rocket, award, database, sparkles, trophy, star, code, terminal
               </p>
             </div>
             <div>
-              <label className="label">Year</label>
+              <label className="label">{t('admin.achievements.year')}</label>
               <input
                 type="text"
                 name="year"
                 value={formData.year}
                 onChange={handleChange}
                 className="input"
-                placeholder="e.g., 2024"
+                placeholder={t('admin.achievements.yearPlaceholder')}
               />
             </div>
           </div>

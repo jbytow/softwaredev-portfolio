@@ -26,11 +26,11 @@ export default function AdminSoftSkills() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
-      toast.success('Soft skill deleted successfully');
+      toast.success(t('admin.softSkills.deleted'));
       setDeleteId(null);
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete soft skill'));
+      toast.error(getApiErrorMessage(error, t('admin.softSkills.deleteFailed')));
     },
   });
 
@@ -79,7 +79,9 @@ export default function AdminSoftSkills() {
                     <h3 className="font-medium text-dark-100">{skill.nameEn}</h3>
                     <p className="text-sm text-dark-400">{skill.namePl}</p>
                     {skill.icon && (
-                      <span className="text-xs text-dark-500">Icon: {skill.icon}</span>
+                      <span className="text-xs text-dark-500">
+                        {t('admin.softSkills.iconLabel', { icon: skill.icon })}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -107,7 +109,7 @@ export default function AdminSoftSkills() {
       <ConfirmDeleteModal
         open={deleteId !== null}
         title={t('admin.common.confirmDelete')}
-        message="Are you sure you want to delete this soft skill? This action cannot be undone."
+        message={t('admin.softSkills.deleteConfirm')}
         isPending={deleteMutation.isPending}
         onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
         onCancel={() => setDeleteId(null)}
