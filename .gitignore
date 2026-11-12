@@ -40,3 +40,7 @@ uploads/
 
 # Claude Code
 .claude/
+
+# Worktrees paczek audytu
+.worktrees/
+.superpowers/
