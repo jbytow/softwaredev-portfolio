@@ -70,6 +70,7 @@ function SortableMediaItem({ item, onDelete }: SortableMediaItemProps) {
 
       {/* Delete button */}
       <button
+        type="button"
         onClick={() => onDelete(item.id)}
         className="absolute top-2 right-2 p-1 rounded bg-red-500/70 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
       >
@@ -256,6 +257,13 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
             type="text"
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
+            onKeyDown={(e) => {
+              // Enter would otherwise submit the surrounding post form
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleYouTubeAdd();
+              }
+            }}
             placeholder="Paste YouTube URL..."
             className="input pl-10"
           />
