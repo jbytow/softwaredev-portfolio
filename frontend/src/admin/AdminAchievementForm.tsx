@@ -71,6 +71,7 @@ export default function AdminAchievementForm() {
     onSuccess: () => {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievement(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       toast.success('Achievement updated');
       navigate('/admin/achievements');

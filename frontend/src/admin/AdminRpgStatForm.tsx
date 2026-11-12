@@ -74,6 +74,7 @@ export default function AdminRpgStatForm() {
       setBaseline(JSON.stringify({ formData, skillsText }));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStat(id!) });
       toast.success('RPG stat updated');
       navigate('/admin/rpg-stats');
     },

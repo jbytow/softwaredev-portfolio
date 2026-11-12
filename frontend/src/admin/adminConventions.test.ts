@@ -40,4 +40,22 @@ describe('admin panel conventions', () => {
       .map(([file]) => file);
     expect(offenders).toEqual([]);
   });
+
+  it('invalidates the cache in every file that mutates', () => {
+    const offenders = Object.entries(sources)
+      .filter(([, code]) => /useMutation\(/.test(code) && !/invalidate/i.test(code))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
+
+  it('invalidates the detail key a form reads, so reopening an edit page does not show stale data', () => {
+    const offenders = Object.entries(sources).flatMap(([file, code]) => {
+      if (!/useMutation\(/.test(code)) return [];
+      const read = [...code.matchAll(/queryKey: queryKeys\.admin\.(\w+)\(id!\)/g)].map((m) => m[1]);
+      return [...new Set(read)]
+        .filter((key) => !code.includes(`invalidateQueries({ queryKey: queryKeys.admin.${key}(`))
+        .map((key) => file + ' ' + key);
+    });
+    expect(offenders).toEqual([]);
+  });
 });

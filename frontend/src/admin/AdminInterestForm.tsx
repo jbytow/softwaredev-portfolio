@@ -71,6 +71,7 @@ export default function AdminInterestForm() {
     onSuccess: () => {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.interest(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       toast.success('Interest updated');
       navigate('/admin/interests');
