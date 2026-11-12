@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/experiences")
@@ -24,14 +23,5 @@ public class ExperienceController {
 
         List<ExperienceDto> experiences = experienceService.getAllExperiences(LocaleUtils.extractLocale(locale));
         return ResponseEntity.ok(ApiResponse.success(experiences));
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<ExperienceDto>> getExperienceById(
-            @PathVariable UUID id,
-            @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
-
-        ExperienceDto experience = experienceService.getExperienceById(id, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(experience));
     }
 }

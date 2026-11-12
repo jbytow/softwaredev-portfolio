@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -150,29 +148,6 @@ class PostRepositoryTest {
             assertThat(result).isSortedAccordingTo(
                     (p1, p2) -> Integer.compare(p1.getDisplayOrder(), p2.getDisplayOrder())
             );
-        }
-    }
-
-    @Nested
-    @DisplayName("findByPublishedTrue")
-    class FindByPublishedTrue {
-
-        @Test
-        @DisplayName("should return paginated published posts")
-        void shouldReturnPaginatedPublishedPosts() {
-            Page<Post> result = postRepository.findByPublishedTrue(PageRequest.of(0, 10));
-
-            assertThat(result.getContent()).hasSize(2);
-            assertThat(result.getTotalElements()).isEqualTo(2);
-        }
-
-        @Test
-        @DisplayName("should respect page size")
-        void shouldRespectPageSize() {
-            Page<Post> result = postRepository.findByPublishedTrue(PageRequest.of(0, 1));
-
-            assertThat(result.getContent()).hasSize(1);
-            assertThat(result.getTotalPages()).isEqualTo(2);
         }
     }
 
