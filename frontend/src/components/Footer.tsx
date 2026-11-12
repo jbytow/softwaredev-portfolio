@@ -1,10 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useNerdTranslation } from '@/hooks/useNerdTranslation';
-import { useQuery } from '@tanstack/react-query';
 import { Linkedin, Instagram, Facebook, Mail, Github } from 'lucide-react';
-import { settingsApi } from '@/services/api';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { queryKeys } from '@/lib/queryKeys';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 
 const socialIcons: Record<string, typeof Linkedin> = {
   linkedin: Linkedin,
@@ -24,15 +21,13 @@ const footerLinks = [
 
 export default function Footer() {
   const { t } = useNerdTranslation();
-  const { language } = useLanguage();
   const currentYear = new Date().getFullYear();
 
-  const { data: settingsData } = useQuery({
-    queryKey: queryKeys.settings(language),
-    queryFn: () => settingsApi.get(),
-  });
+  const { data: settingsData } = useSiteSettings();
 
   const settings = settingsData?.data;
+  const socialLinks = Object.entries(settings?.socialLinks ?? {}).filter(([, url]) => url?.trim());
+  const hasEmailLink = socialLinks.some(([platform]) => platform.toLowerCase() === 'email');
 
   const getSocialHref = (platform: string, url: string) => {
     if (platform.toLowerCase() === 'email') {
@@ -76,7 +71,7 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-dark-100">{t('contact.info.social')}</h3>
             <div className="flex space-x-3">
-              {settings?.socialLinks && Object.entries(settings.socialLinks).map(([platform, url]) => {
+              {socialLinks.map(([platform, url]) => {
                 const Icon = socialIcons[platform.toLowerCase()] || Linkedin;
                 return (
                   <a
@@ -91,11 +86,11 @@ export default function Footer() {
                   </a>
                 );
               })}
-              {settings?.email && !settings?.socialLinks?.email && (
+              {settings?.email && !hasEmailLink && (
                 <a
                   href={`mailto:${settings.email}`}
                   className="p-2 text-dark-400 hover:text-primary-400 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors"
-                  aria-label="Email"
+                  aria-label={t('contact.info.email')}
                 >
                   <Mail className="w-5 h-5" />
                 </a>
