@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
   closestCenter,
@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import { adminMediaApi } from '@/services/api';
 import { Media, MediaType } from '@/types';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import { queryKeys } from '@/lib/queryKeys';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 interface MediaManagerProps {
@@ -106,6 +107,15 @@ function SortableMediaItem({ item, onDelete }: SortableMediaItemProps) {
 export default function MediaManager({ postId, media, onMediaChange }: MediaManagerProps) {
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const queryClient = useQueryClient();
+
+  // The mounted post form seeds its fields only once per post, so refetching the detail
+  // here keeps the cache fresh without touching unsaved edits.
+  const invalidatePostQueries = () => {
+    queryClient.invalidateQueries({ queryKey: queryKeys.admin.post(postId) });
+    queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+    queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -119,6 +129,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
     onSuccess: (response) => {
       if (response.data) {
         onMediaChange([...media, response.data]);
+        invalidatePostQueries();
         toast.success('Media uploaded');
       }
     },
@@ -133,6 +144,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       if (response.data) {
         onMediaChange([...media, response.data]);
         setYoutubeUrl('');
+        invalidatePostQueries();
         toast.success('YouTube video added');
       }
     },
@@ -145,6 +157,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
     mutationFn: (id: string) => adminMediaApi.delete(id),
     onSuccess: (_, deletedId) => {
       onMediaChange(media.filter((m) => m.id !== deletedId));
+      invalidatePostQueries();
       toast.success('Media deleted');
     },
     onError: (error) => {
@@ -155,6 +168,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminMediaApi.reorder(postId, items),
+    onSuccess: invalidatePostQueries,
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to save order'));
     },
