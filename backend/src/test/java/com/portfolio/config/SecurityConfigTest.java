@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.LoggerFactory;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
@@ -35,10 +36,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.server.Cookie.SameSite;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
@@ -329,6 +335,51 @@ class SecurityConfigTest {
 
             mockMvc.perform(get("/api/admin/posts").cookie(authCookie(expired)))
                     .andExpect(status().isUnauthorized());
+        }
+    }
+
+    private static void assertSessionCookieSecure(ApplicationContext context, boolean expected) throws Exception {
+        assertThat(context.containsBean("sessionCookieSecureInitializer")).isTrue();
+        MockServletContext servletContext = new MockServletContext();
+        context.getBean("sessionCookieSecureInitializer", ServletContextInitializer.class).onStartup(servletContext);
+        assertThat(servletContext.getSessionCookieConfig().isSecure()).isEqualTo(expected);
+    }
+
+    @Nested
+    @DisplayName("JSESSIONID used for the OAuth state")
+    class SessionCookie {
+
+        @Autowired
+        private ApplicationContext context;
+
+        @Test
+        @DisplayName("gets SameSite=Lax, other cookies are left alone")
+        void sameSiteLaxForSessionCookieOnly() {
+            assertThat(context.getBeansOfType(CookieSameSiteSupplier.class).values()).anySatisfy(supplier -> {
+                assertThat(supplier.getSameSite(new Cookie("JSESSIONID", "x"))).isEqualTo(SameSite.LAX);
+                assertThat(supplier.getSameSite(new Cookie("other", "x"))).isNull();
+            });
+        }
+
+        @Test
+        @DisplayName("is not marked Secure for an http frontend")
+        void notSecureForHttpFrontend() throws Exception {
+            assertSessionCookieSecure(context, false);
+        }
+    }
+
+    @Nested
+    @TestPropertySource(properties = "app.frontend.url=https://jbytow.pl")
+    @DisplayName("JSESSIONID behind an https frontend")
+    class HttpsSessionCookie {
+
+        @Autowired
+        private ApplicationContext context;
+
+        @Test
+        @DisplayName("is marked Secure although Tomcat itself only sees plain http")
+        void secureForHttpsFrontend() throws Exception {
+            assertSessionCookieSecure(context, true);
         }
     }
 }

@@ -5,6 +5,8 @@ import com.portfolio.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -83,6 +85,23 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    // oauth2Login keeps the authorization request in the HTTP session, so JSESSIONID exists despite STATELESS
+    @Bean
+    public CookieSameSiteSupplier sessionCookieSameSiteSupplier() {
+        return CookieSameSiteSupplier.ofLax().whenHasName("JSESSIONID");
+    }
+
+    // Behind the tunnel Tomcat only sees plain http and would never set Secure on its own;
+    // same rule as the auth_token cookie
+    @Bean
+    public ServletContextInitializer sessionCookieSecureInitializer() {
+        return servletContext -> {
+            if (frontendUrl.startsWith("https://")) {
+                servletContext.getSessionCookieConfig().setSecure(true);
+            }
+        };
     }
 
     @Bean
