@@ -146,6 +146,15 @@ Implementing optimistic UI updates for drag-and-drop reordering while maintainin
 ### 6. Cloudflare Tunnel Integration
 Configuring secure public access through Cloudflare Tunnel while maintaining proper HTTPS termination and WebSocket support for development hot reload.
 
+### 7. Porting a Security Audit Between Twin Repositories
+The marketing-portfolio twin went through a 56-point audit (authentication, error handling, uploads, database, edge proxy, frontend accessibility, Spring Boot 4). This fork had drifted: RPG modules, no newsletter, seven colour presets instead of two. Copying the twin's commits would not apply. Solution: an evidence-first checklist (each point grepped in the fork before any change), 17 packages with disjoint file sets merged in four waves, test-first changes with an independent review of every package diff, and shared files (translations, README, docs) edited only after the packages landed. Result: all 56 points ported, backend tests 135 to 531, frontend tests 0 to 319, two trivial merge conflicts.
+
+### 8. Database Tests That Silently Skipped Themselves
+The suite reported green while its only database test class was skipped: Testcontainers 1.19.3 spoke Docker API 1.32, Docker 29 requires 1.40, and `disabledWithoutDocker` concluded there was no Docker at all. With `ddl-auto: create-drop` in tests the Flyway migrations were never exercised. Fix: a newer Testcontainers, Flyway plus `ddl-auto: validate` in the test profile, a `MigrationSchemaTest` that runs V1..V8 against PostgreSQL 16 and compares the schema with the entities, and a rule that "green" means zero skipped tests, enforced by CI with Docker.
+
+### 9. Painting the Saved Colour Preset Before React Under CSP
+Visitors with a saved preset saw a flash of the default theme because colours were applied by React. The twin's fix (two themes, a `data-theme` attribute) did not fit seven presets stored as JavaScript objects, and any inline script collides with a Content-Security-Policy. Solution: presets moved into CSS as `[data-theme]` blocks, the context only sets the attribute, a tiny inline script in `index.html` sets it from `localStorage` before the first paint, and the edge CSP allows exactly that script through a `sha256` hash that a test keeps in sync with the script body.
+
 ## Getting Started
 
 ### Prerequisites

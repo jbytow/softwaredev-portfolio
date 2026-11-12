@@ -207,7 +207,7 @@ export default function AdminSettings() {
                 value={formData.siteName}
                 onChange={handleChange}
                 className="input"
-                placeholder="Zakulecka ✨"
+                placeholder="My Portfolio"
               />
             </div>
             <div>
@@ -218,7 +218,7 @@ export default function AdminSettings() {
                 value={formData.ownerName}
                 onChange={handleChange}
                 className="input"
-                placeholder="Natalia Zakulecka"
+                placeholder="Jane Doe"
               />
             </div>
           </div>
