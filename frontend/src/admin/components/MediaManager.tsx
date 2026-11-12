@@ -132,11 +132,11 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       if (response.data) {
         onMediaChange([...media, response.data]);
         invalidatePostQueries();
-        toast.success(t('admin.media.uploaded'));
+        toast.success(t('admin.media.mediaUploaded'));
       }
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, t('admin.media.uploadFailed')));
+      toast.error(getApiErrorMessage(error, t('admin.media.mediaUploadFailed')));
     },
   });
 
@@ -160,7 +160,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
     onSuccess: (_, deletedId) => {
       onMediaChange(media.filter((m) => m.id !== deletedId));
       invalidatePostQueries();
-      toast.success(t('admin.media.deleted'));
+      toast.success(t('admin.media.mediaDeleted'));
     },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, t('admin.media.deleteFailed')));

@@ -525,7 +525,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.challengePlaceholder')}
+                      placeholder={t('admin.posts.challengeEnPlaceholder')}
                     />
                   </div>
                   <div>
@@ -536,7 +536,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.challengePlaceholder')}
+                      placeholder={t('admin.posts.challengePlPlaceholder')}
                     />
                   </div>
                 </div>
@@ -554,7 +554,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.solutionPlaceholder')}
+                      placeholder={t('admin.posts.solutionEnPlaceholder')}
                     />
                   </div>
                   <div>
@@ -565,7 +565,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.solutionPlaceholder')}
+                      placeholder={t('admin.posts.solutionPlPlaceholder')}
                     />
                   </div>
                 </div>
@@ -583,7 +583,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.resultsPlaceholder')}
+                      placeholder={t('admin.posts.resultsEnPlaceholder')}
                     />
                   </div>
                   <div>
@@ -594,7 +594,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.resultsPlaceholder')}
+                      placeholder={t('admin.posts.resultsPlPlaceholder')}
                     />
                   </div>
                 </div>
@@ -612,7 +612,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.testimonialPlaceholder')}
+                      placeholder={t('admin.posts.testimonialEnPlaceholder')}
                     />
                   </div>
                   <div>
@@ -623,7 +623,7 @@ export default function AdminPostForm() {
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder={t('admin.posts.testimonialPlaceholder')}
+                      placeholder={t('admin.posts.testimonialPlPlaceholder')}
                     />
                   </div>
                 </div>
