@@ -30,6 +30,9 @@ spring:
       max-file-size: ${MAX_FILE_SIZE:50MB}
       max-request-size: ${MAX_FILE_SIZE:50MB}
 
+  lifecycle:
+    timeout-per-shutdown-phase: 8s
+
   security:
     oauth2:
       client:
@@ -70,6 +73,7 @@ server:
   servlet:
     context-path: /
   forward-headers-strategy: framework
+  shutdown: graceful
 
 # Application specific configuration
 app:
@@ -101,6 +105,9 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+  health:
+    mail:
+      enabled: false
 
 logging:
   level:
