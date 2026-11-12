@@ -143,6 +143,10 @@
     "testimonial": "Key Decisions",
     "testimonial_nerd": "Party Leader's Notes"
   },
+  "post": {
+    "backToProjects": "Back to projects",
+    "notFound": "Post not found"
+  },
   "skills": {
     "title": "Skills",
     "title_nerd": "Skill Tree",
@@ -300,9 +304,5 @@
     "quickLinks_nerd": "Waypoints",
     "tagline": "Building software solutions with Java, Spring Boot, React, and more.",
     "tagline_nerd": "Crafting software artifacts with arcane tools."
-  },
-  "post": {
-    "backToProjects": "Back to projects",
-    "notFound": "Post not found"
   }
 }

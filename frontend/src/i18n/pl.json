@@ -143,6 +143,10 @@
     "testimonial": "Kluczowe Decyzje",
     "testimonial_nerd": "Notatki lidera grupy"
   },
+  "post": {
+    "backToProjects": "Powrót do projektów",
+    "notFound": "Nie znaleziono wpisu"
+  },
   "skills": {
     "title": "Umiejętności",
     "title_nerd": "Drzewko umiejętności",
@@ -300,9 +304,5 @@
     "quickLinks_nerd": "Punkty nawigacyjne",
     "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej.",
     "tagline_nerd": "Craftowanie artefaktów programistycznych z użyciem tajemnych narzędzi."
-  },
-  "post": {
-    "backToProjects": "Powrót do projektów",
-    "notFound": "Nie znaleziono wpisu"
   }
 }
