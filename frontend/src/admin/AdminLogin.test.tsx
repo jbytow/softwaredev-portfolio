@@ -15,7 +15,7 @@ vi.mock('react-hot-toast', () => ({ default: { error: toastError } }));
 function renderAt(url: string) {
   render(
     <HelmetProvider>
-      <MemoryRouter initialEntries={[url]}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[url]}>
         <AdminLogin />
       </MemoryRouter>
     </HelmetProvider>

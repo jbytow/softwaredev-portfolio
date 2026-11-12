@@ -33,7 +33,7 @@ function renderEdit() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={['/admin/soft-skills/s1/edit']}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={['/admin/soft-skills/s1/edit']}>
         <Routes>
           <Route path="/admin/soft-skills/:id/edit" element={<AdminSoftSkillForm />} />
           <Route path="/admin/soft-skills" element={<div>list</div>} />

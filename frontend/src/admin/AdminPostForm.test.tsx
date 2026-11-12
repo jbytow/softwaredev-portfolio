@@ -29,7 +29,7 @@ function renderForm(path: string) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   render(
     <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={[path]}>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[path]}>
         <Routes>
           <Route path="/admin/posts/new" element={<AdminPostForm />} />
           <Route path="/admin/posts/:id/edit" element={<AdminPostForm />} />
