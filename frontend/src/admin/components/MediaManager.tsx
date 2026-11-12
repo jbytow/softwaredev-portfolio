@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
@@ -105,6 +106,7 @@ function SortableMediaItem({ item, onDelete }: SortableMediaItemProps) {
 }
 
 export default function MediaManager({ postId, media, onMediaChange }: MediaManagerProps) {
+  const { t } = useTranslation();
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const queryClient = useQueryClient();
@@ -130,11 +132,11 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       if (response.data) {
         onMediaChange([...media, response.data]);
         invalidatePostQueries();
-        toast.success('Media uploaded');
+        toast.success(t('admin.media.uploaded'));
       }
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to upload media'));
+      toast.error(getApiErrorMessage(error, t('admin.media.uploadFailed')));
     },
   });
 
@@ -145,11 +147,11 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         onMediaChange([...media, response.data]);
         setYoutubeUrl('');
         invalidatePostQueries();
-        toast.success('YouTube video added');
+        toast.success(t('admin.media.youtubeAdded'));
       }
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to add YouTube video'));
+      toast.error(getApiErrorMessage(error, t('admin.media.youtubeAddFailed')));
     },
   });
 
@@ -158,10 +160,10 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
     onSuccess: (_, deletedId) => {
       onMediaChange(media.filter((m) => m.id !== deletedId));
       invalidatePostQueries();
-      toast.success('Media deleted');
+      toast.success(t('admin.media.deleted'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete media'));
+      toast.error(getApiErrorMessage(error, t('admin.media.deleteFailed')));
     },
   });
 
@@ -170,7 +172,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       adminMediaApi.reorder(postId, items),
     onSuccess: invalidatePostQueries,
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to save order'));
+      toast.error(getApiErrorMessage(error, t('admin.media.reorderFailed')));
     },
   });
 
@@ -253,10 +255,10 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
             <>
               <Upload className="w-10 h-10 text-dark-400 mb-2" />
               <span className="text-dark-300">
-                Drop files here or click to upload
+                {t('admin.media.dropFiles')}
               </span>
               <span className="text-sm text-dark-500 mt-1">
-                Images and videos supported
+                {t('admin.media.supportedFormats')}
               </span>
             </>
           )}
@@ -278,7 +280,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
                 handleYouTubeAdd();
               }
             }}
-            placeholder="Paste YouTube URL..."
+            placeholder={t('admin.media.youtubeUrlPlaceholder')}
             className="input pl-10"
           />
         </div>
@@ -288,7 +290,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
           disabled={!youtubeUrl.trim() || youTubeMutation.isPending}
           className="btn-secondary disabled:opacity-50"
         >
-          {youTubeMutation.isPending ? 'Adding...' : 'Add'}
+          {youTubeMutation.isPending ? t('admin.media.adding') : t('admin.media.add')}
         </button>
       </div>
 
@@ -316,7 +318,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       {media.length === 0 && (
         <div className="text-center py-8 text-dark-400">
           <ImageIcon className="w-12 h-12 mx-auto mb-2 opacity-50" />
-          <p>No media added yet</p>
+          <p>{t('admin.media.noneAdded')}</p>
         </div>
       )}
     </div>

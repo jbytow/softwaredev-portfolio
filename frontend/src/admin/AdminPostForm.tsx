@@ -133,11 +133,11 @@ export default function AdminPostForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
-      toast.success('Post created successfully');
+      toast.success(t('admin.posts.created'));
       navigate('/admin/posts');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to create post'));
+      toast.error(getApiErrorMessage(error, t('admin.posts.createFailed')));
     },
   });
 
@@ -150,11 +150,11 @@ export default function AdminPostForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
-      toast.success('Post updated successfully');
+      toast.success(t('admin.posts.updated'));
       navigate('/admin/posts');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update post'));
+      toast.error(getApiErrorMessage(error, t('admin.posts.updateFailed')));
     },
   });
 
@@ -266,7 +266,7 @@ export default function AdminPostForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Category */}
         <div className="card">
-          <label className="label">Category</label>
+          <label className="label">{t('admin.common.category')}</label>
           <select
             name="category"
             value={formData.category}
@@ -284,10 +284,10 @@ export default function AdminPostForm() {
 
         {/* Titles */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Titles</h3>
+          <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.titles')}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Title (English)</label>
+              <label className="label">{t('admin.posts.titleEn')}</label>
               <input
                 type="text"
                 name="titleEn"
@@ -298,7 +298,7 @@ export default function AdminPostForm() {
               />
             </div>
             <div>
-              <label className="label">Title (Polish)</label>
+              <label className="label">{t('admin.posts.titlePl')}</label>
               <input
                 type="text"
                 name="titlePl"
@@ -310,28 +310,28 @@ export default function AdminPostForm() {
             </div>
           </div>
           <div>
-            <label className="label">Slug (URL)</label>
+            <label className="label">{t('admin.posts.slug')}</label>
             <input
               type="text"
               name="slug"
               value={formData.slug}
               onChange={handleChange}
               className="input"
-              placeholder="auto-generated-from-title"
+              placeholder={t('admin.posts.slugPlaceholder')}
             />
           </div>
         </div>
 
         {/* Hashtags */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Hashtags</h3>
+          <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.hashtags')}</h3>
           <div className="flex gap-2">
             <input
               type="text"
               value={newHashtag}
               onChange={(e) => setNewHashtag(e.target.value)}
               onKeyDown={handleHashtagKeyDown}
-              placeholder="Add hashtag..."
+              placeholder={t('admin.posts.addHashtag')}
               className="input flex-1"
             />
             <button
@@ -365,10 +365,10 @@ export default function AdminPostForm() {
 
         {/* Excerpts */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Excerpts</h3>
+          <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.excerpts')}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Excerpt (English)</label>
+              <label className="label">{t('admin.posts.excerptEn')}</label>
               <textarea
                 name="excerptEn"
                 value={formData.excerptEn}
@@ -378,7 +378,7 @@ export default function AdminPostForm() {
               />
             </div>
             <div>
-              <label className="label">Excerpt (Polish)</label>
+              <label className="label">{t('admin.posts.excerptPl')}</label>
               <textarea
                 name="excerptPl"
                 value={formData.excerptPl}
@@ -392,22 +392,22 @@ export default function AdminPostForm() {
 
         {/* Content */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Content</h3>
+          <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.content')}</h3>
           <div className="space-y-4">
             <div>
-              <label className="label">Content (English)</label>
+              <label className="label">{t('admin.posts.contentEn')}</label>
               <RichTextEditor
                 content={formData.contentEn || {}}
                 onChange={(content) => setFormData((prev) => ({ ...prev, contentEn: content }))}
-                placeholder="Write your content in English..."
+                placeholder={t('admin.posts.contentEnPlaceholder')}
               />
             </div>
             <div>
-              <label className="label">Content (Polish)</label>
+              <label className="label">{t('admin.posts.contentPl')}</label>
               <RichTextEditor
                 content={formData.contentPl || {}}
                 onChange={(content) => setFormData((prev) => ({ ...prev, contentPl: content }))}
-                placeholder="Napisz treść po polsku..."
+                placeholder={t('admin.posts.contentPlPlaceholder')}
               />
             </div>
           </div>
@@ -415,7 +415,7 @@ export default function AdminPostForm() {
 
         {/* Featured Image */}
         <div className="card">
-          <label className="label">Featured Image URL</label>
+          <label className="label">{t('admin.posts.featuredImageUrl')}</label>
           <input
             type="text"
             name="featuredImage"
@@ -427,7 +427,7 @@ export default function AdminPostForm() {
           {formData.featuredImage && (
             <img
               src={formData.featuredImage}
-              alt="Preview"
+              alt={t('admin.preview.button')}
               className="mt-4 max-h-48 rounded-lg object-cover"
             />
           )}
@@ -435,7 +435,7 @@ export default function AdminPostForm() {
 
         {/* GitHub & Live URL */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Project Links</h3>
+          <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.projectLinks')}</h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
               <label className="label">{t('admin.posts.githubUrl')}</label>
@@ -465,9 +465,9 @@ export default function AdminPostForm() {
         {/* Media Manager */}
         {isEditing && id ? (
           <div className="card space-y-4">
-            <h3 className="text-lg font-semibold text-dark-100">Media Gallery</h3>
+            <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.mediaGallery')}</h3>
             <p className="text-sm text-dark-400">
-              Upload images, videos, or add YouTube videos. Drag to reorder.
+              {t('admin.posts.mediaGalleryHint')}
             </p>
             <MediaManager
               postId={id}
@@ -477,9 +477,9 @@ export default function AdminPostForm() {
           </div>
         ) : (
           <div className="card">
-            <h3 className="text-lg font-semibold text-dark-100">Media Gallery</h3>
+            <h3 className="text-lg font-semibold text-dark-100">{t('admin.posts.mediaGallery')}</h3>
             <p className="text-sm text-dark-400 mt-2">
-              Save the post first to add images, videos, or YouTube links.
+              {t('admin.posts.mediaGalleryBeforeSave')}
             </p>
           </div>
         )}
@@ -518,25 +518,25 @@ export default function AdminPostForm() {
                 <h4 className="font-medium text-dark-200">{t('caseStudy.challenge')}</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Challenge (English)</label>
+                    <label className="label">{t('admin.posts.challengeEn')}</label>
                     <textarea
                       name="caseStudyChallengeEn"
                       value={formData.caseStudyChallengeEn}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="What problem did the client face?"
+                      placeholder={t('admin.posts.challengePlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="label">Challenge (Polish)</label>
+                    <label className="label">{t('admin.posts.challengePl')}</label>
                     <textarea
                       name="caseStudyChallengePl"
                       value={formData.caseStudyChallengePl}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="Jaki problem miał klient?"
+                      placeholder={t('admin.posts.challengePlaceholder')}
                     />
                   </div>
                 </div>
@@ -547,25 +547,25 @@ export default function AdminPostForm() {
                 <h4 className="font-medium text-dark-200">{t('caseStudy.solution')}</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Solution (English)</label>
+                    <label className="label">{t('admin.posts.solutionEn')}</label>
                     <textarea
                       name="caseStudySolutionEn"
                       value={formData.caseStudySolutionEn}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="What strategy or approach was used?"
+                      placeholder={t('admin.posts.solutionPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="label">Solution (Polish)</label>
+                    <label className="label">{t('admin.posts.solutionPl')}</label>
                     <textarea
                       name="caseStudySolutionPl"
                       value={formData.caseStudySolutionPl}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="Jaka strategia lub podejście zostało zastosowane?"
+                      placeholder={t('admin.posts.solutionPlaceholder')}
                     />
                   </div>
                 </div>
@@ -576,25 +576,25 @@ export default function AdminPostForm() {
                 <h4 className="font-medium text-dark-200">{t('caseStudy.results')}</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Results (English)</label>
+                    <label className="label">{t('admin.posts.resultsEn')}</label>
                     <textarea
                       name="caseStudyResultsEn"
                       value={formData.caseStudyResultsEn}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="What were the outcomes and metrics?"
+                      placeholder={t('admin.posts.resultsPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="label">Results (Polish)</label>
+                    <label className="label">{t('admin.posts.resultsPl')}</label>
                     <textarea
                       name="caseStudyResultsPl"
                       value={formData.caseStudyResultsPl}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="Jakie były wyniki i metryki?"
+                      placeholder={t('admin.posts.resultsPlaceholder')}
                     />
                   </div>
                 </div>
@@ -605,37 +605,37 @@ export default function AdminPostForm() {
                 <h4 className="font-medium text-dark-200">{t('caseStudy.testimonial')} ({t('common.optional')})</h4>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="label">Testimonial (English)</label>
+                    <label className="label">{t('admin.posts.testimonialEn')}</label>
                     <textarea
                       name="caseStudyTestimonialEn"
                       value={formData.caseStudyTestimonialEn}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="Client quote..."
+                      placeholder={t('admin.posts.testimonialPlaceholder')}
                     />
                   </div>
                   <div>
-                    <label className="label">Testimonial (Polish)</label>
+                    <label className="label">{t('admin.posts.testimonialPl')}</label>
                     <textarea
                       name="caseStudyTestimonialPl"
                       value={formData.caseStudyTestimonialPl}
                       onChange={handleChange}
                       className="input"
                       rows={3}
-                      placeholder="Cytat klienta..."
+                      placeholder={t('admin.posts.testimonialPlaceholder')}
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="label">Testimonial Author</label>
+                  <label className="label">{t('admin.posts.testimonialAuthor')}</label>
                   <input
                     type="text"
                     name="caseStudyTestimonialAuthor"
                     value={formData.caseStudyTestimonialAuthor}
                     onChange={handleChange}
                     className="input"
-                    placeholder="John Doe, CEO at Company"
+                    placeholder={t('admin.posts.testimonialAuthorPlaceholder')}
                   />
                 </div>
               </div>
