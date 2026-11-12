@@ -84,6 +84,8 @@
     "title_nerd": "Karta postaci",
     "subtitle": "Poznaj mnie bliżej",
     "subtitle_nerd": "Staty, lore i pasywne zdolności",
+    "placeholder": "Treść sekcji \"O mnie\" pojawi się wkrótce...",
+    "profileImageAlt": "Zdjęcie profilowe",
     "interests": {
       "title": "Moje zainteresowania",
       "title_nerd": "Zadania poboczne",

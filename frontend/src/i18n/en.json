@@ -84,6 +84,8 @@
     "title_nerd": "Character Sheet",
     "subtitle": "Get to know me better",
     "subtitle_nerd": "Stats, lore, and passive abilities",
+    "placeholder": "About content coming soon...",
+    "profileImageAlt": "Profile photo",
     "interests": {
       "title": "My Interests",
       "title_nerd": "Side Quests",
