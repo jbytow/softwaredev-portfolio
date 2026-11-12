@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { Media, MediaType } from '@/types';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import YouTubeFacade from './YouTubeFacade';
 
 interface MediaCarouselProps {
   media: Media[];
@@ -9,22 +11,26 @@ interface MediaCarouselProps {
 }
 
 export default function MediaCarousel({ media, className = '' }: MediaCarouselProps) {
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!media || media.length === 0) {
     return null;
   }
 
+  // The list can shrink after a refetch while a later slide is selected
+  const index = Math.min(currentIndex, media.length - 1);
+
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
+    setCurrentIndex(index === 0 ? media.length - 1 : index - 1);
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
+    setCurrentIndex(index === media.length - 1 ? 0 : index + 1);
   };
 
   const getAdjacentIndex = (offset: number) => {
-    const newIndex = currentIndex + offset;
+    const newIndex = index + offset;
     if (newIndex < 0) return media.length + newIndex;
     if (newIndex >= media.length) return newIndex - media.length;
     return newIndex;
@@ -42,15 +48,7 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
           </div>
         );
       }
-      return (
-        <iframe
-          src={item.url}
-          title={item.altText || 'YouTube video'}
-          className="w-full h-full"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      );
+      return <YouTubeFacade url={item.url} title={item.altText || t('media.youtubeVideo')} />;
     }
 
     if (item.type === MediaType.VIDEO) {
@@ -70,7 +68,7 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
           controls
           className="w-full h-full object-contain"
         >
-          Your browser does not support the video tag.
+          {t('media.videoUnsupported')}
         </video>
       );
     }
@@ -103,7 +101,7 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
               left: '50%',
               transform: 'translateX(-105%) scale(0.8)',
             }}
-            aria-label="Previous"
+            aria-label={t('common.previous')}
           >
             <div className="w-full bg-dark-800 rounded-xl overflow-hidden" style={{ aspectRatio: '4/5' }}>
               {renderMedia(media[prevIndex], false)}
@@ -121,13 +119,13 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
           }}
         >
           <motion.div
-            key={currentIndex}
+            key={index}
             initial={{ opacity: 0.5 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
             className="w-full h-full"
           >
-            {renderMedia(media[currentIndex], true)}
+            {renderMedia(media[index], true)}
           </motion.div>
         </div>
 
@@ -142,7 +140,7 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
               right: '50%',
               transform: 'translateX(105%) scale(0.8)',
             }}
-            aria-label="Next"
+            aria-label={t('common.next')}
           >
             <div className="w-full bg-dark-800 rounded-xl overflow-hidden" style={{ aspectRatio: '4/5' }}>
               {renderMedia(media[nextIndex], false)}
@@ -154,16 +152,16 @@ export default function MediaCarousel({ media, className = '' }: MediaCarouselPr
       {/* Dots indicator - only show if multiple items */}
       {hasMultiple && (
         <div className="flex justify-center gap-2 mt-4">
-          {media.map((_, index) => (
+          {media.map((_, dotIndex) => (
             <button
-              key={index}
-              onClick={() => setCurrentIndex(index)}
+              key={dotIndex}
+              onClick={() => setCurrentIndex(dotIndex)}
               className={`h-2 rounded-full transition-all ${
-                index === currentIndex
+                dotIndex === index
                   ? 'bg-primary-500 w-6'
                   : 'bg-dark-600 w-2 hover:bg-dark-500'
               }`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={t('media.goToSlide', { n: dotIndex + 1 })}
             />
           ))}
         </div>

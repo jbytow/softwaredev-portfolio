@@ -321,5 +321,12 @@
     "backHome": "Wróć na stronę główną",
     "message": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
     "title": "Nie znaleziono strony"
+  },
+  "media": {
+    "closeImage": "Zamknij",
+    "goToSlide": "Przejdź do slajdu {{n}}",
+    "playVideo": "Odtwórz film",
+    "videoUnsupported": "Twoja przeglądarka nie obsługuje odtwarzania wideo.",
+    "youtubeVideo": "Film w serwisie YouTube"
   }
 }

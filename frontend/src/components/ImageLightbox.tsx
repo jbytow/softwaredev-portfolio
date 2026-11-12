@@ -1,5 +1,6 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 
 interface ImageLightboxProps {
@@ -10,21 +11,35 @@ interface ImageLightboxProps {
 }
 
 export default function ImageLightbox({ src, alt, isOpen, onClose }: ImageLightboxProps) {
-  // Close on escape key
+  const { t } = useTranslation();
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Own effect keyed on isOpen only: an inline onClose from the parent must not re-capture the opener
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
+    if (!isOpen) return;
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    closeButtonRef.current?.focus();
+    return () => opener?.focus();
+  }, [isOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
+      } else if (e.key === 'Tab') {
+        // The close button is the only focusable element, so focus stays on it
+        e.preventDefault();
+        closeButtonRef.current?.focus();
       }
     };
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'unset';
     };
   }, [isOpen, onClose]);
@@ -36,13 +51,17 @@ export default function ImageLightbox({ src, alt, isOpen, onClose }: ImageLightb
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
           onClick={onClose}
         >
           <button
+            ref={closeButtonRef}
             onClick={onClose}
             className="absolute top-4 right-4 p-2 text-white/70 hover:text-white transition-colors"
-            aria-label="Close"
+            aria-label={t('media.closeImage')}
           >
             <X className="w-8 h-8" />
           </button>

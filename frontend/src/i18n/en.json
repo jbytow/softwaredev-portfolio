@@ -321,5 +321,12 @@
     "backHome": "Back to the home page",
     "message": "The page you are looking for does not exist or has been moved.",
     "title": "Page not found"
+  },
+  "media": {
+    "closeImage": "Close",
+    "goToSlide": "Go to slide {{n}}",
+    "playVideo": "Play video",
+    "videoUnsupported": "Your browser does not support video playback.",
+    "youtubeVideo": "YouTube video"
   }
 }
