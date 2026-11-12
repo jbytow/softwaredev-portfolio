@@ -1,55 +1,79 @@
-import { generateHTML } from '@tiptap/html';
-import StarterKit from '@tiptap/starter-kit';
-import Underline from '@tiptap/extension-underline';
-import Link from '@tiptap/extension-link';
-import TextAlign from '@tiptap/extension-text-align';
+// The core generateHTML serialises with the browser DOM; @tiptap/html's zeed-dom serializer
+// silently drops style attributes, which removed every text alignment from public posts.
+import { generateHTML } from '@tiptap/react';
 import { useMemo } from 'react';
+import { richTextExtensions } from '@/lib/richTextExtensions';
 
 interface RichTextContentProps {
   content: Record<string, unknown>;
   className?: string;
 }
 
+type RenderedContent = { html: string } | { paragraphs: string[] };
+
+function childrenOf(node: unknown): unknown[] {
+  const content = (node as { content?: unknown } | null)?.content;
+  return Array.isArray(content) ? content : [];
+}
+
+function textOf(node: unknown): string | undefined {
+  const text = (node as { text?: unknown } | null)?.text;
+  return typeof text === 'string' ? text : undefined;
+}
+
+function inlineText(node: unknown): string {
+  return textOf(node) ?? childrenOf(node).map(inlineText).join('');
+}
+
+// Every node that directly holds text becomes one paragraph, so a document the schema
+// rejects still shows its words in reading order.
+function textParagraphs(node: unknown): string[] {
+  const children = childrenOf(node);
+  if (children.some((child) => textOf(child) !== undefined)) {
+    return [children.map(inlineText).join('')];
+  }
+  return children.flatMap(textParagraphs);
+}
+
+function renderContent(content: Record<string, unknown>): RenderedContent {
+  try {
+    return { html: generateHTML(content, richTextExtensions) };
+  } catch (error) {
+    // Schema drift must stay visible to the owner without hiding the post body from visitors
+    console.error('RichTextContent: falling back to plain text', error);
+    return { paragraphs: textParagraphs(content).filter((text) => text.trim() !== '') };
+  }
+}
+
 export default function RichTextContent({ content, className = '' }: RichTextContentProps) {
-  const html = useMemo(() => {
-    if (!content || Object.keys(content).length === 0) {
-      return '';
-    }
+  const rendered = useMemo(
+    () => (!content || Object.keys(content).length === 0 ? null : renderContent(content)),
+    [content]
+  );
 
-    try {
-      return generateHTML(content, [
-        StarterKit.configure({
-          heading: {
-            levels: [1, 2, 3],
-          },
-        }),
-        Underline,
-        Link.configure({
-          openOnClick: true,
-          HTMLAttributes: {
-            class: 'text-primary-400 underline hover:text-primary-300',
-            target: '_blank',
-            rel: 'noopener noreferrer',
-          },
-        }),
-        TextAlign.configure({
-          types: ['heading', 'paragraph'],
-        }),
-      ]);
-    } catch {
-      // Failed to render content
-      return '';
-    }
-  }, [content]);
+  const classes = `prose prose-invert prose-lg max-w-none ${className}`;
 
-  if (!html) {
+  if (!rendered) {
     return null;
   }
 
-  return (
-    <div
-      className={`prose prose-invert prose-lg max-w-none ${className}`}
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
-  );
+  if ('paragraphs' in rendered) {
+    if (rendered.paragraphs.length === 0) {
+      return null;
+    }
+    return (
+      <div className={classes}>
+        {rendered.paragraphs.map((text, index) => (
+          <p key={index}>{text}</p>
+        ))}
+      </div>
+    );
+  }
+
+  if (!rendered.html) {
+    return null;
+  }
+
+  // generateHTML serialises through the ProseMirror schema (text is escaped, Link strips unsafe hrefs)
+  return <div className={classes} dangerouslySetInnerHTML={{ __html: rendered.html }} />;
 }
