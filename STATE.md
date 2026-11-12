@@ -17,6 +17,7 @@ Artefakty sesji audytu (dziennik paczek, briefy, raporty, recenzje) leżą poza 
 - 77 commitów + 17 merge; `git log eca0ec8..HEAD` bez atrybucji AI.
 
 ## W toku
+- Właściciel zaakceptował rekomendacje 1-8 (2026-11-12): w toku paczka porządkowa (uwagi minor audytu: Post.hasCaseStudy, queryKeys, log bez e-maila, isAdmin(null), LocaleUtilsTest, docs/api.md, placeholdery AdminSettings, Challenges 7-9 w README), potem testy, sprzątanie worktree, merge audit-2026-11 -> main i push. Wdrożenie na prod NIE zlecone.
 - Smoke compose (dev compose, świeża baza, projekt `sdpa-smoke`) przeszedł: health 200, 401 bez Location, 404 JSON, Flyway V1-V8; stack tylko zatrzymany, do usunięcia `docker compose -p sdpa-smoke -f docker-compose.yml down -v`.
 - Audyt regresji zakończony: 0 critical/important, 55/56 zrobione, pkt 52 częściowo (brak `LocaleUtilsTest`), 14 uwag minor (m.in. martwe `Post.hasCaseStudy()`, nieużywane klucze w `queryKeys.ts`, e-mail odrzuconego konta w logu, `isAdmin(null)` NPE, limit 255 na `rpgClassTitle`).
 
