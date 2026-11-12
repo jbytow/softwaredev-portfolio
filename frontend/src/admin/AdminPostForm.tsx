@@ -78,8 +78,8 @@ export default function AdminPostForm() {
       const post = postData.data;
       setFormData({
         category: post.category,
-        titleEn: post.titleEn,
-        titlePl: post.titlePl,
+        titleEn: post.titleEn || '',
+        titlePl: post.titlePl || '',
         slug: post.slug,
         excerptEn: post.excerptEn || '',
         excerptPl: post.excerptPl || '',
