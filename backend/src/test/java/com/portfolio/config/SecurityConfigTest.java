@@ -15,7 +15,19 @@ import com.portfolio.service.RpgStatService;
 import com.portfolio.service.UserService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import jakarta.servlet.http.Cookie;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.LoggerFactory;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -31,9 +43,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -64,6 +79,9 @@ class SecurityConfigTest {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
 
     @Value("${app.jwt.secret}")
     private String jwtSecret;
@@ -202,6 +220,72 @@ class SecurityConfigTest {
 
             mockMvc.perform(get("/api/admin/rpg-stats").cookie(authCookie(token)))
                     .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("OAuth login outcome")
+    class OAuthLogin {
+
+        private final Logger configLogger = (Logger) LoggerFactory.getLogger(SecurityConfig.class);
+        private final ListAppender<ILoggingEvent> logEvents = new ListAppender<>();
+
+        @BeforeEach
+        void attachAppender() {
+            logEvents.start();
+            configLogger.addAppender(logEvents);
+        }
+
+        @AfterEach
+        void detachAppender() {
+            configLogger.detachAppender(logEvents);
+        }
+
+        @Test
+        @DisplayName("callback with an unknown state redirects to the SPA login page with oauth_failed")
+        void unknownStateRedirectsToSpaLogin() throws Exception {
+            mockMvc.perform(get("/login/oauth2/code/google")
+                            .param("code", "secret-auth-code")
+                            .param("state", "unknown"))
+                    .andExpect(status().isFound())
+                    .andExpect(header().string(HttpHeaders.LOCATION,
+                            "http://localhost:3000/admin/login?error=oauth_failed"));
+
+            assertThat(logEvents.list)
+                    .filteredOn(event -> event.getLevel() == Level.WARN)
+                    .singleElement()
+                    .satisfies(event -> assertThat(event.getFormattedMessage())
+                            .contains("OAuth2AuthenticationException")
+                            .doesNotContain("secret-auth-code"));
+        }
+
+        @Test
+        @DisplayName("callback after the user cancelled consent redirects to the SPA login page")
+        void cancelledConsentRedirectsToSpaLogin() throws Exception {
+            mockMvc.perform(get("/login/oauth2/code/google")
+                            .param("error", "access_denied")
+                            .param("state", "x"))
+                    .andExpect(status().isFound())
+                    .andExpect(header().string(HttpHeaders.LOCATION,
+                            "http://localhost:3000/admin/login?error=oauth_failed"));
+        }
+
+        @Test
+        @DisplayName("the wired success handler rejects an allowlisted but unverified Google e-mail")
+        void unverifiedEmailRedirectsToNotAuthorized() throws Exception {
+            Map<String, Object> attributes = Map.of("sub", "google-sub-1", "email", ADMIN_EMAIL,
+                    "name", "Admin", "email_verified", false);
+            DefaultOAuth2User user = new DefaultOAuth2User(
+                    List.of(new OAuth2UserAuthority(attributes)), attributes, "email");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            oAuth2SuccessHandler.onAuthenticationSuccess(new MockHttpServletRequest(), response,
+                    new OAuth2AuthenticationToken(user, user.getAuthorities(), "google"));
+
+            assertThat(response.getRedirectedUrl())
+                    .isEqualTo("http://localhost:3000/admin/login?error=not_authorized");
+            assertThat(response.getHeaders(HttpHeaders.SET_COOKIE)).isEmpty();
+            verifyNoInteractions(userRepository);
         }
     }
 

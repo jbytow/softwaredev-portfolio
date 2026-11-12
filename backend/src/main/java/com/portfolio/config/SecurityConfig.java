@@ -3,6 +3,7 @@ package com.portfolio.config;
 import com.portfolio.security.JwtAuthenticationFilter;
 import com.portfolio.security.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
     private final OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
@@ -33,6 +35,9 @@ public class SecurityConfig {
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -69,7 +74,12 @@ public class SecurityConfig {
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                                 new AntPathRequestMatcher("/api/**")))
                 .oauth2Login(oauth2 -> oauth2
-                        .successHandler(oAuth2SuccessHandler))
+                        .successHandler(oAuth2SuccessHandler)
+                        // Spring's default /login?error is not a route of the SPA
+                        .failureHandler((request, response, exception) -> {
+                            log.warn("OAuth login failed: {}", exception.getClass().getSimpleName());
+                            response.sendRedirect(frontendUrl + "/admin/login?error=oauth_failed");
+                        }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
