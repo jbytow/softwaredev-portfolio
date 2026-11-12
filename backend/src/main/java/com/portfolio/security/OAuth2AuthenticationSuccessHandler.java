@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -46,18 +47,19 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
 
-        User user = userService.processOAuthUser(
+        Optional<User> admin = userService.processOAuthUser(
                 email,
                 oAuth2User.getAttribute("name"),
                 oAuth2User.getAttribute("picture"),
                 provider,
                 oAuth2User.getAttribute("sub"));
 
-        if (!user.getIsAdmin()) {
+        if (admin.isEmpty()) {
             log.warn("Rejected admin login: {}", email);
             response.sendRedirect(frontendUrl + "/admin/login?error=not_authorized");
             return;
         }
+        User user = admin.get();
 
         // Generate JWT token
         String jwt = jwtService.generateToken(user.getEmail(), user.getName(), user.getIsAdmin());

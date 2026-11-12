@@ -296,6 +296,24 @@ class SecurityConfigTest {
             assertThat(response.getHeaders(HttpHeaders.SET_COOKIE)).isEmpty();
             verifyNoInteractions(userRepository);
         }
+
+        @Test
+        @DisplayName("the wired success handler rejects a verified e-mail outside the allowlist without storing it")
+        void nonAllowlistedEmailIsNotStored() throws Exception {
+            Map<String, Object> attributes = Map.of("sub", "google-sub-2", "email", "stranger@example.com",
+                    "name", "Stranger", "email_verified", true);
+            DefaultOAuth2User user = new DefaultOAuth2User(
+                    List.of(new OAuth2UserAuthority(attributes)), attributes, "email");
+            MockHttpServletResponse response = new MockHttpServletResponse();
+
+            oAuth2SuccessHandler.onAuthenticationSuccess(new MockHttpServletRequest(), response,
+                    new OAuth2AuthenticationToken(user, user.getAuthorities(), "google"));
+
+            assertThat(response.getRedirectedUrl())
+                    .isEqualTo("http://localhost:3000/admin/login?error=not_authorized");
+            assertThat(response.getHeaders(HttpHeaders.SET_COOKIE)).isEmpty();
+            verifyNoInteractions(userRepository);
+        }
     }
 
     @Nested

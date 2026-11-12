@@ -27,6 +27,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -87,7 +88,9 @@ class OAuth2AuthenticationSuccessHandlerTest {
 
     private void givenProcessedUser(String email, boolean isAdmin) {
         given(userService.processOAuthUser(any(), any(), any(), any(), any()))
-                .willReturn(User.builder().email(email).name("Some Name").isAdmin(isAdmin).build());
+                .willReturn(isAdmin
+                        ? Optional.of(User.builder().email(email).name("Some Name").isAdmin(true).build())
+                        : Optional.empty());
     }
 
     private List<ILoggingEvent> events(Level level) {
