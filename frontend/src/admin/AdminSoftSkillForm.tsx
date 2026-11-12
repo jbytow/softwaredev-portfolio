@@ -70,7 +70,6 @@ export default function AdminSoftSkillForm() {
     onSuccess: () => {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success(t('admin.softSkills.created'));
       navigate('/admin/soft-skills');
@@ -86,7 +85,6 @@ export default function AdminSoftSkillForm() {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkill(id!) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success(t('admin.softSkills.updated'));
       navigate('/admin/soft-skills');

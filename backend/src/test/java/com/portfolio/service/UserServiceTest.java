@@ -49,6 +49,12 @@ class UserServiceTest {
         }
 
         @Test
+        @DisplayName("rejects a missing e-mail instead of failing")
+        void rejectsNullEmail() {
+            assertThat(userService.isAdmin(null)).isFalse();
+        }
+
+        @Test
         @DisplayName("rejects an e-mail that is not on the allowlist")
         void rejectsUnknownEmail() {
             assertThat(userService.isAdmin("someone@test.com")).isFalse();

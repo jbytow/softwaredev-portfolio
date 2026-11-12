@@ -147,10 +147,4 @@ public class Post {
     public String getCaseStudyTestimonial(String locale) {
         return "pl".equalsIgnoreCase(locale) ? caseStudyTestimonialPl : caseStudyTestimonialEn;
     }
-
-    public boolean hasCaseStudy() {
-        return (caseStudyChallengeEn != null && !caseStudyChallengeEn.isBlank()) ||
-               (caseStudySolutionEn != null && !caseStudySolutionEn.isBlank()) ||
-               (caseStudyResultsEn != null && !caseStudyResultsEn.isBlank());
-    }
 }

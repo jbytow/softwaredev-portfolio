@@ -49,7 +49,6 @@ export default function AdminSkillCategoryForm() {
     onSuccess: () => {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success(t('admin.skillCategories.created'));
       navigate('/admin/skill-categories');
@@ -65,7 +64,6 @@ export default function AdminSkillCategoryForm() {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategory(id!) });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success(t('admin.skillCategories.updated'));
       navigate('/admin/skill-categories');

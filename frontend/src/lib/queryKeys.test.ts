@@ -12,14 +12,11 @@ describe('queryKeys.prefix', () => {
       [queryKeys.posts('pl', 'featured'), queryKeys.prefix.posts()],
       [queryKeys.postsByHashtag('pl', 'java'), queryKeys.prefix.posts()],
       [queryKeys.post('en', 'slug'), queryKeys.prefix.post()],
-      [queryKeys.softSkills('en'), queryKeys.prefix.softSkills()],
-      [queryKeys.skillCategories('en'), queryKeys.prefix.skillCategories()],
       [queryKeys.skillCategoriesWithSkills('en'), queryKeys.prefix.skills()],
       [queryKeys.experiences('en'), queryKeys.prefix.experiences()],
       [queryKeys.interests('en'), queryKeys.prefix.interests()],
       [queryKeys.achievements('en'), queryKeys.prefix.achievements()],
       [queryKeys.rpgStats('en'), queryKeys.prefix.rpgStats()],
-      [queryKeys.hashtags(), queryKeys.prefix.hashtags()],
     ];
     for (const [key, prefix] of pairs) {
       expect(startsWith(key, prefix)).toBe(true);

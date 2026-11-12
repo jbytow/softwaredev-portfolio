@@ -8,28 +8,22 @@ export const queryKeys = {
   postsByHashtag: (lang: string, hashtag: string) =>
     ['posts', lang, 'hashtag', hashtag] as const,
   post: (lang: string, slug: string) => ['post', lang, slug] as const,
-  softSkills: (lang: string) => ['softSkills', lang] as const,
-  skillCategories: (lang: string) => ['skillCategories', lang] as const,
   skillCategoriesWithSkills: (lang: string) => ['skillCategoriesWithSkills', lang] as const,
   experiences: (lang: string) => ['experiences', lang] as const,
   interests: (lang: string) => ['interests', lang] as const,
   achievements: (lang: string) => ['achievements', lang] as const,
   rpgStats: (lang: string) => ['rpgStats', lang] as const,
-  hashtags: () => ['hashtags'] as const,
 
   // Language-agnostic prefixes, for invalidation only: public queries are keyed per language
   prefix: {
     settings: () => ['settings'] as const,
     posts: () => ['posts'] as const,
     post: () => ['post'] as const,
-    softSkills: () => ['softSkills'] as const,
-    skillCategories: () => ['skillCategories'] as const,
     skills: () => ['skillCategoriesWithSkills'] as const,
     experiences: () => ['experiences'] as const,
     interests: () => ['interests'] as const,
     achievements: () => ['achievements'] as const,
     rpgStats: () => ['rpgStats'] as const,
-    hashtags: () => ['hashtags'] as const,
   },
 
   // Admin queries (language-independent, manages all languages)

@@ -24,7 +24,6 @@ export default function AdminSoftSkills() {
     mutationFn: (id: string) => adminSoftSkillsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success(t('admin.softSkills.deleted'));
       setDeleteId(null);

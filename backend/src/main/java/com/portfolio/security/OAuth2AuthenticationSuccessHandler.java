@@ -42,7 +42,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         // The allowlist matches on the e-mail string, which Google may return unverified
         if (!Boolean.TRUE.equals(oAuth2User.getAttribute("email_verified"))) {
-            log.warn("Rejected admin login (unverified e-mail): {}", email);
+            log.warn("Rejected admin login: e-mail not verified");
             response.sendRedirect(frontendUrl + "/admin/login?error=not_authorized");
             return;
         }
@@ -55,7 +55,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 oAuth2User.getAttribute("sub"));
 
         if (admin.isEmpty()) {
-            log.warn("Rejected admin login: {}", email);
+            log.warn("Rejected admin login: account not on the admin allowlist");
             response.sendRedirect(frontendUrl + "/admin/login?error=not_authorized");
             return;
         }

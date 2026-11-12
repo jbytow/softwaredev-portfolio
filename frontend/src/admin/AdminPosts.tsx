@@ -40,7 +40,6 @@ export default function AdminPosts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       setDeleteTarget(null);
       toast.success(t('admin.posts.deleted'));
     },
@@ -55,7 +54,6 @@ export default function AdminPosts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success(t('admin.posts.statusUpdated'));
     },
     onError: (error) => {

@@ -31,7 +31,7 @@ public class UserService {
     }
 
     public boolean isAdmin(String email) {
-        return getAdminEmails().contains(email.toLowerCase());
+        return email != null && getAdminEmails().contains(email.toLowerCase());
     }
 
     /**

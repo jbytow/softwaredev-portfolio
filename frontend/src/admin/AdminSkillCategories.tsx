@@ -24,10 +24,8 @@ export default function AdminSkillCategories() {
     mutationFn: (id: string) => adminSkillCategoriesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       toast.success(t('admin.skillCategories.deleted'));
       setDeleteId(null);
     },

@@ -132,7 +132,6 @@ export default function AdminPostForm() {
       setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success(t('admin.posts.created'));
       navigate('/admin/posts');
     },
@@ -149,7 +148,6 @@ export default function AdminPostForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.post(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
-      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success(t('admin.posts.updated'));
       navigate('/admin/posts');
     },

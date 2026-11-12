@@ -110,7 +110,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
             assertThat(response.getHeaders(HttpHeaders.SET_COOKIE)).isEmpty();
             verify(userService, never()).processOAuthUser(any(), any(), any(), any(), any());
             assertThat(events(Level.WARN)).singleElement()
-                    .satisfies(event -> assertThat(event.getFormattedMessage()).contains("admin@test.com"));
+                    .satisfies(event -> assertThat(event.getFormattedMessage())
+                            .contains("not verified").doesNotContain("admin@test.com"));
         }
 
         @Test
@@ -195,7 +196,8 @@ class OAuth2AuthenticationSuccessHandlerTest {
             assertThat(response.getRedirectedUrl()).isEqualTo(NOT_AUTHORIZED);
             assertThat(response.getHeaders(HttpHeaders.SET_COOKIE)).isEmpty();
             assertThat(events(Level.WARN)).singleElement()
-                    .satisfies(event -> assertThat(event.getFormattedMessage()).contains("someone@test.com"));
+                    .satisfies(event -> assertThat(event.getFormattedMessage())
+                            .contains("allowlist").doesNotContain("someone@test.com"));
         }
     }
 }
