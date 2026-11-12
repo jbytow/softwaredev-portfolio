@@ -14,7 +14,6 @@
     "published": "Published",
     "draft": "Draft",
     "actions": "Actions",
-    "confirm": "Confirm",
     "back": "Back",
     "backTo": "Back to",
     "next": "Next",
@@ -273,8 +272,11 @@
       "logout": "Logout",
       "loginWith": "Login with",
       "google": "Google",
-      "github": "GitHub",
-      "notAuthorized": "You are not authorized to access the admin panel"
+      "notAuthorized": "You are not authorized to access the admin panel",
+      "oauthFailed": "Google sign-in failed or was cancelled. Please try again."
+    },
+    "common": {
+      "confirmDelete": "Confirm Delete"
     }
   },
   "footer": {

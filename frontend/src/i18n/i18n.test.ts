@@ -43,7 +43,6 @@ const PENDING_CONSUMERS: string[] = [
   'about.rpg.con',
   'about.rpg.cha',
   'admin.auth.login',
-  'admin.auth.github',
 ];
 
 const sources = import.meta.glob<string>(['/src/**/*.{ts,tsx}', '!/src/**/*.test.{ts,tsx}'], {

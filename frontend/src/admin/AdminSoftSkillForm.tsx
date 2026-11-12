@@ -8,6 +8,7 @@ import { adminSoftSkillsApi, adminSkillCategoriesApi } from '@/services/api';
 import { SoftSkillCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSoftSkillForm() {
   const { id } = useParams<{ id: string }>();
@@ -66,8 +67,8 @@ export default function AdminSoftSkillForm() {
       toast.success('Soft skill created successfully');
       navigate('/admin/soft-skills');
     },
-    onError: () => {
-      toast.error('Failed to create soft skill');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create soft skill'));
     },
   });
 
@@ -80,8 +81,8 @@ export default function AdminSoftSkillForm() {
       toast.success('Soft skill updated successfully');
       navigate('/admin/soft-skills');
     },
-    onError: () => {
-      toast.error('Failed to update soft skill');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update soft skill'));
     },
   });
 

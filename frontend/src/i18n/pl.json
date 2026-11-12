@@ -14,7 +14,6 @@
     "published": "Opublikowane",
     "draft": "Szkic",
     "actions": "Akcje",
-    "confirm": "Potwierdź",
     "back": "Wstecz",
     "backTo": "Powrót do",
     "next": "Dalej",
@@ -273,8 +272,11 @@
       "logout": "Wyloguj się",
       "loginWith": "Zaloguj przez",
       "google": "Google",
-      "github": "GitHub",
-      "notAuthorized": "Nie masz uprawnień do panelu administracyjnego"
+      "notAuthorized": "Nie masz uprawnień do panelu administracyjnego",
+      "oauthFailed": "Logowanie przez Google nie powiodło się lub zostało przerwane. Spróbuj ponownie."
+    },
+    "common": {
+      "confirmDelete": "Potwierdź usunięcie"
     }
   },
   "footer": {

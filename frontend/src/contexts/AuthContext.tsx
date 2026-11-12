@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (provider: 'google' | 'github') => void;
+  login: () => void;
   logout: () => Promise<void>;
   checkAuth: () => Promise<void>;
 }
@@ -40,8 +40,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = (provider: 'google' | 'github') => {
-    window.location.href = `/oauth2/authorization/${provider}`;
+  // Google is the only registered OAuth2 client; admin rights come from ADMIN_EMAILS on the backend
+  const login = () => {
+    window.location.href = '/oauth2/authorization/google';
   };
 
   const logout = async () => {

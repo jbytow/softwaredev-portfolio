@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import { adminMediaApi } from '@/services/api';
 import { Media, MediaType } from '@/types';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 interface MediaManagerProps {
   postId: string;
@@ -120,8 +121,8 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         toast.success('Media uploaded');
       }
     },
-    onError: () => {
-      toast.error('Failed to upload media');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to upload media'));
     },
   });
 
@@ -134,8 +135,8 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         toast.success('YouTube video added');
       }
     },
-    onError: () => {
-      toast.error('Failed to add YouTube video');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to add YouTube video'));
     },
   });
 
@@ -145,16 +146,16 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       onMediaChange(media.filter((m) => m.id !== deletedId));
       toast.success('Media deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete media');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete media'));
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminMediaApi.reorder(postId, items),
-    onError: () => {
-      toast.error('Failed to save order');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to save order'));
     },
   });
 

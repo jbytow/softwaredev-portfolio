@@ -8,6 +8,7 @@ import { adminAchievementsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { AchievementCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminAchievementForm() {
   const { t } = useTranslation();
@@ -52,8 +53,8 @@ export default function AdminAchievementForm() {
       toast.success('Achievement created');
       navigate('/admin/achievements');
     },
-    onError: () => {
-      toast.error('Failed to create achievement');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create achievement'));
     },
   });
 
@@ -64,8 +65,8 @@ export default function AdminAchievementForm() {
       toast.success('Achievement updated');
       navigate('/admin/achievements');
     },
-    onError: () => {
-      toast.error('Failed to update achievement');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update achievement'));
     },
   });
 

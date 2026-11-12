@@ -8,6 +8,7 @@ import { adminExperiencesApi } from '@/services/api';
 import { ExperienceCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminExperienceForm() {
   const { id } = useParams<{ id: string }>();
@@ -62,8 +63,8 @@ export default function AdminExperienceForm() {
       toast.success('Experience created successfully');
       navigate('/admin/experiences');
     },
-    onError: () => {
-      toast.error('Failed to create experience');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create experience'));
     },
   });
 
@@ -76,8 +77,8 @@ export default function AdminExperienceForm() {
       toast.success('Experience updated successfully');
       navigate('/admin/experiences');
     },
-    onError: () => {
-      toast.error('Failed to update experience');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update experience'));
     },
   });
 

@@ -10,6 +10,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import MediaManager from '@/admin/components/MediaManager';
 import RichTextEditor from '@/components/RichTextEditor';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminPostForm() {
   const { id } = useParams<{ id: string }>();
@@ -97,8 +98,8 @@ export default function AdminPostForm() {
       toast.success('Post created successfully');
       navigate('/admin/posts');
     },
-    onError: () => {
-      toast.error('Failed to create post');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create post'));
     },
   });
 
@@ -113,8 +114,8 @@ export default function AdminPostForm() {
       toast.success('Post updated successfully');
       navigate('/admin/posts');
     },
-    onError: () => {
-      toast.error('Failed to update post');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update post'));
     },
   });
 
