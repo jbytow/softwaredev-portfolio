@@ -1,12 +1,11 @@
+# Same schema path as production: Flyway builds it, Hibernate only validates.
+# @WebMvcTest slices load no DataSource, so this affects only the Testcontainers tests.
 spring:
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
+      ddl-auto: validate
   flyway:
-    enabled: false
+    enabled: true
   main:
     allow-bean-definition-overriding: true
 
