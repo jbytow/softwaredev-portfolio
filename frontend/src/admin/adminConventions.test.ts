@@ -24,6 +24,38 @@ describe('admin panel conventions', () => {
   });
 
   it('confirms deletes through ConfirmDeleteModal, not native confirm()', () => {
-    expect(linesMatching(/(?<![\w.])(window\.)?confirm\(/)).toEqual([]);
+    // AdminLayout asks before leaving a dirty form (not a delete), with the same prompt as useUnsavedChanges
+    const offenders = linesMatching(/(?<![\w.])(window\.)?confirm\(/).filter((entry) => !entry.includes('AdminLayout.tsx'));
+    expect(offenders).toEqual([]);
+  });
+
+  it('invalidates through queryKeys, not hand-written key arrays', () => {
+    expect(linesMatching(/invalidateQueries\(\{ queryKey: \[/)).toEqual([]);
+  });
+
+  it('refreshes the public pages (queryKeys.prefix) wherever an admin mutation invalidates admin data', () => {
+    const offenders = Object.entries(sources)
+      .filter(([file, code]) => /invalidateQueries\(\{ queryKey: queryKeys\.admin\./.test(code) && !file.endsWith('AdminMedia.tsx'))
+      .filter(([, code]) => !/queryKeys\.prefix\./.test(code))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
+
+  it('invalidates the cache in every file that mutates', () => {
+    const offenders = Object.entries(sources)
+      .filter(([, code]) => /useMutation\(/.test(code) && !/invalidate/i.test(code))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
+
+  it('invalidates the detail key a form reads, so reopening an edit page does not show stale data', () => {
+    const offenders = Object.entries(sources).flatMap(([file, code]) => {
+      if (!/useMutation\(/.test(code)) return [];
+      const read = [...code.matchAll(/queryKey: queryKeys\.admin\.(\w+)\(id!\)/g)].map((m) => m[1]);
+      return [...new Set(read)]
+        .filter((key) => !code.includes(`invalidateQueries({ queryKey: queryKeys.admin.${key}(`))
+        .map((key) => file + ' ' + key);
+    });
+    expect(offenders).toEqual([]);
   });
 });

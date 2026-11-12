@@ -38,6 +38,7 @@ function renderForm(path: string) {
       </MemoryRouter>
     </QueryClientProvider>
   );
+  return client;
 }
 
 const slugInput = () => document.querySelector('input[name="slug"]') as HTMLInputElement;
@@ -109,6 +110,22 @@ describe('AdminPostForm', () => {
       renderForm('/admin/posts/p1/edit');
       await waitFor(() => expect(slugInput().value).toBe('stored-slug'));
       expect(screen.queryByText(badge())).toBeNull();
+    });
+  });
+
+  describe('refetch while editing', () => {
+    it('keeps unsaved edits when the post is refetched', async () => {
+      api.getById.mockResolvedValue({ success: true, data: post() });
+      const client = renderForm('/admin/posts/p1/edit');
+      const titleEn = () => document.querySelector('input[name="titleEn"]') as HTMLInputElement;
+      await waitFor(() => expect(titleEn().value).toBe('Title'));
+      fireEvent.change(titleEn(), { target: { value: 'Edited' } });
+      api.getById.mockResolvedValue({ success: true, data: post({ titleEn: 'Changed on server' }) });
+
+      await client.invalidateQueries();
+      await waitFor(() => expect(api.getById).toHaveBeenCalledTimes(2));
+
+      expect(titleEn().value).toBe('Edited');
     });
   });
 });

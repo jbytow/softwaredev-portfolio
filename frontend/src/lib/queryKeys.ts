@@ -17,12 +17,31 @@ export const queryKeys = {
   rpgStats: (lang: string) => ['rpgStats', lang] as const,
   hashtags: () => ['hashtags'] as const,
 
+  // Language-agnostic prefixes, for invalidation only: public queries are keyed per language
+  prefix: {
+    settings: () => ['settings'] as const,
+    posts: () => ['posts'] as const,
+    post: () => ['post'] as const,
+    softSkills: () => ['softSkills'] as const,
+    skillCategories: () => ['skillCategories'] as const,
+    skills: () => ['skillCategoriesWithSkills'] as const,
+    experiences: () => ['experiences'] as const,
+    interests: () => ['interests'] as const,
+    achievements: () => ['achievements'] as const,
+    rpgStats: () => ['rpgStats'] as const,
+    hashtags: () => ['hashtags'] as const,
+  },
+
   // Admin queries (language-independent, manages all languages)
   admin: {
     posts: (category?: Category) => ['admin', 'posts', category] as const,
+    // A key with an undefined category would not prefix-match category-filtered lists
+    postsAll: () => ['admin', 'posts'] as const,
     post: (id: string) => ['admin', 'post', id] as const,
+    postAll: () => ['admin', 'post'] as const,
     settings: () => ['admin', 'settings'] as const,
-    media: () => ['admin', 'media'] as const,
+    media: (page: number, size: number) => ['admin', 'media', page, size] as const,
+    mediaAll: () => ['admin', 'media'] as const,
     softSkills: () => ['admin', 'softSkills'] as const,
     softSkill: (id: string) => ['admin', 'softSkill', id] as const,
     skillCategories: () => ['admin', 'skillCategories'] as const,

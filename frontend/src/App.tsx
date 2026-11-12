@@ -27,6 +27,7 @@ const AdminLogin = page(() => import('./admin/AdminLogin'));
 const AdminDashboard = page(() => import('./admin/AdminDashboard'));
 const AdminPosts = page(() => import('./admin/AdminPosts'));
 const AdminPostForm = page(() => import('./admin/AdminPostForm'));
+const AdminPostPreview = page(() => import('./admin/AdminPostPreview'));
 const AdminSoftSkills = page(() => import('./admin/AdminSoftSkills'));
 const AdminSoftSkillForm = page(() => import('./admin/AdminSoftSkillForm'));
 const AdminSkillCategories = page(() => import('./admin/AdminSkillCategories'));
@@ -74,6 +75,7 @@ function App() {
             <Route path="posts" element={<AdminPosts />} />
             <Route path="posts/new" element={<AdminPostForm />} />
             <Route path="posts/:id/edit" element={<AdminPostForm />} />
+            <Route path="posts/:id/preview" element={<AdminPostPreview />} />
             <Route path="experiences" element={<AdminExperiences />} />
             <Route path="experiences/new" element={<AdminExperienceForm />} />
             <Route path="experiences/:id/edit" element={<AdminExperienceForm />} />

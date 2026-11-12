@@ -293,6 +293,22 @@
       "footer": "Footer Section",
       "seo": "SEO Settings"
     },
+    "preview": {
+      "button": "Preview",
+      "draftBanner": "Draft preview: visitors cannot see this page until it is published.",
+      "publishedBanner": "Preview of the published page.",
+      "backToEditor": "Back to the editor",
+      "language": "Previewed language"
+    },
+    "session": {
+      "expiredTitle": "Your session has expired",
+      "expiredBody": "Your changes are still on this page. Sign in again in a new tab, then come back, close this window and save.",
+      "openLogin": "Sign in in a new tab",
+      "close": "Close"
+    },
+    "unsaved": {
+      "confirmLeave": "You have unsaved changes. Leave without saving?"
+    },
     "auth": {
       "login": "Login",
       "logout": "Logout",

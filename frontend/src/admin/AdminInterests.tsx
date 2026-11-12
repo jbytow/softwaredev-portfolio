@@ -127,6 +127,7 @@ export default function AdminInterests() {
     mutationFn: (id: string) => adminInterestsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       setDeleteTarget(null);
       toast.success('Interest deleted');
     },
@@ -138,6 +139,9 @@ export default function AdminInterests() {
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminInterestsApi.reorder(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
+    },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to reorder'));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
@@ -149,6 +153,7 @@ export default function AdminInterests() {
     if (over && active.id !== over.id) {
       const oldIndex = interests.findIndex((i) => i.id === active.id);
       const newIndex = interests.findIndex((i) => i.id === over.id);
+      const previous = interests;
       const newItems = arrayMove(interests, oldIndex, newIndex);
       setInterests(newItems);
 
@@ -156,7 +161,7 @@ export default function AdminInterests() {
         id: item.id,
         displayOrder: index,
       }));
-      reorderMutation.mutate(reorderItems);
+      reorderMutation.mutate(reorderItems, { onError: () => setInterests(previous) });
     }
   };
 

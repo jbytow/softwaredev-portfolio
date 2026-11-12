@@ -7,6 +7,7 @@ import {
   Plus,
   Search,
   Edit,
+  ExternalLink,
   Trash2,
   Eye,
   EyeOff,
@@ -36,7 +37,10 @@ export default function AdminPosts() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminPostsApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       setDeleteTarget(null);
       toast.success('Post deleted successfully');
     },
@@ -48,7 +52,10 @@ export default function AdminPosts() {
   const togglePublishMutation = useMutation({
     mutationFn: (id: string) => adminPostsApi.togglePublish(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success('Post status updated');
     },
     onError: (error) => {
@@ -200,6 +207,16 @@ export default function AdminPosts() {
                             <Eye className="w-5 h-5" />
                           )}
                         </button>
+                        <Link
+                          to={`/admin/posts/${post.id}/preview`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={t('admin.preview.button')}
+                          title={t('admin.preview.button')}
+                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </Link>
                         <Link
                           to={`/admin/posts/${post.id}/edit`}
                           className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"

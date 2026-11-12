@@ -8,6 +8,8 @@ import { adminSkillCategoriesApi } from '@/services/api';
 import { SkillCategoryCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSkillCategoryForm() {
@@ -21,8 +23,10 @@ export default function AdminSkillCategoryForm() {
     nameEn: '',
     namePl: '',
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
-  const { data: categoryData, isLoading: categoryLoading } = useQuery({
+  const { data: categoryData, isLoading: categoryLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.skillCategory(id!),
     queryFn: () => adminSkillCategoriesApi.getById(id!),
     enabled: isEditing,
@@ -31,18 +35,22 @@ export default function AdminSkillCategoryForm() {
   useEffect(() => {
     if (categoryData?.data) {
       const category = categoryData.data;
-      setFormData({
+      const seeded: typeof formData = {
         nameEn: category.nameEn,
         namePl: category.namePl,
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [categoryData]);
 
   const createMutation = useMutation({
     mutationFn: (data: SkillCategoryCreateRequest) => adminSkillCategoriesApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
-      queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Category created successfully');
       navigate('/admin/skill-categories');
     },
@@ -54,9 +62,11 @@ export default function AdminSkillCategoryForm() {
   const updateMutation = useMutation({
     mutationFn: (data: SkillCategoryCreateRequest) => adminSkillCategoriesApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategory(id!) });
-      queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Category updated successfully');
       navigate('/admin/skill-categories');
     },
@@ -88,12 +98,16 @@ export default function AdminSkillCategoryForm() {
     return <LoadingSpinner />;
   }
 
+  if (loadFailed && !categoryData) {
+    return <LoadError onRetry={() => refetch()} />;
+  }
+
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => navigate('/admin/skill-categories')}
+          onClick={() => confirmLeave() && navigate('/admin/skill-categories')}
           className="p-2 text-dark-400 hover:text-dark-100 hover:bg-dark-700 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -138,7 +152,7 @@ export default function AdminSkillCategoryForm() {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/skill-categories')}
+            onClick={() => confirmLeave() && navigate('/admin/skill-categories')}
             className="btn-secondary"
           >
             {t('common.cancel')}

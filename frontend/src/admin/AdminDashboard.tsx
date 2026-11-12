@@ -17,7 +17,7 @@ export default function AdminDashboard() {
   });
 
   const { data: mediaData, isLoading: mediaLoading } = useQuery({
-    queryKey: queryKeys.admin.media(),
+    queryKey: queryKeys.admin.media(0, 1),
     queryFn: () => adminMediaApi.getAll(0, 1),
   });
 

@@ -7,6 +7,8 @@ import { adminSettingsApi } from '@/services/api';
 import { SiteSettingsUpdateRequest, StatItemInput } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSettings() {
@@ -38,8 +40,10 @@ export default function AdminSettings() {
     aboutTagsPl: [],
     statsItems: [],
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.settings(),
     queryFn: () => adminSettingsApi.get(),
   });
@@ -47,7 +51,7 @@ export default function AdminSettings() {
   useEffect(() => {
     if (data?.data) {
       const settings = data.data;
-      setFormData({
+      const seeded: typeof formData = {
         heroTitleEn: settings.heroTitleEn || '',
         heroTitlePl: settings.heroTitlePl || '',
         rpgClassTitleEn: settings.rpgClassTitleEn || '',
@@ -76,16 +80,19 @@ export default function AdminSettings() {
           labelEn: s.labelEn,
           labelPl: s.labelPl,
         })) || [],
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [data]);
 
   const updateMutation = useMutation({
     mutationFn: (data: SiteSettingsUpdateRequest) => adminSettingsApi.update(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.settings() });
       // Invalidate all public settings queries (matches all languages)
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.settings() });
       toast.success(t('admin.settings.title') + ' updated successfully');
     },
     onError: (error) => {
@@ -172,6 +179,10 @@ export default function AdminSettings() {
 
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !data) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   return (

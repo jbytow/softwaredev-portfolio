@@ -115,6 +115,7 @@ export default function AdminRpgStats() {
     mutationFn: (id: string) => adminRpgStatsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       setDeleteTarget(null);
       toast.success('RPG stat deleted');
     },
@@ -126,6 +127,9 @@ export default function AdminRpgStats() {
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminRpgStatsApi.reorder(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
+    },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to reorder'));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
@@ -137,6 +141,7 @@ export default function AdminRpgStats() {
     if (over && active.id !== over.id) {
       const oldIndex = stats.findIndex((i) => i.id === active.id);
       const newIndex = stats.findIndex((i) => i.id === over.id);
+      const previous = stats;
       const newItems = arrayMove(stats, oldIndex, newIndex);
       setStats(newItems);
 
@@ -144,7 +149,7 @@ export default function AdminRpgStats() {
         id: item.id,
         displayOrder: index,
       }));
-      reorderMutation.mutate(reorderItems);
+      reorderMutation.mutate(reorderItems, { onError: () => setStats(previous) });
     }
   };
 
