@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import type { Media } from '@/types';
+import { MediaType, type Media } from '@/types';
 import MediaManager from './MediaManager';
 
 const api = vi.hoisted(() => ({
@@ -16,7 +16,7 @@ vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() 
 const item: Media = {
   id: 'm1',
   postId: 'p1',
-  type: 'IMAGE',
+  type: MediaType.IMAGE,
   filename: 'a.png',
   originalName: 'a.png',
   mimeType: 'image/png',
@@ -47,7 +47,7 @@ function renderInsideForm(media: Media[] = [item]) {
 
 describe('MediaManager inside a form', () => {
   beforeEach(() => {
-    api.createYouTube.mockResolvedValue({ success: true, data: { ...item, id: 'yt', type: 'VIDEO' } });
+    api.createYouTube.mockResolvedValue({ success: true, data: { ...item, id: 'yt', type: MediaType.YOUTUBE } });
     api.delete.mockResolvedValue({ success: true });
   });
   afterEach(() => {

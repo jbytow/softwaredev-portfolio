@@ -190,7 +190,8 @@ export default function AdminPosts() {
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => togglePublishMutation.mutate(post.id)}
-                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+                          disabled={togglePublishMutation.isPending}
+                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50"
                           title={post.published ? 'Unpublish' : 'Publish'}
                         >
                           {post.published ? (
