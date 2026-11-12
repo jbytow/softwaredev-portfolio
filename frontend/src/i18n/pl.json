@@ -106,6 +106,10 @@
   "experience": {
     "title": "Doświadczenie",
     "title_nerd": "Dziennik questów",
+    "empty": "Nie ma jeszcze wpisów o doświadczeniu.",
+    "fatigueHover": "Liczy się wytrwałość.",
+    "fatiguePassed": "Test zmęczenia zaliczony. Wciąż czytasz.",
+    "monthsShort": "mies.",
     "subtitle": "Moja ścieżka zawodowa",
     "subtitle_nerd": "Ukończone kampanie i trwające rajdy",
     "present": "Obecnie",

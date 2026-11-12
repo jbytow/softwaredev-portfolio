@@ -106,6 +106,10 @@
   "experience": {
     "title": "Experience",
     "title_nerd": "Quest Log",
+    "empty": "No experience entries yet.",
+    "fatigueHover": "Endurance matters.",
+    "fatiguePassed": "Fatigue check passed. Still reading.",
+    "monthsShort": "mo.",
     "subtitle": "My professional journey",
     "subtitle_nerd": "Completed campaigns and ongoing raids",
     "present": "Present",
