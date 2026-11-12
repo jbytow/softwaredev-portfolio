@@ -29,8 +29,8 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -72,7 +72,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 ContactController.class
         },
         excludeAutoConfiguration = {
-                org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration.class
+                org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration.class
         }
 )
 @Import(TestSecurityConfig.class)
@@ -88,37 +88,37 @@ class JsonWireFormatTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private PostService postService;
 
-    @MockBean
+    @MockitoBean
     private ExperienceService experienceService;
 
-    @MockBean
+    @MockitoBean
     private InterestService interestService;
 
-    @MockBean
+    @MockitoBean
     private SkillCategoryService skillCategoryService;
 
-    @MockBean
+    @MockitoBean
     private SiteSettingsService siteSettingsService;
 
-    @MockBean
+    @MockitoBean
     private AchievementService achievementService;
 
-    @MockBean
+    @MockitoBean
     private RpgStatService rpgStatService;
 
-    @MockBean
+    @MockitoBean
     private MediaService mediaService;
 
-    @MockBean
+    @MockitoBean
     private ContactService contactService;
 
-    @MockBean
+    @MockitoBean
     private JwtService jwtService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     private void assertBody(RequestBuilder request, int expectedStatus, String expectedJson, JSONCompareMode mode)

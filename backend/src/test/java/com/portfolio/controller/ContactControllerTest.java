@@ -17,8 +17,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(
         controllers = ContactController.class,
         excludeAutoConfiguration = {
-                org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration.class
+                org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration.class
         }
 )
 @Import(TestSecurityConfig.class)
@@ -47,13 +47,13 @@ class ContactControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private ContactService contactService;
 
-    @MockBean
+    @MockitoBean
     private JwtService jwtService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     private static String body(String name, String email, String subject, String message) {
@@ -192,5 +192,36 @@ class ContactControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(contactService, never()).sendContactEmail(any());
+    }
+
+    // Jackson 3 fails on content after the first JSON value; Jackson 2 silently ignored it
+    @Nested
+    @DisplayName("trailing tokens after the JSON body")
+    class TrailingTokens {
+
+        @Test
+        @DisplayName("an invalid body followed by more JSON is unreadable (400 Invalid request), not a list of field errors")
+        void invalidBodyWithTrailingTokens() throws Exception {
+            mockMvc.perform(post("/api/contact")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body("Anna", "not-an-email", "Hello", "Nice portfolio") + "{\"extra\": 1}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Invalid request"))
+                    .andExpect(jsonPath("$.errors").doesNotExist());
+
+            verify(contactService, never()).sendContactEmail(any());
+        }
+
+        @Test
+        @DisplayName("a valid body followed by more JSON is rejected with 400 and sends nothing")
+        void validBodyWithTrailingTokens() throws Exception {
+            mockMvc.perform(post("/api/contact")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body("Anna", "anna@example.org", "Hello", "Nice portfolio") + "{\"extra\": 1}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Invalid request"));
+
+            verify(contactService, never()).sendContactEmail(any());
+        }
     }
 }
