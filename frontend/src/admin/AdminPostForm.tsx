@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
-import { ArrowLeft, Save, Eye, EyeOff, X, Plus, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Save, Eye, EyeOff, ExternalLink, X, Plus, ChevronDown, ChevronUp } from 'lucide-react';
 import { adminPostsApi } from '@/services/api';
 import { Category, PostCreateRequest, PostUpdateRequest, Media } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
@@ -218,6 +218,18 @@ export default function AdminPostForm() {
           </h1>
         </div>
         <div className="flex items-center space-x-3">
+          {isEditing && (
+            // A new tab keeps this form and its unsaved edits; the preview shows the last saved state
+            <Link
+              to={`/admin/posts/${id}/preview`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary"
+            >
+              <ExternalLink className="w-5 h-5 mr-2" />
+              {t('admin.preview.button')}
+            </Link>
+          )}
           <button
             type="button"
             onClick={() => setFormData((prev) => ({ ...prev, published: !prev.published }))}

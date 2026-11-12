@@ -7,6 +7,7 @@ import {
   Plus,
   Search,
   Edit,
+  ExternalLink,
   Trash2,
   Eye,
   EyeOff,
@@ -206,6 +207,16 @@ export default function AdminPosts() {
                             <Eye className="w-5 h-5" />
                           )}
                         </button>
+                        <Link
+                          to={`/admin/posts/${post.id}/preview`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={t('admin.preview.button')}
+                          title={t('admin.preview.button')}
+                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+                        >
+                          <ExternalLink className="w-5 h-5" />
+                        </Link>
                         <Link
                           to={`/admin/posts/${post.id}/edit`}
                           className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"

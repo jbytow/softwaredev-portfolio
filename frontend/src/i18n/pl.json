@@ -293,6 +293,13 @@
       "footer": "Sekcja Stopki",
       "seo": "Ustawienia SEO"
     },
+    "preview": {
+      "button": "Podgląd",
+      "draftBanner": "Podgląd szkicu: odwiedzający nie zobaczą tej strony, dopóki nie zostanie opublikowana.",
+      "publishedBanner": "Podgląd opublikowanej strony.",
+      "backToEditor": "Powrót do edytora",
+      "language": "Język podglądu"
+    },
     "session": {
       "expiredTitle": "Twoja sesja wygasła",
       "expiredBody": "Zmiany nadal są na tej stronie. Zaloguj się ponownie w nowej karcie, wróć tutaj, zamknij to okno i zapisz.",
