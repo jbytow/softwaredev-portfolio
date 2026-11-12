@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,6 +37,9 @@ class PostServiceTest {
 
     @Mock
     private PostRepository postRepository;
+
+    @Mock
+    private MediaService mediaService;
 
     @InjectMocks
     private PostService postService;
@@ -359,6 +363,18 @@ class PostServiceTest {
         }
 
         @Test
+        @DisplayName("should delete the post's media before the post itself")
+        void shouldDeleteMediaBeforePost() {
+            given(postRepository.existsById(postId)).willReturn(true);
+
+            postService.deletePost(postId);
+
+            InOrder order = inOrder(mediaService, postRepository);
+            order.verify(mediaService).deleteAllForPost(postId);
+            order.verify(postRepository).deleteById(postId);
+        }
+
+        @Test
         @DisplayName("should throw EntityNotFoundException when post not found")
         void shouldThrowExceptionWhenNotFound() {
             UUID nonExistentId = UUID.randomUUID();
@@ -366,6 +382,7 @@ class PostServiceTest {
 
             assertThatThrownBy(() -> postService.deletePost(nonExistentId))
                     .isInstanceOf(EntityNotFoundException.class);
+            verifyNoInteractions(mediaService);
         }
     }
 

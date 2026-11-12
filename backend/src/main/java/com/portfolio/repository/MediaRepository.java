@@ -16,17 +16,13 @@ import java.util.UUID;
 @Repository
 public interface MediaRepository extends JpaRepository<Media, UUID> {
 
-    List<Media> findByPostIdOrderByCreatedAtDesc(UUID postId);
-
     List<Media> findByPostIdOrderByDisplayOrderAsc(UUID postId);
 
     Page<Media> findByPostIdIsNull(Pageable pageable);
 
     Page<Media> findByType(MediaType type, Pageable pageable);
 
-    List<Media> findByPostIdIsNullOrderByCreatedAtDesc();
-
-    boolean existsByFilename(String filename);
+    List<Media> findByPostId(UUID postId);
 
     @Query("SELECT COALESCE(MAX(m.displayOrder), 0) FROM Media m WHERE m.post.id = :postId")
     int getMaxDisplayOrderForPost(@Param("postId") UUID postId);

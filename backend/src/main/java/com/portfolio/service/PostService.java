@@ -22,6 +22,7 @@ import java.util.UUID;
 public class PostService {
 
     private final PostRepository postRepository;
+    private final MediaService mediaService;
     private final Slugify slugify = Slugify.builder().build();
 
     public List<PostDto> getAllPublishedPosts(String locale) {
@@ -204,6 +205,7 @@ public class PostService {
         if (!postRepository.existsById(id)) {
             throw new EntityNotFoundException("Post not found: " + id);
         }
+        mediaService.deleteAllForPost(id);
         postRepository.deleteById(id);
     }
 
