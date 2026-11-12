@@ -5,6 +5,7 @@ import com.portfolio.service.AchievementService;
 import com.portfolio.util.LocaleUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,28 +42,28 @@ public class AdminAchievementController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         AchievementDto achievement = achievementService.create(request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(achievement, "Achievement created successfully"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(achievement));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<AchievementDto>> update(
             @PathVariable UUID id,
-            @RequestBody AchievementUpdateRequest request,
+            @Valid @RequestBody AchievementUpdateRequest request,
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         AchievementDto achievement = achievementService.update(id, request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(achievement, "Achievement updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(achievement));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable UUID id) {
         achievementService.delete(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Achievement deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<ApiResponse<Void>> reorder(@RequestBody ReorderRequest request) {
+    public ResponseEntity<ApiResponse<Void>> reorder(@Valid @RequestBody ReorderRequest request) {
         achievementService.reorder(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Achievements reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

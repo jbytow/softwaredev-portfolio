@@ -43,7 +43,7 @@ public class AdminSoftSkillController {
 
         SoftSkillDto skill = softSkillService.createSoftSkill(request, LocaleUtils.extractLocale(locale));
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(skill, "Soft skill created successfully"));
+                .body(ApiResponse.success(skill));
     }
 
     @PutMapping("/{id}")
@@ -53,18 +53,18 @@ public class AdminSoftSkillController {
             @RequestHeader(value = "Accept-Language", defaultValue = "en") String locale) {
 
         SoftSkillDto skill = softSkillService.updateSoftSkill(id, request, LocaleUtils.extractLocale(locale));
-        return ResponseEntity.ok(ApiResponse.success(skill, "Soft skill updated successfully"));
+        return ResponseEntity.ok(ApiResponse.success(skill));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteSoftSkill(@PathVariable UUID id) {
         softSkillService.deleteSoftSkill(id);
-        return ResponseEntity.ok(ApiResponse.success(null, "Soft skill deleted successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PatchMapping("/reorder")
-    public ResponseEntity<ApiResponse<Void>> reorderSoftSkills(@RequestBody ReorderRequest request) {
+    public ResponseEntity<ApiResponse<Void>> reorderSoftSkills(@Valid @RequestBody ReorderRequest request) {
         softSkillService.reorderSoftSkills(request);
-        return ResponseEntity.ok(ApiResponse.success(null, "Soft skills reordered successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

@@ -45,6 +45,6 @@ public class AuthController {
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 
-        return ResponseEntity.ok(ApiResponse.success(null, "Logged out successfully"));
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 }

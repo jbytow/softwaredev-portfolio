@@ -1,5 +1,8 @@
 package com.portfolio.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,14 +16,17 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ReorderRequest {
-    private List<OrderItem> items;
+    @NotEmpty(message = "Items are required")
+    private List<@NotNull(message = "Item must not be null") @Valid OrderItem> items;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
     public static class OrderItem {
-        private UUID id;
-        private Integer displayOrder;
+        @NotNull(message = "Id is required")
+    private UUID id;
+        @NotNull(message = "Display order is required")
+    private Integer displayOrder;
     }
 }

@@ -1,5 +1,6 @@
 package com.portfolio.dto;
 
+import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -17,12 +18,15 @@ import java.util.List;
 public class ExperienceCreateRequest {
 
     @NotBlank(message = "English title is required")
+    @Size(max = 255, message = "English title must not exceed 255 characters")
     private String titleEn;
 
     @NotBlank(message = "Polish title is required")
+    @Size(max = 255, message = "Polish title must not exceed 255 characters")
     private String titlePl;
 
     @NotBlank(message = "Company is required")
+    @Size(max = 255, message = "Company must not exceed 255 characters")
     private String company;
 
     @NotNull(message = "Start date is required")
