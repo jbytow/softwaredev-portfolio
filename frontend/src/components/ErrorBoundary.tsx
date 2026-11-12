@@ -1,5 +1,6 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import i18n from '@/i18n/index';
 
 interface Props {
   children: ReactNode;
@@ -28,8 +29,10 @@ export default class ErrorBoundary extends Component<Props, State> {
     }
   }
 
-  handleRetry = () => {
-    this.setState({ hasError: false, error: null });
+  // A full reload instead of a state reset: React.lazy caches a rejected import, so
+  // re-rendering the same tree would throw again; a reload also fetches a fresh index.html.
+  handleReload = () => {
+    window.location.reload();
   };
 
   render() {
@@ -45,17 +48,17 @@ export default class ErrorBoundary extends Component<Props, State> {
               <AlertTriangle className="w-8 h-8 text-red-400" />
             </div>
             <h2 className="text-xl font-semibold text-dark-100 mb-2">
-              Something went wrong
+              {i18n.t('errors.boundary.title')}
             </h2>
             <p className="text-dark-400 mb-6">
-              An unexpected error occurred. Please try refreshing the page.
+              {i18n.t('errors.boundary.message')}
             </p>
             <button
-              onClick={this.handleRetry}
+              onClick={this.handleReload}
               className="btn-secondary inline-flex items-center gap-2"
             >
               <RefreshCw className="w-4 h-4" />
-              Try Again
+              {i18n.t('errors.boundary.reload')}
             </button>
           </div>
         </div>

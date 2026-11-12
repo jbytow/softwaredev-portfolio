@@ -1,4 +1,8 @@
+import { useEffect, useState } from 'react';
 import { clsx } from 'clsx';
+
+// Full-screen spinners wait this long so fast loads do not flash an overlay
+const FULL_SCREEN_DELAY_MS = 200;
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -13,6 +17,13 @@ export default function LoadingSpinner({ size = 'md', fullScreen = false }: Load
   };
 
   const config = sizeConfig[size];
+  const [delayElapsed, setDelayElapsed] = useState(!fullScreen);
+
+  useEffect(() => {
+    if (!fullScreen) return;
+    const timer = setTimeout(() => setDelayElapsed(true), FULL_SCREEN_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [fullScreen]);
 
   const coffee = (
     <div className="flex flex-col items-center">
@@ -34,6 +45,7 @@ export default function LoadingSpinner({ size = 'md', fullScreen = false }: Load
   );
 
   if (fullScreen) {
+    if (!delayElapsed) return null;
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-dark-900 z-50">
         {coffee}

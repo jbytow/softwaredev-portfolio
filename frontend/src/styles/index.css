@@ -1,3 +1,5 @@
+@import './fonts.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -29,6 +31,169 @@
     --color-dark-800: 38 38 38;
     --color-dark-900: 23 23 23;
     --color-dark-950: 10 10 10;
+  }
+
+  /* Presets other than the default emerald (:root above); the attribute is set by the inline script in index.html and by ThemeContext */
+  /* A. Coffee & Code. Warm espresso/charcoal backgrounds, amber primary, cream accent. */
+  html[data-theme='coffee'] {
+    --color-primary-50: 255 251 235;
+    --color-primary-100: 254 243 199;
+    --color-primary-200: 253 230 138;
+    --color-primary-300: 252 211 77;
+    --color-primary-400: 251 191 36;
+    --color-primary-500: 245 158 11;
+    --color-primary-600: 217 119 6;
+    --color-primary-700: 180 83 9;
+    --color-primary-800: 146 64 14;
+    --color-primary-900: 120 53 15;
+    --color-primary-950: 69 26 3;
+    --color-accent: 254 243 199;
+    --color-dark-50: 250 250 249;
+    --color-dark-100: 245 245 244;
+    --color-dark-200: 231 229 228;
+    --color-dark-300: 214 211 209;
+    --color-dark-400: 168 162 158;
+    --color-dark-500: 120 113 108;
+    --color-dark-600: 87 83 78;
+    --color-dark-700: 68 64 60;
+    --color-dark-800: 41 37 36;
+    --color-dark-900: 28 25 23;
+    --color-dark-950: 12 10 9;
+  }
+
+  /* B. Mountain Dusk. Deep slate backgrounds, muted forest green, warm amber accent. */
+  html[data-theme='mountain'] {
+    --color-primary-50: 236 253 245;
+    --color-primary-100: 209 250 229;
+    --color-primary-200: 167 243 208;
+    --color-primary-300: 110 231 183;
+    --color-primary-400: 52 211 153;
+    --color-primary-500: 16 185 129;
+    --color-primary-600: 5 150 105;
+    --color-primary-700: 4 120 87;
+    --color-primary-800: 6 95 70;
+    --color-primary-900: 6 78 59;
+    --color-primary-950: 2 44 34;
+    --color-accent: 217 119 6;
+    --color-dark-50: 248 250 252;
+    --color-dark-100: 241 245 249;
+    --color-dark-200: 226 232 240;
+    --color-dark-300: 203 213 225;
+    --color-dark-400: 148 163 184;
+    --color-dark-500: 100 116 139;
+    --color-dark-600: 71 85 105;
+    --color-dark-700: 51 65 85;
+    --color-dark-800: 30 41 59;
+    --color-dark-900: 15 23 42;
+    --color-dark-950: 2 6 23;
+  }
+
+  /* C. Terminal Classic. Near-black backgrounds, green phosphor accent. Clean, no-nonsense. */
+  html[data-theme='terminal'] {
+    --color-primary-50: 236 253 245;
+    --color-primary-100: 209 250 229;
+    --color-primary-200: 167 243 208;
+    --color-primary-300: 110 231 183;
+    --color-primary-400: 52 211 153;
+    --color-primary-500: 16 185 129;
+    --color-primary-600: 5 150 105;
+    --color-primary-700: 4 120 87;
+    --color-primary-800: 6 95 70;
+    --color-primary-900: 6 78 59;
+    --color-primary-950: 2 44 34;
+    --color-accent: 74 222 128;
+    --color-dark-50: 250 250 250;
+    --color-dark-100: 244 244 245;
+    --color-dark-200: 228 228 231;
+    --color-dark-300: 212 212 216;
+    --color-dark-400: 161 161 170;
+    --color-dark-500: 113 113 122;
+    --color-dark-600: 82 82 91;
+    --color-dark-700: 63 63 70;
+    --color-dark-800: 39 39 42;
+    --color-dark-900: 24 24 27;
+    --color-dark-950: 9 9 11;
+  }
+
+  /* D. Neon Quest. Deep purple-black, electric violet primary, gold accent. RPG/gaming. */
+  html[data-theme='neon'] {
+    --color-primary-50: 245 243 255;
+    --color-primary-100: 237 233 254;
+    --color-primary-200: 221 214 254;
+    --color-primary-300: 196 181 253;
+    --color-primary-400: 167 139 250;
+    --color-primary-500: 139 92 246;
+    --color-primary-600: 124 58 237;
+    --color-primary-700: 109 40 217;
+    --color-primary-800: 91 33 182;
+    --color-primary-900: 76 29 149;
+    --color-primary-950: 46 16 101;
+    --color-accent: 245 158 11;
+    --color-dark-50: 245 243 248;
+    --color-dark-100: 235 232 240;
+    --color-dark-200: 208 202 219;
+    --color-dark-300: 176 165 192;
+    --color-dark-400: 139 127 163;
+    --color-dark-500: 102 90 133;
+    --color-dark-600: 76 64 107;
+    --color-dark-700: 56 45 82;
+    --color-dark-800: 39 29 61;
+    --color-dark-900: 26 16 41;
+    --color-dark-950: 15 10 26;
+  }
+
+  /* 2. Violet & Amber. Bold, creative, high-contrast. Zinc backgrounds. */
+  html[data-theme='violet'] {
+    --color-primary-50: 245 243 255;
+    --color-primary-100: 237 233 254;
+    --color-primary-200: 221 214 254;
+    --color-primary-300: 196 181 253;
+    --color-primary-400: 167 139 250;
+    --color-primary-500: 139 92 246;
+    --color-primary-600: 124 58 237;
+    --color-primary-700: 109 40 217;
+    --color-primary-800: 91 33 182;
+    --color-primary-900: 76 29 149;
+    --color-primary-950: 46 16 101;
+    --color-accent: 245 158 11;
+    --color-dark-50: 250 250 250;
+    --color-dark-100: 244 244 245;
+    --color-dark-200: 228 228 231;
+    --color-dark-300: 212 212 216;
+    --color-dark-400: 161 161 170;
+    --color-dark-500: 113 113 122;
+    --color-dark-600: 82 82 91;
+    --color-dark-700: 63 63 70;
+    --color-dark-800: 39 39 42;
+    --color-dark-900: 24 24 27;
+    --color-dark-950: 9 9 11;
+  }
+
+  /* 3. Cyan & Rose. Cyberpunk/neon feel. Deep navy/black, cyan glow, rose accent. */
+  html[data-theme='cyber'] {
+    --color-primary-50: 236 254 255;
+    --color-primary-100: 207 250 254;
+    --color-primary-200: 165 243 252;
+    --color-primary-300: 103 232 249;
+    --color-primary-400: 34 211 238;
+    --color-primary-500: 6 182 212;
+    --color-primary-600: 8 145 178;
+    --color-primary-700: 14 116 144;
+    --color-primary-800: 21 94 117;
+    --color-primary-900: 22 78 99;
+    --color-primary-950: 8 51 68;
+    --color-accent: 244 63 94;
+    --color-dark-50: 248 250 252;
+    --color-dark-100: 241 245 249;
+    --color-dark-200: 226 232 240;
+    --color-dark-300: 203 213 225;
+    --color-dark-400: 148 163 184;
+    --color-dark-500: 100 116 139;
+    --color-dark-600: 71 85 105;
+    --color-dark-700: 51 65 85;
+    --color-dark-800: 30 41 59;
+    --color-dark-900: 15 23 42;
+    --color-dark-950: 2 6 23;
   }
 
   html {
@@ -580,4 +745,17 @@
 /* Paragraphs in editor */
 .ProseMirror p {
   @apply my-2;
+}
+
+/* Must stay the last block: the reduced-motion test slices the stylesheet from here.
+   Durations shrink instead of animation: none, so reveal animations still end in their visible state. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

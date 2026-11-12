@@ -28,7 +28,8 @@
     "contactMe": "Skontaktuj się",
     "contactMe_nerd": "Przywołaj mnie",
     "downloadCV": "Pobierz CV",
-    "optional": "opcjonalne"
+    "optional": "opcjonalne",
+    "skipToContent": "Przejdź do treści"
   },
   "nav": {
     "home": "Strona główna",
@@ -43,7 +44,11 @@
     "skills_nerd": "Drzewko umiejętności",
     "contact": "Kontakt",
     "contact_nerd": "Przywołanie",
-    "admin": "Admin"
+    "admin": "Admin",
+    "cycleTheme": "Zmień motyw kolorystyczny",
+    "toggleLanguage": "Zmień język",
+    "toggleMenu": "Menu",
+    "toggleNerdMode": "Tryb nerd"
   },
   "home": {
     "hero": {
@@ -304,5 +309,17 @@
     "quickLinks_nerd": "Punkty nawigacyjne",
     "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej.",
     "tagline_nerd": "Craftowanie artefaktów programistycznych z użyciem tajemnych narzędzi."
+  },
+  "errors": {
+    "boundary": {
+      "title": "Coś poszło nie tak",
+      "message": "Wystąpił nieoczekiwany błąd. Odśwież stronę.",
+      "reload": "Odśwież stronę"
+    }
+  },
+  "notFound": {
+    "backHome": "Wróć na stronę główną",
+    "message": "Strona, której szukasz, nie istnieje lub została przeniesiona.",
+    "title": "Nie znaleziono strony"
   }
 }
