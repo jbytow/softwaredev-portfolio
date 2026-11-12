@@ -18,13 +18,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.MethodParameter;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.data.util.TypeInformation;
+import org.springframework.data.core.PropertyReferenceException;
+import org.springframework.data.core.TypeInformation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.mock.http.MockHttpInputMessage;
@@ -55,7 +55,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(
         controllers = PostController.class,
         excludeAutoConfiguration = {
-                org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration.class
+                org.springframework.boot.security.oauth2.client.autoconfigure.OAuth2ClientAutoConfiguration.class
         }
 )
 @Import(TestSecurityConfig.class)
@@ -66,13 +66,13 @@ class GlobalExceptionHandlerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private PostService postService;
 
-    @MockBean
+    @MockitoBean
     private JwtService jwtService;
 
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     private final Logger handlerLogger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -154,7 +154,7 @@ class GlobalExceptionHandlerTest {
                 Arguments.of(new HttpRequestMethodNotSupportedException("PUT"), HttpStatus.METHOD_NOT_ALLOWED),
                 Arguments.of(new HttpMediaTypeNotSupportedException("text/plain not supported"),
                         HttpStatus.UNSUPPORTED_MEDIA_TYPE),
-                Arguments.of(new MaxUploadSizeExceededException(1024), HttpStatus.PAYLOAD_TOO_LARGE),
+                Arguments.of(new MaxUploadSizeExceededException(1024), HttpStatus.CONTENT_TOO_LARGE),
                 Arguments.of(new DataIntegrityViolationException("duplicate key value violates unique constraint"),
                         HttpStatus.CONFLICT),
                 Arguments.of(new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad thing"), HttpStatus.BAD_REQUEST)

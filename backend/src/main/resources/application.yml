@@ -95,6 +95,9 @@ management:
   endpoint:
     health:
       show-details: when_authorized
+      # Boot 4 enables the Kubernetes probes by default; Compose only needs the aggregate status
+      probes:
+        enabled: false
   health:
     mail:
       enabled: false
