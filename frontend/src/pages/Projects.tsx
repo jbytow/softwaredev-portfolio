@@ -2,7 +2,7 @@ import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowRight, X, Github, ExternalLink } from 'lucide-react';
 import { postsApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,11 +14,10 @@ import HashtagList from '@/components/HashtagList';
 export default function Projects() {
   const { t } = useNerdTranslation();
   const { language } = useLanguage();
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeHashtag = searchParams.get('hashtag');
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending, isError, refetch } = useQuery({
     queryKey: activeHashtag
       ? queryKeys.postsByHashtag(language, activeHashtag)
       : queryKeys.posts(language),
@@ -34,11 +33,7 @@ export default function Projects() {
     setSearchParams({});
   };
 
-  const handleTileClick = (slug: string) => {
-    navigate(`/projects/${slug}`);
-  };
-
-  if (isLoading) {
+  if (isPending) {
     return <LoadingSpinner fullScreen />;
   }
 
@@ -66,11 +61,13 @@ export default function Projects() {
               animate={{ opacity: 1, y: 0 }}
               className="mb-8 flex items-center justify-center gap-2"
             >
-              <span className="text-dark-400">Filtered by:</span>
+              <span className="text-dark-400">{t('projects.filteredBy')}</span>
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/20 text-primary-400">
                 #{activeHashtag}
                 <button
+                  type="button"
                   onClick={clearHashtagFilter}
+                  aria-label={t('projects.clearFilter')}
                   className="hover:text-primary-300 transition-colors"
                 >
                   <X className="w-4 h-4" />
@@ -86,27 +83,31 @@ export default function Projects() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="card-hover group cursor-pointer"
-                onClick={() => handleTileClick(project.slug)}
+                className="relative card-hover group has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-primary-500"
               >
                 {project.featuredImage && (
                   <div className="aspect-video rounded-xl overflow-hidden mb-4 bg-dark-700">
                     <img
                       src={getMediaUrl(project.featuredImage)}
                       alt={project.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                 )}
 
                 <h3 className="text-xl font-semibold text-dark-100 mb-2 group-hover:text-primary-400 transition-colors">
-                  {project.title}
+                  <Link
+                    to={`/projects/${project.slug}`}
+                    className="after:absolute after:inset-0 focus:outline-none"
+                  >
+                    {project.title}
+                  </Link>
                 </h3>
 
                 <p className="text-dark-400 text-sm line-clamp-2 mb-4">{project.excerpt}</p>
 
                 {project.hashtags && project.hashtags.length > 0 && (
-                  <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+                  <div className="mb-4">
                     <HashtagList
                       hashtags={project.hashtags}
                       clickable={true}
@@ -121,14 +122,15 @@ export default function Projects() {
                     {t('projects.viewProject')}
                     <ArrowRight className="ml-1 w-4 h-4" />
                   </span>
-                  <div className="flex gap-2 ml-auto" onClick={(e) => e.stopPropagation()}>
+                  <div className="relative z-10 flex gap-2 ml-auto">
                     {project.githubUrl && (
                       <a
                         href={project.githubUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 text-dark-400 hover:text-primary-400 bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
-                        title="GitHub"
+                        title={t('projects.github')}
+                        aria-label={t('projects.github')}
                       >
                         <Github className="w-4 h-4" />
                       </a>
@@ -139,7 +141,8 @@ export default function Projects() {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-1.5 text-dark-400 hover:text-accent bg-dark-700 hover:bg-dark-600 rounded-lg transition-colors"
-                        title="Live Demo"
+                        title={t('projects.liveDemo')}
+                        aria-label={t('projects.liveDemo')}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
@@ -150,11 +153,20 @@ export default function Projects() {
             ))}
           </div>
 
-          {projects.length === 0 && (
+          {isError && !data && (
+            <div className="text-center py-12">
+              <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+              <button type="button" onClick={() => refetch()} className="btn-secondary">
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
+
+          {!isError && projects.length === 0 && (
             <div className="text-center text-dark-400 py-12">
               {activeHashtag
-                ? `No projects found with hashtag #${activeHashtag}`
-                : 'No projects yet.'}
+                ? t('projects.emptyForHashtag', { hashtag: activeHashtag })
+                : t('projects.empty')}
             </div>
           )}
         </div>

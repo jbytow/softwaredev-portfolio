@@ -31,9 +31,10 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
-import { settingsApi, postsApi, achievementsApi } from '@/services/api';
+import { postsApi, achievementsApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
@@ -105,17 +106,28 @@ export default function Home() {
   const mountainBackY = useTransform(scrollY, [0, 600], [0, 60]);
   const mountainFrontY = useTransform(scrollY, [0, 600], [0, 100]);
 
-  const { data: settingsData, isLoading: settingsLoading } = useQuery({
-    queryKey: queryKeys.settings(language),
-    queryFn: () => settingsApi.get(),
-  });
+  const {
+    data: settingsData,
+    isPending: settingsPending,
+    isError: settingsError,
+    refetch: refetchSettings,
+  } = useSiteSettings();
 
-  const { data: postsData, isLoading: postsLoading } = useQuery({
+  const {
+    data: postsData,
+    isPending: postsPending,
+    isError: postsError,
+    refetch: refetchPosts,
+  } = useQuery({
     queryKey: queryKeys.posts(language, 'featured'),
     queryFn: () => postsApi.getAll(),
   });
 
-  const { data: achievementsData } = useQuery({
+  const {
+    data: achievementsData,
+    isError: achievementsError,
+    refetch: refetchAchievements,
+  } = useQuery({
     queryKey: queryKeys.achievements(language),
     queryFn: () => achievementsApi.getAll(),
   });
@@ -124,8 +136,24 @@ export default function Home() {
   const featuredPosts = postsData?.data?.slice(0, 6) || [];
   const achievements = achievementsData?.data || [];
 
-  if (settingsLoading) {
+  if (settingsPending) {
     return <LoadingSpinner fullScreen />;
+  }
+
+  // Without settings the hero would render empty, which looks like a broken site rather than a failed request
+  if (settingsError && !settingsData) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <div className="text-center py-12">
+            <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+            <button type="button" onClick={() => refetchSettings()} className="btn-secondary">
+              {t('common.retry')}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -291,6 +319,17 @@ export default function Home() {
         </section>
       )}
 
+      {achievementsError && !achievementsData && (
+        <section className="py-20">
+          <div className="container text-center">
+            <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+            <button type="button" onClick={() => refetchAchievements()} className="btn-secondary">
+              {t('common.retry')}
+            </button>
+          </div>
+        </section>
+      )}
+
       {/* Achievements Section */}
       {achievements.length > 0 && (
         <section className="py-20">
@@ -356,8 +395,15 @@ export default function Home() {
             <p className="section-subheading mx-auto">{t('home.featured.subtitle')}</p>
           </motion.div>
 
-          {postsLoading ? (
+          {postsPending ? (
             <LoadingSpinner />
+          ) : postsError && !postsData ? (
+            <div className="text-center py-12">
+              <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+              <button type="button" onClick={() => refetchPosts()} className="btn-secondary">
+                {t('common.retry')}
+              </button>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {featuredPosts.map((post, index) => (
@@ -367,29 +413,31 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.1 }}
-                  className="card-hover group"
+                  className="relative card-hover group has-[a:focus-visible]:ring-2 has-[a:focus-visible]:ring-primary-500"
                 >
                   {post.featuredImage && (
                     <div className="aspect-video rounded-xl overflow-hidden mb-4 bg-dark-700">
                       <img
                         src={getMediaUrl(post.featuredImage)}
                         alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   )}
                   <span className="badge-primary mb-3">{post.categoryLabel}</span>
                   <h3 className="text-xl font-semibold text-dark-100 mb-2 group-hover:text-primary-400 transition-colors">
-                    {post.title}
+                    <Link
+                      to={`/projects/${post.slug}`}
+                      className="after:absolute after:inset-0 focus:outline-none"
+                    >
+                      {post.title}
+                    </Link>
                   </h3>
                   <p className="text-dark-400 text-sm line-clamp-2">{post.excerpt}</p>
-                  <Link
-                    to={`/projects/${post.slug}`}
-                    className="inline-flex items-center mt-4 text-primary-400 hover:text-primary-300 text-sm font-medium"
-                  >
+                  <span className="inline-flex items-center mt-4 text-primary-400 group-hover:text-primary-300 text-sm font-medium">
                     {t('common.readMore')}
                     <ArrowRight className="ml-1 w-4 h-4" />
-                  </Link>
+                  </span>
                 </motion.article>
               ))}
             </div>

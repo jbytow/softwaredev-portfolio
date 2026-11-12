@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNerdTranslation } from '@/hooks/useNerdTranslation';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import toast from 'react-hot-toast';
 import {
@@ -14,9 +13,8 @@ import {
   Facebook,
   Github,
 } from 'lucide-react';
-import { settingsApi, contactApi } from '@/services/api';
-import { useLanguage } from '@/contexts/LanguageContext';
-import { queryKeys } from '@/lib/queryKeys';
+import { contactApi } from '@/services/api';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 const socialIcons: Record<string, typeof Linkedin> = {
@@ -28,21 +26,19 @@ const socialIcons: Record<string, typeof Linkedin> = {
 
 export default function Contact() {
   const { t } = useNerdTranslation();
-  const { language } = useLanguage();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     subject: '',
     message: '',
+    website: '',
   });
 
-  const { data: settingsData, isLoading } = useQuery({
-    queryKey: queryKeys.settings(language),
-    queryFn: () => settingsApi.get(),
-  });
+  const { data: settingsData, isPending, isError, refetch } = useSiteSettings();
 
   const settings = settingsData?.data;
+  const socialLinks = Object.entries(settings?.socialLinks ?? {}).filter(([, url]) => url?.trim());
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +47,7 @@ export default function Contact() {
     try {
       await contactApi.submit(formData);
       toast.success(t('contact.form.success'));
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', website: '' });
     } catch {
       toast.error(t('contact.form.error'));
     } finally {
@@ -59,7 +55,7 @@ export default function Contact() {
     }
   };
 
-  if (isLoading) {
+  if (isPending) {
     return <LoadingSpinner fullScreen />;
   }
 
@@ -99,6 +95,7 @@ export default function Contact() {
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       className="input"
+                      maxLength={100}
                       required
                     />
                   </div>
@@ -127,6 +124,7 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="input"
+                    maxLength={200}
                     required
                   />
                 </div>
@@ -141,7 +139,22 @@ export default function Contact() {
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="input resize-none"
+                    maxLength={5000}
                     required
+                  />
+                </div>
+
+                {/* Honeypot: bots fill every field; kept off-screen rather than display:none, which many bots skip */}
+                <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px' }}>
+                  <label htmlFor="website">{t('contact.honeypot')}</label>
+                  <input
+                    type="text"
+                    id="website"
+                    name="website"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                    tabIndex={-1}
+                    autoComplete="off"
                   />
                 </div>
 
@@ -171,7 +184,7 @@ export default function Contact() {
             >
               <div className="card">
                 <h3 className="text-xl font-semibold text-dark-100 mb-6">
-                  Contact Information
+                  {t('contact.info.title')}
                 </h3>
 
                 <div className="space-y-4">
@@ -211,21 +224,30 @@ export default function Contact() {
                     </div>
                     <div>
                       <div className="text-sm text-dark-500">{t('contact.info.location')}</div>
-                      <div>Remote / Worldwide</div>
+                      <div>{t('contact.info.remote')}</div>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {isError && !settingsData && (
+                <div className="card text-center">
+                  <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+                  <button type="button" onClick={() => refetch()} className="btn-secondary">
+                    {t('common.retry')}
+                  </button>
+                </div>
+              )}
+
               {/* Social Links */}
-              {settings?.socialLinks && Object.keys(settings.socialLinks).length > 0 && (
+              {socialLinks.length > 0 && (
                 <div className="card">
                   <h3 className="text-xl font-semibold text-dark-100 mb-6">
                     {t('contact.info.social')}
                   </h3>
 
                   <div className="flex flex-wrap gap-3">
-                    {Object.entries(settings.socialLinks).map(([platform, url]) => {
+                    {socialLinks.map(([platform, url]) => {
                       const Icon = socialIcons[platform.toLowerCase()] || Linkedin;
                       return (
                         <a

@@ -9,8 +9,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
+// Backend sends LocalDate (YYYY-MM-DD); new Date('YYYY-MM-DD') is UTC midnight and shifts the month west of UTC
+function parseLocalDate(dateStr: string): Date {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return new Date(year, month - 1, day || 1);
+}
+
 function formatDate(dateStr: string, locale: string): string {
-  const date = new Date(dateStr);
+  const date = parseLocalDate(dateStr);
   return date.toLocaleDateString(locale === 'pl' ? 'pl-PL' : 'en-US', {
     month: 'short',
     year: 'numeric',
@@ -18,13 +24,14 @@ function formatDate(dateStr: string, locale: string): string {
 }
 
 function calculateMonthsDuration(startDate: string, endDate: string | null): number {
-  const start = new Date(startDate);
-  const end = endDate ? new Date(endDate) : new Date();
+  const start = parseLocalDate(startDate);
+  const end = endDate ? parseLocalDate(endDate) : new Date();
   const months = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
   return Math.max(1, months + 1); // At least 1 month
 }
 
 function FatigueCheck({ nerdMode }: { nerdMode: boolean }) {
+  const { t } = useNerdTranslation();
   const [timeSpent, setTimeSpent] = useState(0);
   const [atBottom, setAtBottom] = useState(false);
   const [revealed, setRevealed] = useState(false);
@@ -60,8 +67,8 @@ function FatigueCheck({ nerdMode }: { nerdMode: boolean }) {
   return (
     <div className="text-center mt-16 mb-4">
       <p className="fatigue-check text-xs text-dark-600 font-mono italic transition-all duration-700 animate-fade-in">
-        <span className="fatigue-default">Fatigue check passed. Still reading.</span>
-        <span className="fatigue-hover">Endurance matters.</span>
+        <span className="fatigue-default">{t('experience.fatiguePassed')}</span>
+        <span className="fatigue-hover">{t('experience.fatigueHover')}</span>
       </p>
     </div>
   );
@@ -71,17 +78,17 @@ export default function Experience() {
   const { t, nerdMode } = useNerdTranslation();
   const { language } = useLanguage();
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending, isError, refetch } = useQuery({
     queryKey: queryKeys.experiences(language),
     queryFn: () => experiencesApi.getAll(),
   });
 
   // Sort by start date descending (most recent first)
   const experiences = [...(data?.data || [])].sort((a, b) => {
-    return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+    return parseLocalDate(b.startDate).getTime() - parseLocalDate(a.startDate).getTime();
   });
 
-  if (isLoading) {
+  if (isPending) {
     return <LoadingSpinner fullScreen />;
   }
 
@@ -136,7 +143,7 @@ export default function Experience() {
                             </span>
                           </div>
                           <div className="text-dark-500 text-xs mt-1">
-                            {calculateMonthsDuration(exp.startDate, exp.endDate)} {language === 'pl' ? 'mies.' : 'mo.'}
+                            {calculateMonthsDuration(exp.startDate, exp.endDate)} {t('experience.monthsShort')}
                           </div>
                         </div>
                       </div>
@@ -161,9 +168,18 @@ export default function Experience() {
               </div>
             </div>
 
-            {experiences.length === 0 && (
+            {isError && !data && (
+              <div className="text-center py-12">
+                <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+                <button type="button" onClick={() => refetch()} className="btn-secondary">
+                  {t('common.retry')}
+                </button>
+              </div>
+            )}
+
+            {!isError && experiences.length === 0 && (
               <div className="text-center text-dark-400 py-12">
-                No experience entries yet.
+                {t('experience.empty')}
               </div>
             )}
           </div>

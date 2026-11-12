@@ -13,10 +13,12 @@ import {
   Trophy,
   type LucideIcon,
 } from 'lucide-react';
-import { settingsApi, interestsApi, achievementsApi, rpgStatsApi } from '@/services/api';
+import { interestsApi, achievementsApi, rpgStatsApi } from '@/services/api';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { queryKeys } from '@/lib/queryKeys';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import { renderAboutText } from '@/lib/aboutText';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 const questIconMap: Record<string, LucideIcon> = {
@@ -27,6 +29,18 @@ const questIconMap: Record<string, LucideIcon> = {
   sparkles: Sparkles,
   trophy: Trophy,
 };
+
+function LoadError({ onRetry, className = 'py-12' }: { onRetry: () => void; className?: string }) {
+  const { t } = useNerdTranslation();
+  return (
+    <div className={`text-center ${className}`}>
+      <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+      <button type="button" onClick={onRetry} className="btn-secondary">
+        {t('common.retry')}
+      </button>
+    </div>
+  );
+}
 
 export default function About() {
   const { t } = useNerdTranslation();
@@ -39,22 +53,36 @@ export default function About() {
     localStorage.setItem('rpgMode', String(rpgMode));
   }, [rpgMode]);
 
-  const { data: settingsData, isLoading: settingsLoading } = useQuery({
-    queryKey: queryKeys.settings(language),
-    queryFn: () => settingsApi.get(),
-  });
+  const {
+    data: settingsData,
+    isPending: settingsPending,
+    isError: settingsError,
+    refetch: refetchSettings,
+  } = useSiteSettings();
 
-  const { data: interestsData } = useQuery({
+  const {
+    data: interestsData,
+    isError: interestsError,
+    refetch: refetchInterests,
+  } = useQuery({
     queryKey: queryKeys.interests(language),
     queryFn: () => interestsApi.getAll(),
   });
 
-  const { data: achievementsData } = useQuery({
+  const {
+    data: achievementsData,
+    isError: achievementsError,
+    refetch: refetchAchievements,
+  } = useQuery({
     queryKey: queryKeys.achievements(language),
     queryFn: () => achievementsApi.getAll(),
   });
 
-  const { data: rpgStatsData } = useQuery({
+  const {
+    data: rpgStatsData,
+    isError: rpgStatsError,
+    refetch: refetchRpgStats,
+  } = useQuery({
     queryKey: queryKeys.rpgStats(language),
     queryFn: () => rpgStatsApi.getAll(),
   });
@@ -64,8 +92,19 @@ export default function About() {
   const achievements = achievementsData?.data || [];
   const rpgStats = rpgStatsData?.data || [];
 
-  if (settingsLoading) {
+  if (settingsPending) {
     return <LoadingSpinner fullScreen />;
+  }
+
+  // Settings carry the about text, so without them the page would only show a made-up placeholder
+  if (settingsError && !settingsData) {
+    return (
+      <section className="py-20">
+        <div className="container">
+          <LoadError onRetry={() => refetchSettings()} />
+        </div>
+      </section>
+    );
   }
 
   return (
@@ -114,6 +153,10 @@ export default function About() {
                       {settings?.rpgClassTitle || t('about.rpg.classTitle')}
                     </p>
                   </div>
+
+                  {rpgStatsError && !rpgStatsData && (
+                    <LoadError onRetry={() => refetchRpgStats()} className="py-6 mb-8" />
+                  )}
 
                   {/* Stats Grid */}
                   {rpgStats.length > 0 && (
@@ -165,6 +208,10 @@ export default function About() {
                         ))}
                       </div>
                     </div>
+                  )}
+
+                  {achievementsError && !achievementsData && (
+                    <LoadError onRetry={() => refetchAchievements()} className="py-6" />
                   )}
 
                   {/* Quests Completed */}
@@ -228,7 +275,7 @@ export default function About() {
                         <div className="absolute inset-0 bg-gradient-to-br from-primary-500 to-accent rounded-2xl transform rotate-3" />
                         <img
                           src={settings.profileImage}
-                          alt="Profile"
+                          alt={t('about.profileImageAlt')}
                           className="relative rounded-2xl w-full object-cover shadow-xl"
                         />
                       </div>
@@ -248,7 +295,7 @@ export default function About() {
                     <div
                       className="prose prose-invert prose-lg max-w-none"
                       dangerouslySetInnerHTML={{
-                        __html: settings?.aboutText || '<p>About content coming soon...</p>',
+                        __html: renderAboutText(settings?.aboutText, t('about.placeholder')),
                       }}
                     />
 
@@ -268,6 +315,14 @@ export default function About() {
           </AnimatePresence>
         </div>
       </section>
+
+      {interestsError && !interestsData && (
+        <section className="py-20 bg-dark-800/50">
+          <div className="container">
+            <LoadError onRetry={() => refetchInterests()} className="py-6" />
+          </div>
+        </section>
+      )}
 
       {/* Interests Section */}
       {interests.length > 0 && (

@@ -69,14 +69,14 @@ export default function Skills() {
     localStorage.setItem('xpMode', String(xpMode));
   }, [xpMode]);
 
-  const { data, isLoading } = useQuery({
+  const { data, isPending, isError, refetch } = useQuery({
     queryKey: queryKeys.skillCategoriesWithSkills(language),
     queryFn: () => skillCategoriesApi.getAllWithSkills(),
   });
 
   const categories: SkillCategoryWithSkills[] = data?.data || [];
 
-  if (isLoading) {
+  if (isPending) {
     return <LoadingSpinner fullScreen />;
   }
 
@@ -113,6 +113,15 @@ export default function Skills() {
             </div>
             <p className="section-subheading mx-auto">{t('skills.subtitle')}</p>
           </motion.div>
+
+          {isError && !data && (
+            <div className="text-center py-12">
+              <p className="text-dark-400 mb-4">{t('common.loadError')}</p>
+              <button type="button" onClick={() => refetch()} className="btn-secondary">
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             {xpMode ? (
@@ -171,10 +180,8 @@ export default function Skills() {
                   </motion.div>
                 ))}
 
-                {categories.every(cat => cat.skills.length === 0) && (
-                  <div className="text-center text-dark-400 py-12">
-                    {t('admin.softSkills.noSkillsYet')}
-                  </div>
+                {!isError && categories.every(cat => cat.skills.length === 0) && (
+                  <p className="text-center text-dark-400 py-12">{t('skills.empty')}</p>
                 )}
               </motion.div>
             ) : (
@@ -225,33 +232,8 @@ export default function Skills() {
                   </motion.div>
                 ))}
 
-                {categories.every(cat => cat.skills.length === 0) && (
-                  <div className="text-center">
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {[
-                        { icon: Code, title: 'Java', desc: 'Core language for backend development' },
-                        { icon: Terminal, title: 'Spring Boot', desc: 'Building robust REST APIs and microservices' },
-                        { icon: Database, title: 'PostgreSQL', desc: 'Relational database design and optimization' },
-                        { icon: Monitor, title: 'React', desc: 'Building modern, responsive user interfaces' },
-                        { icon: GitBranch, title: 'Git', desc: 'Version control and collaborative workflows' },
-                        { icon: Server, title: 'Docker', desc: 'Containerization and deployment' },
-                      ].map((skill, index) => (
-                        <motion.div
-                          key={skill.title}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="card-hover text-center"
-                        >
-                          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-accent/20 mb-6">
-                            <skill.icon className="w-8 h-8 text-primary-400" />
-                          </div>
-                          <h3 className="text-xl font-semibold text-dark-100 mb-3">{skill.title}</h3>
-                          <p className="text-dark-400">{skill.desc}</p>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
+                {!isError && categories.every(cat => cat.skills.length === 0) && (
+                  <p className="text-center text-dark-400 py-12">{t('skills.empty')}</p>
                 )}
               </motion.div>
             )}

@@ -3,6 +3,7 @@
     "loading": "Loading...",
     "error": "An error occurred",
     "retry": "Retry",
+    "loadError": "Could not load this content.",
     "save": "Save",
     "cancel": "Cancel",
     "delete": "Delete",
@@ -16,11 +17,11 @@
     "actions": "Actions",
     "confirm": "Confirm",
     "back": "Back",
-    "backTo": "Back to",
     "next": "Next",
     "previous": "Previous",
     "viewMore": "View More",
     "viewMore_nerd": "Load Next Area",
+    "showLess": "Less",
     "readMore": "Read More",
     "readMore_nerd": "Inspect Loot",
     "learnMore": "Learn More",
@@ -83,6 +84,8 @@
     "title_nerd": "Character Sheet",
     "subtitle": "Get to know me better",
     "subtitle_nerd": "Stats, lore, and passive abilities",
+    "placeholder": "About content coming soon...",
+    "profileImageAlt": "Profile photo",
     "interests": {
       "title": "My Interests",
       "title_nerd": "Side Quests",
@@ -105,6 +108,10 @@
   "experience": {
     "title": "Experience",
     "title_nerd": "Quest Log",
+    "empty": "No experience entries yet.",
+    "fatigueHover": "Endurance matters.",
+    "fatiguePassed": "Fatigue check passed. Still reading.",
+    "monthsShort": "mo.",
     "subtitle": "My professional journey",
     "subtitle_nerd": "Completed campaigns and ongoing raids",
     "present": "Present",
@@ -115,6 +122,12 @@
     "title_nerd": "Dungeons Cleared",
     "subtitle": "Software projects I've built and contributed to",
     "subtitle_nerd": "Instances built, raided, and deployed to production",
+    "clearFilter": "Clear filter",
+    "empty": "No projects yet.",
+    "emptyForHashtag": "No projects found with hashtag #{{hashtag}}",
+    "filteredBy": "Filtered by:",
+    "github": "GitHub",
+    "liveDemo": "Live demo",
     "viewProject": "View Project",
     "viewProject_nerd": "Enter Dungeon"
   },
@@ -130,11 +143,16 @@
     "testimonial": "Key Decisions",
     "testimonial_nerd": "Party Leader's Notes"
   },
+  "post": {
+    "backToProjects": "Back to projects",
+    "notFound": "Post not found"
+  },
   "skills": {
     "title": "Skills",
     "title_nerd": "Skill Tree",
     "subtitle": "Technologies and tools I work with",
     "subtitle_nerd": "Abilities unlocked and talent points invested",
+    "empty": "No skills added yet.",
     "xpToggle": "XP Mode",
     "levelLabel": "LVL"
   },
@@ -143,6 +161,7 @@
     "title_nerd": "Summon Developer",
     "subtitle": "Interested in working together? Let's connect",
     "subtitle_nerd": "Send a message through the ethereal plane",
+    "honeypot": "Leave this field empty",
     "form": {
       "name": "Your Name",
       "name_nerd": "Your Character Name",
@@ -166,6 +185,8 @@
       "email_nerd": "Pigeon Mail",
       "phone": "Phone",
       "phone_nerd": "Hearthstone",
+      "remote": "Remote / Worldwide",
+      "title": "Contact Information",
       "location": "Location",
       "location_nerd": "Spawn Point",
       "social": "Follow Me",
