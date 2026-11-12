@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface HashtagListProps {
@@ -17,6 +18,7 @@ export default function HashtagList({
   expandable = false,
   className = '',
 }: HashtagListProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!hashtags || hashtags.length === 0) {
@@ -51,7 +53,7 @@ export default function HashtagList({
           className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-dark-700 text-dark-400 hover:bg-dark-600 hover:text-dark-300 transition-colors"
         >
           <ChevronUp className="w-3 h-3" />
-          Less
+          {t('common.showLess')}
         </button>
       );
     }
@@ -73,7 +75,7 @@ export default function HashtagList({
 
   if (clickable) {
     return (
-      <div className={`flex flex-wrap gap-2 ${className}`}>
+      <div className={`relative z-10 flex flex-wrap gap-2 ${className}`}>
         {displayHashtags.map((hashtag) => (
           <Link
             key={hashtag}
@@ -89,7 +91,7 @@ export default function HashtagList({
   }
 
   return (
-    <div className={`flex flex-wrap gap-2 ${className}`}>
+    <div className={`relative z-10 flex flex-wrap gap-2 ${className}`}>
       {displayHashtags.map((hashtag) => (
         <span
           key={hashtag}
