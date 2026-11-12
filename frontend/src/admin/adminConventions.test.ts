@@ -24,7 +24,9 @@ describe('admin panel conventions', () => {
   });
 
   it('confirms deletes through ConfirmDeleteModal, not native confirm()', () => {
-    expect(linesMatching(/(?<![\w.])(window\.)?confirm\(/)).toEqual([]);
+    // AdminLayout asks before leaving a dirty form (not a delete), with the same prompt as useUnsavedChanges
+    const offenders = linesMatching(/(?<![\w.])(window\.)?confirm\(/).filter((entry) => !entry.includes('AdminLayout.tsx'));
+    expect(offenders).toEqual([]);
   });
 
   it('invalidates through queryKeys, not hand-written key arrays', () => {

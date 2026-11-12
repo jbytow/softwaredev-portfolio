@@ -9,6 +9,7 @@ import { ExperienceCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminExperienceForm() {
@@ -29,6 +30,8 @@ export default function AdminExperienceForm() {
     achievementsEn: [],
     achievementsPl: [],
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
   const [newAchievementEn, setNewAchievementEn] = useState('');
   const [newAchievementPl, setNewAchievementPl] = useState('');
@@ -42,7 +45,7 @@ export default function AdminExperienceForm() {
   useEffect(() => {
     if (expData?.data) {
       const exp = expData.data;
-      setFormData({
+      const seeded: typeof formData = {
         titleEn: exp.titleEn,
         titlePl: exp.titlePl,
         company: exp.company,
@@ -52,13 +55,16 @@ export default function AdminExperienceForm() {
         descriptionPl: exp.descriptionPl || '',
         achievementsEn: exp.achievementsEn || [],
         achievementsPl: exp.achievementsPl || [],
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [expData]);
 
   const createMutation = useMutation({
     mutationFn: (data: ExperienceCreateRequest) => adminExperiencesApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.experiences() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.experiences() });
       toast.success('Experience created successfully');
@@ -72,6 +78,7 @@ export default function AdminExperienceForm() {
   const updateMutation = useMutation({
     mutationFn: (data: ExperienceCreateRequest) => adminExperiencesApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.experiences() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.experience(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.experiences() });
@@ -153,7 +160,7 @@ export default function AdminExperienceForm() {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => navigate('/admin/experiences')}
+          onClick={() => confirmLeave() && navigate('/admin/experiences')}
           className="p-2 text-dark-400 hover:text-dark-100 hover:bg-dark-700 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -347,7 +354,7 @@ export default function AdminExperienceForm() {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/experiences')}
+            onClick={() => confirmLeave() && navigate('/admin/experiences')}
             className="btn-secondary"
           >
             {t('common.cancel')}

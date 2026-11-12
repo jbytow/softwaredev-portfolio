@@ -9,6 +9,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { RpgStatCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminRpgStatForm() {
@@ -27,6 +28,8 @@ export default function AdminRpgStatForm() {
     skills: [],
   });
   const [skillsText, setSkillsText] = useState('');
+  const [baseline, setBaseline] = useState(() => JSON.stringify({ formData, skillsText }));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify({ formData, skillsText }) !== baseline);
 
   const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.rpgStat(id!),
@@ -37,14 +40,16 @@ export default function AdminRpgStatForm() {
   useEffect(() => {
     if (data?.data) {
       const stat = data.data;
-      setFormData({
+      const seeded: typeof formData = {
         attr: stat.attr,
         labelEn: stat.labelEn,
         labelPl: stat.labelPl,
         level: stat.level,
         maxLevel: stat.maxLevel,
         skills: stat.skills,
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify({ formData: seeded, skillsText: stat.skills.join(', ') }));
       setSkillsText(stat.skills.join(', '));
     }
   }, [data]);
@@ -52,6 +57,7 @@ export default function AdminRpgStatForm() {
   const createMutation = useMutation({
     mutationFn: (data: RpgStatCreateRequest) => adminRpgStatsApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify({ formData, skillsText }));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       toast.success('RPG stat created');
@@ -65,6 +71,7 @@ export default function AdminRpgStatForm() {
   const updateMutation = useMutation({
     mutationFn: (data: RpgStatCreateRequest) => adminRpgStatsApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify({ formData, skillsText }));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       toast.success('RPG stat updated');
@@ -108,7 +115,7 @@ export default function AdminRpgStatForm() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate('/admin/rpg-stats')}
+          onClick={() => confirmLeave() && navigate('/admin/rpg-stats')}
           className="p-2 text-dark-400 hover:text-dark-100 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -223,7 +230,7 @@ export default function AdminRpgStatForm() {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/rpg-stats')}
+            onClick={() => confirmLeave() && navigate('/admin/rpg-stats')}
             className="btn-secondary"
           >
             {t('common.cancel')}

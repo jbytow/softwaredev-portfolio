@@ -9,6 +9,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { InterestCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import { getApiErrorMessage } from '@/lib/apiError';
 
@@ -26,6 +27,8 @@ export default function AdminInterestForm() {
     image2: '',
     image3: '',
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
 
   const { data, isLoading, isError: loadFailed, refetch } = useQuery({
@@ -37,19 +40,22 @@ export default function AdminInterestForm() {
   useEffect(() => {
     if (data?.data) {
       const interest = data.data;
-      setFormData({
+      const seeded: typeof formData = {
         titleEn: interest.titleEn,
         titlePl: interest.titlePl,
         image1: interest.image1 || '',
         image2: interest.image2 || '',
         image3: interest.image3 || '',
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [data]);
 
   const createMutation = useMutation({
     mutationFn: (data: InterestCreateRequest) => adminInterestsApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       toast.success('Interest created');
@@ -63,6 +69,7 @@ export default function AdminInterestForm() {
   const updateMutation = useMutation({
     mutationFn: (data: InterestCreateRequest) => adminInterestsApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       toast.success('Interest updated');
@@ -119,7 +126,7 @@ export default function AdminInterestForm() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate('/admin/interests')}
+          onClick={() => confirmLeave() && navigate('/admin/interests')}
           className="p-2 text-dark-400 hover:text-dark-100 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -206,7 +213,7 @@ export default function AdminInterestForm() {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/interests')}
+            onClick={() => confirmLeave() && navigate('/admin/interests')}
             className="btn-secondary"
           >
             {t('common.cancel')}

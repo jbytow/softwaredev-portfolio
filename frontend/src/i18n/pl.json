@@ -293,6 +293,15 @@
       "footer": "Sekcja Stopki",
       "seo": "Ustawienia SEO"
     },
+    "session": {
+      "expiredTitle": "Twoja sesja wygasła",
+      "expiredBody": "Zmiany nadal są na tej stronie. Zaloguj się ponownie w nowej karcie, wróć tutaj, zamknij to okno i zapisz.",
+      "openLogin": "Zaloguj w nowej karcie",
+      "close": "Zamknij"
+    },
+    "unsaved": {
+      "confirmLeave": "Masz niezapisane zmiany. Wyjść bez zapisywania?"
+    },
     "auth": {
       "login": "Zaloguj się",
       "logout": "Wyloguj się",

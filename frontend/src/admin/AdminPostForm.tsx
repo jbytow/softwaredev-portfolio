@@ -9,6 +9,7 @@ import { Category, PostCreateRequest, PostUpdateRequest, Media } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import MediaManager from '@/admin/components/MediaManager';
 import RichTextEditor from '@/components/RichTextEditor';
 import { getApiErrorMessage } from '@/lib/apiError';
@@ -63,6 +64,8 @@ export default function AdminPostForm() {
     caseStudyTestimonialPl: '',
     caseStudyTestimonialAuthor: '',
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
   const [media, setMedia] = useState<Media[]>([]);
   const [newHashtag, setNewHashtag] = useState('');
@@ -77,7 +80,7 @@ export default function AdminPostForm() {
   useEffect(() => {
     if (postData?.data) {
       const post = postData.data;
-      setFormData({
+      const seeded: typeof formData = {
         category: post.category,
         titleEn: post.titleEn || '',
         titlePl: post.titlePl || '',
@@ -100,7 +103,9 @@ export default function AdminPostForm() {
         caseStudyTestimonialEn: post.caseStudyTestimonialEn || '',
         caseStudyTestimonialPl: post.caseStudyTestimonialPl || '',
         caseStudyTestimonialAuthor: post.caseStudyTestimonialAuthor || '',
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
       setMedia(post.media || []);
       // Auto-expand if there's existing case study content in either language
       if (hasAnyCaseStudyText(post)) {
@@ -112,6 +117,7 @@ export default function AdminPostForm() {
   const createMutation = useMutation({
     mutationFn: (data: PostCreateRequest) => adminPostsApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
@@ -126,6 +132,7 @@ export default function AdminPostForm() {
   const updateMutation = useMutation({
     mutationFn: (data: PostUpdateRequest) => adminPostsApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.post(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
@@ -201,7 +208,7 @@ export default function AdminPostForm() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <button
-            onClick={() => navigate('/admin/posts')}
+            onClick={() => confirmLeave() && navigate('/admin/posts')}
             className="p-2 text-dark-400 hover:text-dark-100 hover:bg-dark-700 rounded-lg transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -616,7 +623,7 @@ export default function AdminPostForm() {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/posts')}
+            onClick={() => confirmLeave() && navigate('/admin/posts')}
             className="btn-secondary"
           >
             {t('common.cancel')}

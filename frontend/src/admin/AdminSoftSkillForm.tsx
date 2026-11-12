@@ -9,6 +9,7 @@ import { SoftSkillCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSoftSkillForm() {
@@ -29,6 +30,8 @@ export default function AdminSoftSkillForm() {
     level: 5,
     categoryId: '',
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
   const { data: skillData, isLoading: skillLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.softSkill(id!),
@@ -46,7 +49,7 @@ export default function AdminSoftSkillForm() {
   useEffect(() => {
     if (skillData?.data) {
       const skill = skillData.data;
-      setFormData({
+      const seeded: typeof formData = {
         nameEn: skill.nameEn,
         namePl: skill.namePl,
         descriptionEn: skill.descriptionEn || '',
@@ -56,13 +59,16 @@ export default function AdminSoftSkillForm() {
         icon: skill.icon || '',
         level: skill.level ?? 5,
         categoryId: skill.categoryId || '',
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [skillData]);
 
   const createMutation = useMutation({
     mutationFn: (data: SoftSkillCreateRequest) => adminSoftSkillsApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
@@ -77,6 +83,7 @@ export default function AdminSoftSkillForm() {
   const updateMutation = useMutation({
     mutationFn: (data: SoftSkillCreateRequest) => adminSoftSkillsApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkill(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
@@ -126,7 +133,7 @@ export default function AdminSoftSkillForm() {
       {/* Header */}
       <div className="flex items-center space-x-4">
         <button
-          onClick={() => navigate('/admin/soft-skills')}
+          onClick={() => confirmLeave() && navigate('/admin/soft-skills')}
           className="p-2 text-dark-400 hover:text-dark-100 hover:bg-dark-700 rounded-lg transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -284,7 +291,7 @@ export default function AdminSoftSkillForm() {
         <div className="flex justify-end space-x-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/soft-skills')}
+            onClick={() => confirmLeave() && navigate('/admin/soft-skills')}
             className="btn-secondary"
           >
             {t('common.cancel')}

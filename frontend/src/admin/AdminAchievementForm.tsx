@@ -9,6 +9,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { AchievementCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import LoadError from '@/admin/components/LoadError';
+import { useUnsavedChanges } from './hooks/useUnsavedChanges';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminAchievementForm() {
@@ -26,6 +27,8 @@ export default function AdminAchievementForm() {
     icon: '',
     year: '',
   });
+  const [baseline, setBaseline] = useState(() => JSON.stringify(formData));
+  const { confirmLeave } = useUnsavedChanges(JSON.stringify(formData) !== baseline);
 
   const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.achievement(id!),
@@ -36,20 +39,23 @@ export default function AdminAchievementForm() {
   useEffect(() => {
     if (data?.data) {
       const achievement = data.data;
-      setFormData({
+      const seeded: typeof formData = {
         titleEn: achievement.titleEn,
         titlePl: achievement.titlePl,
         descriptionEn: achievement.descriptionEn || '',
         descriptionPl: achievement.descriptionPl || '',
         icon: achievement.icon || '',
         year: achievement.year || '',
-      });
+      };
+      setFormData(seeded);
+      setBaseline(JSON.stringify(seeded));
     }
   }, [data]);
 
   const createMutation = useMutation({
     mutationFn: (data: AchievementCreateRequest) => adminAchievementsApi.create(data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       toast.success('Achievement created');
@@ -63,6 +69,7 @@ export default function AdminAchievementForm() {
   const updateMutation = useMutation({
     mutationFn: (data: AchievementCreateRequest) => adminAchievementsApi.update(id!, data),
     onSuccess: () => {
+      setBaseline(JSON.stringify(formData));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       toast.success('Achievement updated');
@@ -101,7 +108,7 @@ export default function AdminAchievementForm() {
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => navigate('/admin/achievements')}
+          onClick={() => confirmLeave() && navigate('/admin/achievements')}
           className="p-2 text-dark-400 hover:text-dark-100 transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -203,7 +210,7 @@ export default function AdminAchievementForm() {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={() => navigate('/admin/achievements')}
+            onClick={() => confirmLeave() && navigate('/admin/achievements')}
             className="btn-secondary"
           >
             {t('common.cancel')}
