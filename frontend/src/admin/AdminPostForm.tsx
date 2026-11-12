@@ -10,6 +10,26 @@ import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import MediaManager from '@/admin/components/MediaManager';
 import RichTextEditor from '@/components/RichTextEditor';
+import { getApiErrorMessage } from '@/lib/apiError';
+
+// Mirrors the backend rule: a case study exists when the challenge, solution, results or testimonial
+// has text. The form edits both languages, so text in either one counts.
+type CaseStudyField = 'caseStudyChallenge' | 'caseStudySolution' | 'caseStudyResults' | 'caseStudyTestimonial';
+
+function hasAnyCaseStudyText(
+  post: Partial<Record<`${CaseStudyField}${'En' | 'Pl'}`, string | null>>
+): boolean {
+  return [
+    post.caseStudyChallengeEn,
+    post.caseStudySolutionEn,
+    post.caseStudyResultsEn,
+    post.caseStudyTestimonialEn,
+    post.caseStudyChallengePl,
+    post.caseStudySolutionPl,
+    post.caseStudyResultsPl,
+    post.caseStudyTestimonialPl,
+  ].some((text) => Boolean(text?.trim()));
+}
 
 export default function AdminPostForm() {
   const { id } = useParams<{ id: string }>();
@@ -58,8 +78,8 @@ export default function AdminPostForm() {
       const post = postData.data;
       setFormData({
         category: post.category,
-        titleEn: post.titleEn,
-        titlePl: post.titlePl,
+        titleEn: post.titleEn || '',
+        titlePl: post.titlePl || '',
         slug: post.slug,
         excerptEn: post.excerptEn || '',
         excerptPl: post.excerptPl || '',
@@ -81,8 +101,8 @@ export default function AdminPostForm() {
         caseStudyTestimonialAuthor: post.caseStudyTestimonialAuthor || '',
       });
       setMedia(post.media || []);
-      // Auto-expand if there's existing case study content
-      if (post.hasCaseStudy) {
+      // Auto-expand if there's existing case study content in either language
+      if (hasAnyCaseStudyText(post)) {
         setCaseStudyExpanded(true);
       }
     }
@@ -97,8 +117,8 @@ export default function AdminPostForm() {
       toast.success('Post created successfully');
       navigate('/admin/posts');
     },
-    onError: () => {
-      toast.error('Failed to create post');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create post'));
     },
   });
 
@@ -113,17 +133,19 @@ export default function AdminPostForm() {
       toast.success('Post updated successfully');
       navigate('/admin/posts');
     },
-    onError: () => {
-      toast.error('Failed to update post');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update post'));
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // A blank slug is omitted so update keeps the stored one and create lets the backend generate it
+    const submitData = { ...formData, slug: formData.slug?.trim() || undefined };
     if (isEditing) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(submitData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(submitData);
     }
   };
 
@@ -162,11 +184,7 @@ export default function AdminPostForm() {
     }
   };
 
-  const hasCaseStudyContent = Boolean(
-    formData.caseStudyChallengeEn ||
-    formData.caseStudySolutionEn ||
-    formData.caseStudyResultsEn
-  );
+  const hasCaseStudyContent = hasAnyCaseStudyText(formData);
 
   if (postLoading) {
     return <LoadingSpinner />;

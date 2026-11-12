@@ -9,6 +9,7 @@ import { queryKeys } from '@/lib/queryKeys';
 import { InterestCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminInterestForm() {
   const { t } = useTranslation();
@@ -52,8 +53,8 @@ export default function AdminInterestForm() {
       toast.success('Interest created');
       navigate('/admin/interests');
     },
-    onError: () => {
-      toast.error('Failed to create interest');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create interest'));
     },
   });
 
@@ -64,8 +65,8 @@ export default function AdminInterestForm() {
       toast.success('Interest updated');
       navigate('/admin/interests');
     },
-    onError: () => {
-      toast.error('Failed to update interest');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update interest'));
     },
   });
 
@@ -90,8 +91,8 @@ export default function AdminInterestForm() {
       if (response.data) {
         setFormData((prev) => ({ ...prev, [field]: response.data.url }));
       }
-    } catch {
-      toast.error('Failed to upload image');
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, 'Failed to upload image'));
     } finally {
       setUploading((prev) => ({ ...prev, [field]: false }));
     }

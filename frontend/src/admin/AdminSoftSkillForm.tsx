@@ -8,6 +8,7 @@ import { adminSoftSkillsApi, adminSkillCategoriesApi } from '@/services/api';
 import { SoftSkillCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSoftSkillForm() {
   const { id } = useParams<{ id: string }>();
@@ -66,8 +67,8 @@ export default function AdminSoftSkillForm() {
       toast.success('Soft skill created successfully');
       navigate('/admin/soft-skills');
     },
-    onError: () => {
-      toast.error('Failed to create soft skill');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create soft skill'));
     },
   });
 
@@ -80,8 +81,8 @@ export default function AdminSoftSkillForm() {
       toast.success('Soft skill updated successfully');
       navigate('/admin/soft-skills');
     },
-    onError: () => {
-      toast.error('Failed to update soft skill');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update soft skill'));
     },
   });
 
@@ -89,7 +90,8 @@ export default function AdminSoftSkillForm() {
     e.preventDefault();
     const submitData = {
       ...formData,
-      categoryId: formData.categoryId || undefined,
+      // null (not undefined) tells the backend to clear the category; undefined is dropped from the JSON
+      categoryId: formData.categoryId || null,
     };
     if (isEditing) {
       updateMutation.mutate(submitData);
@@ -222,7 +224,7 @@ export default function AdminSoftSkillForm() {
               <label className="label">Category</label>
               <select
                 name="categoryId"
-                value={formData.categoryId}
+                value={formData.categoryId ?? ''}
                 onChange={handleChange}
                 className="input"
               >

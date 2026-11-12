@@ -7,6 +7,7 @@ import { adminSettingsApi } from '@/services/api';
 import { SiteSettingsUpdateRequest, StatItemInput } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSettings() {
   const { t } = useTranslation();
@@ -87,8 +88,8 @@ export default function AdminSettings() {
       queryClient.invalidateQueries({ queryKey: ['settings'] });
       toast.success(t('admin.settings.title') + ' updated successfully');
     },
-    onError: () => {
-      toast.error('Failed to update settings');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update settings'));
     },
   });
 

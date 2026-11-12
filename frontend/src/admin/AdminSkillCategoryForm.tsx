@@ -8,6 +8,7 @@ import { adminSkillCategoriesApi } from '@/services/api';
 import { SkillCategoryCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSkillCategoryForm() {
   const { id } = useParams<{ id: string }>();
@@ -45,8 +46,8 @@ export default function AdminSkillCategoryForm() {
       toast.success('Category created successfully');
       navigate('/admin/skill-categories');
     },
-    onError: () => {
-      toast.error('Failed to create category');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create category'));
     },
   });
 
@@ -59,8 +60,8 @@ export default function AdminSkillCategoryForm() {
       toast.success('Category updated successfully');
       navigate('/admin/skill-categories');
     },
-    onError: () => {
-      toast.error('Failed to update category');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update category'));
     },
   });
 

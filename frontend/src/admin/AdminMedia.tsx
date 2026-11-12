@@ -10,6 +10,8 @@ import { Media, MediaType } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
+import ConfirmDeleteModal from '@/admin/components/ConfirmDeleteModal';
 
 const mediaTypeIcons: Record<MediaType, typeof Image> = {
   [MediaType.IMAGE]: Image,
@@ -21,6 +23,7 @@ const mediaTypeIcons: Record<MediaType, typeof Image> = {
 export default function AdminMedia() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; message: string } | null>(null);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
@@ -35,8 +38,8 @@ export default function AdminMedia() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.media() });
       toast.success(t('admin.media.upload') + ' successful');
     },
-    onError: () => {
-      toast.error('Failed to upload file');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to upload file'));
     },
   });
 
@@ -45,10 +48,11 @@ export default function AdminMedia() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.media() });
       setSelectedMedia(null);
+      setDeleteTarget(null);
       toast.success('Media deleted successfully');
     },
-    onError: () => {
-      toast.error('Failed to delete media');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete media'));
     },
   });
 
@@ -75,9 +79,7 @@ export default function AdminMedia() {
   const media = data?.data?.content || [];
 
   const handleDelete = (item: Media) => {
-    if (window.confirm(`Are you sure you want to delete "${item.originalName}"?`)) {
-      deleteMutation.mutate(item.id);
-    }
+    setDeleteTarget({ id: item.id, message: `Are you sure you want to delete "${item.originalName}"?` });
   };
 
   const formatFileSize = (bytes: number) => {
@@ -235,6 +237,15 @@ export default function AdminMedia() {
           </div>
         </div>
       )}
+
+      <ConfirmDeleteModal
+        open={deleteTarget !== null}
+        title={t('admin.common.confirmDelete')}
+        message={deleteTarget?.message ?? ''}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

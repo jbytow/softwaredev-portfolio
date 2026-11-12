@@ -17,6 +17,8 @@ export default function AdminLogin() {
     const error = searchParams.get('error');
     if (error === 'not_authorized') {
       toast.error(t('admin.auth.notAuthorized'));
+    } else if (error === 'oauth_failed') {
+      toast.error(t('admin.auth.oauthFailed'));
     }
   }, [searchParams, t]);
 
@@ -51,7 +53,7 @@ export default function AdminLogin() {
 
           <div className="card space-y-4">
             <button
-              onClick={() => login('google')}
+              onClick={() => login()}
               className="w-full flex items-center justify-center px-6 py-3 bg-white text-gray-800 rounded-lg font-medium hover:bg-gray-100 transition-colors"
             >
               <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">

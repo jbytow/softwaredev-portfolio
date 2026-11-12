@@ -25,6 +25,8 @@ import { adminRpgStatsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { RpgStat } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
+import ConfirmDeleteModal from '@/admin/components/ConfirmDeleteModal';
 
 function SortableRpgStatItem({
   stat,
@@ -90,6 +92,7 @@ function SortableRpgStatItem({
 export default function AdminRpgStats() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; message: string } | null>(null);
   const [stats, setStats] = useState<RpgStat[]>([]);
 
   const sensors = useSensors(
@@ -112,18 +115,19 @@ export default function AdminRpgStats() {
     mutationFn: (id: string) => adminRpgStatsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
+      setDeleteTarget(null);
       toast.success('RPG stat deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete RPG stat');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete RPG stat'));
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminRpgStatsApi.reorder(items),
-    onError: () => {
-      toast.error('Failed to reorder');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to reorder'));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
     },
   });
@@ -145,9 +149,7 @@ export default function AdminRpgStats() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this RPG stat?')) {
-      deleteMutation.mutate(id);
-    }
+    setDeleteTarget({ id, message: 'Are you sure you want to delete this RPG stat?' });
   };
 
   if (isLoading) {
@@ -195,6 +197,15 @@ export default function AdminRpgStats() {
           </SortableContext>
         </DndContext>
       )}
+
+      <ConfirmDeleteModal
+        open={deleteTarget !== null}
+        title={t('admin.common.confirmDelete')}
+        message={deleteTarget?.message ?? ''}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

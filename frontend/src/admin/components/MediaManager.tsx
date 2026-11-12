@@ -22,6 +22,7 @@ import toast from 'react-hot-toast';
 import { adminMediaApi } from '@/services/api';
 import { Media, MediaType } from '@/types';
 import { getMediaUrl } from '@/lib/mediaUrl';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 interface MediaManagerProps {
   postId: string;
@@ -69,6 +70,7 @@ function SortableMediaItem({ item, onDelete }: SortableMediaItemProps) {
 
       {/* Delete button */}
       <button
+        type="button"
         onClick={() => onDelete(item.id)}
         className="absolute top-2 right-2 p-1 rounded bg-red-500/70 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 z-10"
       >
@@ -120,8 +122,8 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         toast.success('Media uploaded');
       }
     },
-    onError: () => {
-      toast.error('Failed to upload media');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to upload media'));
     },
   });
 
@@ -134,8 +136,8 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         toast.success('YouTube video added');
       }
     },
-    onError: () => {
-      toast.error('Failed to add YouTube video');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to add YouTube video'));
     },
   });
 
@@ -145,16 +147,16 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
       onMediaChange(media.filter((m) => m.id !== deletedId));
       toast.success('Media deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete media');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete media'));
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminMediaApi.reorder(postId, items),
-    onError: () => {
-      toast.error('Failed to save order');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to save order'));
     },
   });
 
@@ -255,6 +257,13 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
             type="text"
             value={youtubeUrl}
             onChange={(e) => setYoutubeUrl(e.target.value)}
+            onKeyDown={(e) => {
+              // Enter would otherwise submit the surrounding post form
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleYouTubeAdd();
+              }
+            }}
             placeholder="Paste YouTube URL..."
             className="input pl-10"
           />

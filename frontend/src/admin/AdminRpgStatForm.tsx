@@ -8,6 +8,7 @@ import { adminRpgStatsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { RpgStatCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminRpgStatForm() {
   const { t } = useTranslation();
@@ -54,8 +55,8 @@ export default function AdminRpgStatForm() {
       toast.success('RPG stat created');
       navigate('/admin/rpg-stats');
     },
-    onError: () => {
-      toast.error('Failed to create RPG stat');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to create RPG stat'));
     },
   });
 
@@ -66,8 +67,8 @@ export default function AdminRpgStatForm() {
       toast.success('RPG stat updated');
       navigate('/admin/rpg-stats');
     },
-    onError: () => {
-      toast.error('Failed to update RPG stat');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update RPG stat'));
     },
   });
 

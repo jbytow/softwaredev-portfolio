@@ -15,15 +15,16 @@ export interface Post {
   category: Category;
   categoryLabel: string;
   title: string;
-  titleEn: string;
-  titlePl: string;
+  // Raw *En/*Pl fields are filled only in admin responses; public ones carry the locale-resolved field
+  titleEn: string | null;
+  titlePl: string | null;
   slug: string;
   excerpt: string;
-  excerptEn: string;
-  excerptPl: string;
+  excerptEn: string | null;
+  excerptPl: string | null;
   content: Record<string, unknown>;
-  contentEn: Record<string, unknown>;
-  contentPl: Record<string, unknown>;
+  contentEn: Record<string, unknown> | null;
+  contentPl: Record<string, unknown> | null;
   featuredImage: string | null;
   githubUrl: string | null;
   liveUrl: string | null;
@@ -119,14 +120,6 @@ export interface Media {
   displayOrder: number;
   videoUrl: string | null;
   createdAt: string;
-}
-
-export interface CategoryInfo {
-  value: Category;
-  label: string;
-  labelEn: string;
-  labelPl: string;
-  postCount: number;
 }
 
 export interface SiteSettings {
@@ -236,7 +229,7 @@ export interface SoftSkillCreateRequest {
   icon?: string;
   level?: number;
   displayOrder?: number;
-  categoryId?: string;
+  categoryId?: string | null;
 }
 
 export type SoftSkillUpdateRequest = Partial<SoftSkillCreateRequest>;

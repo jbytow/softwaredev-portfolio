@@ -25,6 +25,8 @@ import { adminAchievementsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { Achievement } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
+import ConfirmDeleteModal from '@/admin/components/ConfirmDeleteModal';
 
 function SortableAchievementItem({
   achievement,
@@ -92,6 +94,7 @@ function SortableAchievementItem({
 export default function AdminAchievements() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; message: string } | null>(null);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
 
   const sensors = useSensors(
@@ -114,18 +117,19 @@ export default function AdminAchievements() {
     mutationFn: (id: string) => adminAchievementsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
+      setDeleteTarget(null);
       toast.success('Achievement deleted');
     },
-    onError: () => {
-      toast.error('Failed to delete achievement');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete achievement'));
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminAchievementsApi.reorder(items),
-    onError: () => {
-      toast.error('Failed to reorder');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to reorder'));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
     },
   });
@@ -147,9 +151,7 @@ export default function AdminAchievements() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('Are you sure you want to delete this achievement?')) {
-      deleteMutation.mutate(id);
-    }
+    setDeleteTarget({ id, message: 'Are you sure you want to delete this achievement?' });
   };
 
   if (isLoading) {
@@ -197,6 +199,15 @@ export default function AdminAchievements() {
           </SortableContext>
         </DndContext>
       )}
+
+      <ConfirmDeleteModal
+        open={deleteTarget !== null}
+        title={t('admin.common.confirmDelete')}
+        message={deleteTarget?.message ?? ''}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

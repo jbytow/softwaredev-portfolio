@@ -18,10 +18,13 @@ import { Category, Post } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { getApiErrorMessage } from '@/lib/apiError';
+import ConfirmDeleteModal from '@/admin/components/ConfirmDeleteModal';
 
 export default function AdminPosts() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; message: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<Category | ''>('');
 
@@ -34,10 +37,11 @@ export default function AdminPosts() {
     mutationFn: (id: string) => adminPostsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      setDeleteTarget(null);
       toast.success('Post deleted successfully');
     },
-    onError: () => {
-      toast.error('Failed to delete post');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to delete post'));
     },
   });
 
@@ -47,8 +51,8 @@ export default function AdminPosts() {
       queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
       toast.success('Post status updated');
     },
-    onError: () => {
-      toast.error('Failed to update post status');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to update post status'));
     },
   });
 
@@ -58,9 +62,7 @@ export default function AdminPosts() {
   );
 
   const handleDelete = (post: Post) => {
-    if (window.confirm(`Are you sure you want to delete "${post.title}"?`)) {
-      deleteMutation.mutate(post.id);
-    }
+    setDeleteTarget({ id: post.id, message: `Are you sure you want to delete "${post.title}"?` });
   };
 
   if (isLoading) {
@@ -188,7 +190,8 @@ export default function AdminPosts() {
                       <div className="flex items-center justify-end space-x-2">
                         <button
                           onClick={() => togglePublishMutation.mutate(post.id)}
-                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors"
+                          disabled={togglePublishMutation.isPending}
+                          className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50"
                           title={post.published ? 'Unpublish' : 'Publish'}
                         >
                           {post.published ? (
@@ -218,6 +221,15 @@ export default function AdminPosts() {
           </div>
         )}
       </div>
+
+      <ConfirmDeleteModal
+        open={deleteTarget !== null}
+        title={t('admin.common.confirmDelete')}
+        message={deleteTarget?.message ?? ''}
+        isPending={deleteMutation.isPending}
+        onConfirm={() => deleteTarget && deleteMutation.mutate(deleteTarget.id)}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
