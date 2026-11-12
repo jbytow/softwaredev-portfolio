@@ -43,3 +43,6 @@ uploads/
 # Worktrees paczek audytu
 .worktrees/
 .superpowers/
+
+# TypeScript incremental build info
+frontend/*.tsbuildinfo
