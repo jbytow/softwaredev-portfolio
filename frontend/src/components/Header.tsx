@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, Palette } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -8,8 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useNerdMode } from '@/contexts/NerdModeContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useNerdTranslation } from '@/hooks/useNerdTranslation';
-import { settingsApi } from '@/services/api';
-import { queryKeys } from '@/lib/queryKeys';
+import { useSiteSettings } from '@/lib/useSiteSettings';
 
 const navItems = [
   { path: '/', labelKey: 'nav.home' },
@@ -45,10 +43,7 @@ export default function Header() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isMenuOpen]);
 
-  const { data: settingsData } = useQuery({
-    queryKey: queryKeys.settings(language),
-    queryFn: () => settingsApi.get(),
-  });
+  const { data: settingsData } = useSiteSettings();
 
   const settings = settingsData?.data;
 
