@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.startsWith;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -153,6 +154,53 @@ class SecurityConfigTest {
                             .content("""
                                     {"name":"Jan","email":"jan@example.com","subject":"Hi","message":"Hello"}
                                     """))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    @DisplayName("admin role")
+    class AdminRole {
+
+        @Test
+        @DisplayName("token issued to an e-mail later removed from the allowlist gets 403")
+        void delistedAdminTokenIs403() throws Exception {
+            String token = jwtService.generateToken("former@test.com", "Former", true);
+
+            mockMvc.perform(get("/api/admin/posts").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+            mockMvc.perform(get("/api/admin/rpg-stats").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+            mockMvc.perform(get("/api/admin/auth/me").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("authenticated principal without ROLE_ADMIN (isAdmin=false) gets 403")
+        void nonAdminTokenIs403() throws Exception {
+            String token = jwtService.generateToken(ADMIN_EMAIL, "Admin", false);
+
+            mockMvc.perform(get("/api/admin/posts").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+            mockMvc.perform(get("/api/admin/rpg-stats").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("token without the isAdmin claim gets 403, not a server error")
+        void tokenWithoutIsAdminClaimIs403() throws Exception {
+            String token = jwtService.generateToken(Map.of("name", "No Claim"), ADMIN_EMAIL);
+
+            mockMvc.perform(get("/api/admin/posts").cookie(authCookie(token)))
+                    .andExpect(status().isForbidden());
+        }
+
+        @Test
+        @DisplayName("allowlisted admin reaches an RPG admin route")
+        void adminReachesRpgAdminRoute() throws Exception {
+            String token = jwtService.generateToken(ADMIN_EMAIL, "Admin", true);
+
+            mockMvc.perform(get("/api/admin/rpg-stats").cookie(authCookie(token)))
                     .andExpect(status().isOk());
         }
     }

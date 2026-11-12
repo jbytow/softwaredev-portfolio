@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -190,6 +192,14 @@ class JwtServiceTest {
         @DisplayName("should return false when user is not admin")
         void shouldReturnFalseForNonAdmin() {
             String token = jwtService.generateToken("user@example.com", "User", false);
+
+            assertThat(jwtService.extractIsAdmin(token)).isFalse();
+        }
+
+        @Test
+        @DisplayName("should return false when the isAdmin claim is missing")
+        void shouldReturnFalseWhenClaimMissing() {
+            String token = jwtService.generateToken(Map.of("name", "No Claim"), "user@example.com");
 
             assertThat(jwtService.extractIsAdmin(token)).isFalse();
         }

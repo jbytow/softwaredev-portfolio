@@ -78,7 +78,7 @@ public class JwtService {
 
     public boolean extractIsAdmin(String token) {
         Claims claims = extractAllClaims(token);
-        return claims.get("isAdmin", Boolean.class);
+        return Boolean.TRUE.equals(claims.get("isAdmin", Boolean.class));
     }
 
     public String extractName(String token) {

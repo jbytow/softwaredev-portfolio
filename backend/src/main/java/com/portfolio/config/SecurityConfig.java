@@ -60,8 +60,8 @@ public class SecurityConfig {
                         .requestMatchers("/login/oauth2/**").permitAll()
                         // Clearing the auth cookie must work even when the token has already expired
                         .requestMatchers(HttpMethod.POST, "/api/admin/auth/logout").permitAll()
-                        // Admin endpoints require authentication
-                        .requestMatchers("/api/admin/**").authenticated()
+                        // Admin endpoints require the allowlist-backed admin role, not just any token
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll())
                 // Without this, oauth2Login makes every unauthenticated XHR a 302 to Google
                 .exceptionHandling(exceptions -> exceptions
