@@ -583,3 +583,16 @@
 .ProseMirror p {
   @apply my-2;
 }
+
+/* Must stay the last block: the reduced-motion test slices the stylesheet from here.
+   Durations shrink instead of animation: none, so reveal animations still end in their visible state. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

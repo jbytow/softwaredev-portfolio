@@ -27,7 +27,8 @@
     "contactMe": "Contact Me",
     "contactMe_nerd": "Summon Me",
     "downloadCV": "Download CV",
-    "optional": "optional"
+    "optional": "optional",
+    "skipToContent": "Skip to content"
   },
   "nav": {
     "home": "Home",
@@ -283,5 +284,17 @@
     "quickLinks_nerd": "Waypoints",
     "tagline": "Building software solutions with Java, Spring Boot, React, and more.",
     "tagline_nerd": "Crafting software artifacts with arcane tools."
+  },
+  "errors": {
+    "boundary": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please reload the page.",
+      "reload": "Reload page"
+    }
+  },
+  "notFound": {
+    "backHome": "Back to the home page",
+    "message": "The page you are looking for does not exist or has been moved.",
+    "title": "Page not found"
   }
 }
