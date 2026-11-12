@@ -1,7 +1,9 @@
 package com.portfolio.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.portfolio.security.JwtAuthenticationFilter;
 import com.portfolio.security.OAuth2AuthenticationSuccessHandler;
+import com.portfolio.security.OriginCheckFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +37,7 @@ public class SecurityConfig {
 
     private final OAuth2AuthenticationSuccessHandler oAuth2SuccessHandler;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
@@ -49,26 +53,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/api/health").permitAll()
-                        .requestMatchers("/api/posts/**").permitAll()
-                        .requestMatchers("/api/categories/**").permitAll()
-                        .requestMatchers("/api/settings").permitAll()
-                        .requestMatchers("/api/soft-skills/**").permitAll()
-                        .requestMatchers("/api/skill-categories/**").permitAll()
-                        .requestMatchers("/api/experiences/**").permitAll()
-                        .requestMatchers("/api/interests/**").permitAll()
-                        .requestMatchers("/api/achievements/**").permitAll()
-                        .requestMatchers("/api/rpg-stats/**").permitAll()
-                        .requestMatchers("/api/contact").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/media/**").permitAll()
-                        // OAuth endpoints
-                        .requestMatchers("/oauth2/**").permitAll()
-                        .requestMatchers("/login/oauth2/**").permitAll()
                         // Clearing the auth cookie must work even when the token has already expired
                         .requestMatchers(HttpMethod.POST, "/api/admin/auth/logout").permitAll()
                         // Admin endpoints require the allowlist-backed admin role, not just any token
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        // Public by default on purpose (owner decision D5): only the admin API is protected
                         .anyRequest().permitAll())
                 // Without this, oauth2Login makes every unauthenticated XHR a 302 to Google
                 .exceptionHandling(exceptions -> exceptions
@@ -82,6 +71,8 @@ public class SecurityConfig {
                             log.warn("OAuth login failed: {}", exception.getClass().getSimpleName());
                             response.sendRedirect(frontendUrl + "/admin/login?error=oauth_failed");
                         }))
+                // Before CorsFilter, so a foreign Origin on an admin write is always answered and logged here
+                .addFilterBefore(new OriginCheckFilter(frontendUrl, objectMapper), CorsFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
