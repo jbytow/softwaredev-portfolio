@@ -58,6 +58,9 @@ spring:
           writetimeout: 10000
 
 server:
+  servlet:
+    session:
+      timeout: 5m
   port: 8080
   forward-headers-strategy: framework
   shutdown: graceful
