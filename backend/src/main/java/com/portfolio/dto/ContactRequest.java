@@ -23,4 +23,8 @@ public class ContactRequest {
     @NotBlank(message = "Message is required")
     @Size(max = 5000, message = "Message must be less than 5000 characters")
     private String message;
+
+    // Honeypot: hidden in the form, so only bots fill it
+    @Size(max = 200, message = "Website must be less than 200 characters")
+    private String website;
 }
