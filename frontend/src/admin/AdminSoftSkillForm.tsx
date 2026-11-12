@@ -8,6 +8,7 @@ import { adminSoftSkillsApi, adminSkillCategoriesApi } from '@/services/api';
 import { SoftSkillCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSoftSkillForm() {
@@ -29,7 +30,7 @@ export default function AdminSoftSkillForm() {
     categoryId: '',
   });
 
-  const { data: skillData, isLoading: skillLoading } = useQuery({
+  const { data: skillData, isLoading: skillLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.softSkill(id!),
     queryFn: () => adminSoftSkillsApi.getById(id!),
     enabled: isEditing,
@@ -63,7 +64,8 @@ export default function AdminSoftSkillForm() {
     mutationFn: (data: SoftSkillCreateRequest) => adminSoftSkillsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
-      queryClient.invalidateQueries({ queryKey: ['softSkills'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Soft skill created successfully');
       navigate('/admin/soft-skills');
     },
@@ -77,7 +79,8 @@ export default function AdminSoftSkillForm() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkill(id!) });
-      queryClient.invalidateQueries({ queryKey: ['softSkills'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Soft skill updated successfully');
       navigate('/admin/soft-skills');
     },
@@ -112,6 +115,10 @@ export default function AdminSoftSkillForm() {
 
   if (skillLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !skillData) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   return (

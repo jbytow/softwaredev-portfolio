@@ -8,6 +8,7 @@ import { adminSkillCategoriesApi } from '@/services/api';
 import { SkillCategoryCreateRequest } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSkillCategoryForm() {
@@ -22,7 +23,7 @@ export default function AdminSkillCategoryForm() {
     namePl: '',
   });
 
-  const { data: categoryData, isLoading: categoryLoading } = useQuery({
+  const { data: categoryData, isLoading: categoryLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.skillCategory(id!),
     queryFn: () => adminSkillCategoriesApi.getById(id!),
     enabled: isEditing,
@@ -42,7 +43,8 @@ export default function AdminSkillCategoryForm() {
     mutationFn: (data: SkillCategoryCreateRequest) => adminSkillCategoriesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
-      queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Category created successfully');
       navigate('/admin/skill-categories');
     },
@@ -56,7 +58,8 @@ export default function AdminSkillCategoryForm() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategory(id!) });
-      queryClient.invalidateQueries({ queryKey: ['skillCategories'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       toast.success('Category updated successfully');
       navigate('/admin/skill-categories');
     },
@@ -86,6 +89,10 @@ export default function AdminSkillCategoryForm() {
 
   if (categoryLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !categoryData) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   return (

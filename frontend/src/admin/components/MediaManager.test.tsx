@@ -13,6 +13,19 @@ const api = vi.hoisted(() => ({
 vi.mock('@/services/api', () => ({ adminMediaApi: api }));
 vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() } }));
 
+// jsdom has no layout, so the drag is simulated by calling the handler the manager hands to DndContext
+const dnd = vi.hoisted(() => ({ onDragEnd: null as null | ((event: unknown) => void) }));
+vi.mock('@dnd-kit/core', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@dnd-kit/core')>();
+  return {
+    ...actual,
+    DndContext: ({ children, onDragEnd }: { children: React.ReactNode; onDragEnd: (event: unknown) => void }) => {
+      dnd.onDragEnd = onDragEnd;
+      return <>{children}</>;
+    },
+  };
+});
+
 const item: Media = {
   id: 'm1',
   postId: 'p1',
@@ -86,5 +99,18 @@ describe('MediaManager inside a form', () => {
     const field = screen.getByPlaceholderText(/youtube/i);
     fireEvent.keyDown(field, { key: 'Enter' });
     expect(api.createYouTube).not.toHaveBeenCalled();
+  });
+
+  it('restores the previous order when saving a reorder fails', async () => {
+    api.reorder.mockRejectedValue(new Error('boom'));
+    const second = { ...item, id: 'm2', displayOrder: 1 };
+    const { onMediaChange } = renderInsideForm([item, second]);
+
+    dnd.onDragEnd?.({ active: { id: 'm1' }, over: { id: 'm2' } });
+
+    await waitFor(() => expect(api.reorder).toHaveBeenCalled());
+    await waitFor(() => expect(onMediaChange).toHaveBeenCalledTimes(2));
+    expect(onMediaChange.mock.calls[0][0].map((m: Media) => m.id)).toEqual(['m2', 'm1']);
+    expect(onMediaChange.mock.calls[1][0].map((m: Media) => m.id)).toEqual(['m1', 'm2']);
   });
 });

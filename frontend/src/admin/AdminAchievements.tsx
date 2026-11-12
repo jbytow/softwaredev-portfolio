@@ -117,6 +117,7 @@ export default function AdminAchievements() {
     mutationFn: (id: string) => adminAchievementsApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       setDeleteTarget(null);
       toast.success('Achievement deleted');
     },
@@ -128,6 +129,9 @@ export default function AdminAchievements() {
   const reorderMutation = useMutation({
     mutationFn: (items: { id: string; displayOrder: number }[]) =>
       adminAchievementsApi.reorder(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
+    },
     onError: (error) => {
       toast.error(getApiErrorMessage(error, 'Failed to reorder'));
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
@@ -139,6 +143,7 @@ export default function AdminAchievements() {
     if (over && active.id !== over.id) {
       const oldIndex = achievements.findIndex((i) => i.id === active.id);
       const newIndex = achievements.findIndex((i) => i.id === over.id);
+      const previous = achievements;
       const newItems = arrayMove(achievements, oldIndex, newIndex);
       setAchievements(newItems);
 
@@ -146,7 +151,7 @@ export default function AdminAchievements() {
         id: item.id,
         displayOrder: index,
       }));
-      reorderMutation.mutate(reorderItems);
+      reorderMutation.mutate(reorderItems, { onError: () => setAchievements(previous) });
     }
   };
 

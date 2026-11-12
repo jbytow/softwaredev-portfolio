@@ -8,6 +8,7 @@ import { adminAchievementsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { AchievementCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminAchievementForm() {
@@ -26,7 +27,7 @@ export default function AdminAchievementForm() {
     year: '',
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.achievement(id!),
     queryFn: () => adminAchievementsApi.getById(id!),
     enabled: isEditing,
@@ -50,6 +51,7 @@ export default function AdminAchievementForm() {
     mutationFn: (data: AchievementCreateRequest) => adminAchievementsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       toast.success('Achievement created');
       navigate('/admin/achievements');
     },
@@ -62,6 +64,7 @@ export default function AdminAchievementForm() {
     mutationFn: (data: AchievementCreateRequest) => adminAchievementsApi.update(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.achievements() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.achievements() });
       toast.success('Achievement updated');
       navigate('/admin/achievements');
     },
@@ -86,6 +89,10 @@ export default function AdminAchievementForm() {
 
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !data) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   const isPending = createMutation.isPending || updateMutation.isPending;

@@ -8,6 +8,7 @@ import { adminRpgStatsApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { RpgStatCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminRpgStatForm() {
@@ -27,7 +28,7 @@ export default function AdminRpgStatForm() {
   });
   const [skillsText, setSkillsText] = useState('');
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.rpgStat(id!),
     queryFn: () => adminRpgStatsApi.getById(id!),
     enabled: isEditing,
@@ -52,6 +53,7 @@ export default function AdminRpgStatForm() {
     mutationFn: (data: RpgStatCreateRequest) => adminRpgStatsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       toast.success('RPG stat created');
       navigate('/admin/rpg-stats');
     },
@@ -64,6 +66,7 @@ export default function AdminRpgStatForm() {
     mutationFn: (data: RpgStatCreateRequest) => adminRpgStatsApi.update(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.rpgStats() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.rpgStats() });
       toast.success('RPG stat updated');
       navigate('/admin/rpg-stats');
     },
@@ -93,6 +96,10 @@ export default function AdminRpgStatForm() {
 
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !data) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   const isPending = createMutation.isPending || updateMutation.isPending;

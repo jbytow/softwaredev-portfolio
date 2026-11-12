@@ -8,6 +8,7 @@ import { adminInterestsApi, adminMediaApi } from '@/services/api';
 import { queryKeys } from '@/lib/queryKeys';
 import { InterestCreateRequest } from '@/types';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import { getApiErrorMessage } from '@/lib/apiError';
 
@@ -27,7 +28,7 @@ export default function AdminInterestForm() {
   });
   const [uploading, setUploading] = useState<{ [key: string]: boolean }>({});
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.interest(id!),
     queryFn: () => adminInterestsApi.getById(id!),
     enabled: isEditing,
@@ -50,6 +51,7 @@ export default function AdminInterestForm() {
     mutationFn: (data: InterestCreateRequest) => adminInterestsApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       toast.success('Interest created');
       navigate('/admin/interests');
     },
@@ -62,6 +64,7 @@ export default function AdminInterestForm() {
     mutationFn: (data: InterestCreateRequest) => adminInterestsApi.update(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.interests() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.interests() });
       toast.success('Interest updated');
       navigate('/admin/interests');
     },
@@ -104,6 +107,10 @@ export default function AdminInterestForm() {
 
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !data) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   const isPending = createMutation.isPending || updateMutation.isPending;

@@ -26,4 +26,16 @@ describe('admin panel conventions', () => {
   it('confirms deletes through ConfirmDeleteModal, not native confirm()', () => {
     expect(linesMatching(/(?<![\w.])(window\.)?confirm\(/)).toEqual([]);
   });
+
+  it('invalidates through queryKeys, not hand-written key arrays', () => {
+    expect(linesMatching(/invalidateQueries\(\{ queryKey: \[/)).toEqual([]);
+  });
+
+  it('refreshes the public pages (queryKeys.prefix) wherever an admin mutation invalidates admin data', () => {
+    const offenders = Object.entries(sources)
+      .filter(([file, code]) => /invalidateQueries\(\{ queryKey: queryKeys\.admin\./.test(code) && !file.endsWith('AdminMedia.tsx'))
+      .filter(([, code]) => !/queryKeys\.prefix\./.test(code))
+      .map(([file]) => file);
+    expect(offenders).toEqual([]);
+  });
 });

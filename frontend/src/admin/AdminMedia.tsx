@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useDropzone } from 'react-dropzone';
 import toast from 'react-hot-toast';
 import { Upload, Trash2, Image, Film, FileText, X, Youtube } from 'lucide-react';
@@ -8,10 +8,13 @@ import { clsx } from 'clsx';
 import { adminMediaApi } from '@/services/api';
 import { Media, MediaType } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
+import { invalidateMediaConsumers } from '@/lib/mediaInvalidation';
 import { getMediaUrl } from '@/lib/mediaUrl';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import { getApiErrorMessage } from '@/lib/apiError';
 import ConfirmDeleteModal from '@/admin/components/ConfirmDeleteModal';
+
+const PAGE_SIZE = 100;
 
 const mediaTypeIcons: Record<MediaType, typeof Image> = {
   [MediaType.IMAGE]: Image,
@@ -26,16 +29,18 @@ export default function AdminMedia() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; message: string } | null>(null);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [page, setPage] = useState(0);
 
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.admin.media(),
-    queryFn: () => adminMediaApi.getAll(0, 100),
+    queryKey: queryKeys.admin.media(page, PAGE_SIZE),
+    queryFn: () => adminMediaApi.getAll(page, PAGE_SIZE),
+    placeholderData: keepPreviousData,
   });
 
   const uploadMutation = useMutation({
     mutationFn: (file: File) => adminMediaApi.upload(file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.media() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.mediaAll() });
       toast.success(t('admin.media.upload') + ' successful');
     },
     onError: (error) => {
@@ -46,7 +51,10 @@ export default function AdminMedia() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminMediaApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.admin.media() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.mediaAll() });
+      invalidateMediaConsumers(queryClient);
+      // Deleting the only item of the last page would otherwise leave an empty page
+      if (page > 0 && media.length === 1) setPage(page - 1);
       setSelectedMedia(null);
       setDeleteTarget(null);
       toast.success('Media deleted successfully');
@@ -77,6 +85,7 @@ export default function AdminMedia() {
   });
 
   const media = data?.data?.content || [];
+  const totalPages = data?.data?.totalPages ?? 0;
 
   const handleDelete = (item: Media) => {
     setDeleteTarget({ id: item.id, message: `Are you sure you want to delete "${item.originalName}"?` });
@@ -165,6 +174,30 @@ export default function AdminMedia() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4">
+          <button
+            type="button"
+            onClick={() => setPage(page - 1)}
+            disabled={page === 0}
+            className="btn-secondary disabled:opacity-50"
+          >
+            {t('common.previous')}
+          </button>
+          <span className="text-dark-400 text-sm">
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setPage(page + 1)}
+            disabled={page >= totalPages - 1}
+            className="btn-secondary disabled:opacity-50"
+          >
+            {t('common.next')}
+          </button>
         </div>
       )}
 

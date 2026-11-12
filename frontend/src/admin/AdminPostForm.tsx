@@ -8,6 +8,7 @@ import { adminPostsApi } from '@/services/api';
 import { Category, PostCreateRequest, PostUpdateRequest, Media } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import MediaManager from '@/admin/components/MediaManager';
 import RichTextEditor from '@/components/RichTextEditor';
 import { getApiErrorMessage } from '@/lib/apiError';
@@ -67,7 +68,7 @@ export default function AdminPostForm() {
   const [newHashtag, setNewHashtag] = useState('');
   const [caseStudyExpanded, setCaseStudyExpanded] = useState(false);
 
-  const { data: postData, isLoading: postLoading } = useQuery({
+  const { data: postData, isLoading: postLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.post(id!),
     queryFn: () => adminPostsApi.getById(id!),
     enabled: isEditing,
@@ -111,9 +112,9 @@ export default function AdminPostForm() {
   const createMutation = useMutation({
     mutationFn: (data: PostCreateRequest) => adminPostsApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['hashtags'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success('Post created successfully');
       navigate('/admin/posts');
     },
@@ -125,11 +126,11 @@ export default function AdminPostForm() {
   const updateMutation = useMutation({
     mutationFn: (data: PostUpdateRequest) => adminPostsApi.update(id!, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.post(id!) });
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['post'] });
-      queryClient.invalidateQueries({ queryKey: ['hashtags'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success('Post updated successfully');
       navigate('/admin/posts');
     },
@@ -188,6 +189,10 @@ export default function AdminPostForm() {
 
   if (postLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !postData) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   return (

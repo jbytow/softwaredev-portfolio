@@ -36,7 +36,10 @@ export default function AdminPosts() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminPostsApi.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       setDeleteTarget(null);
       toast.success('Post deleted successfully');
     },
@@ -48,7 +51,10 @@ export default function AdminPosts() {
   const togglePublishMutation = useMutation({
     mutationFn: (id: string) => adminPostsApi.togglePublish(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'posts'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.postsAll() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       toast.success('Post status updated');
     },
     onError: (error) => {

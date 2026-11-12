@@ -24,7 +24,7 @@ export default function AdminExperiences() {
     mutationFn: (id: string) => adminExperiencesApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.experiences() });
-      queryClient.invalidateQueries({ queryKey: ['experiences'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.experiences() });
       toast.success('Experience deleted successfully');
       setDeleteId(null);
     },

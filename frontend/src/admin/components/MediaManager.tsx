@@ -209,7 +209,7 @@ export default function MediaManager({ postId, media, onMediaChange }: MediaMana
         id: m.id,
         displayOrder: index,
       }));
-      reorderMutation.mutate(reorderItems);
+      reorderMutation.mutate(reorderItems, { onError: () => onMediaChange(media) });
     }
   };
 

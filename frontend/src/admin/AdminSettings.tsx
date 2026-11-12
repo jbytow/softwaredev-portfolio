@@ -7,6 +7,7 @@ import { adminSettingsApi } from '@/services/api';
 import { SiteSettingsUpdateRequest, StatItemInput } from '@/types';
 import { queryKeys } from '@/lib/queryKeys';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import LoadError from '@/admin/components/LoadError';
 import { getApiErrorMessage } from '@/lib/apiError';
 
 export default function AdminSettings() {
@@ -39,7 +40,7 @@ export default function AdminSettings() {
     statsItems: [],
   });
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError: loadFailed, refetch } = useQuery({
     queryKey: queryKeys.admin.settings(),
     queryFn: () => adminSettingsApi.get(),
   });
@@ -85,7 +86,7 @@ export default function AdminSettings() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.settings() });
       // Invalidate all public settings queries (matches all languages)
-      queryClient.invalidateQueries({ queryKey: ['settings'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.prefix.settings() });
       toast.success(t('admin.settings.title') + ' updated successfully');
     },
     onError: (error) => {
@@ -172,6 +173,10 @@ export default function AdminSettings() {
 
   if (isLoading) {
     return <LoadingSpinner />;
+  }
+
+  if (loadFailed && !data) {
+    return <LoadError onRetry={() => refetch()} />;
   }
 
   return (
