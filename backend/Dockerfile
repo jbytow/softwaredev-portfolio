@@ -33,9 +33,6 @@ RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app/uploads
 # Copy the built JAR
 COPY --from=build /app/target/*.jar app.jar
 
-# Change ownership of the application
-RUN chown -R appuser:appgroup /app
-
 # Switch to non-root user
 USER appuser
 
