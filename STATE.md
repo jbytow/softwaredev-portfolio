@@ -1,5 +1,5 @@
 # STATE - softwareDevPortfolioApp
-Aktualizacja: 2026-11-12 (sesja audytu, checkpoint po scaleniu paczek)
+Aktualizacja: 2026-11-12 (audyt scalony do main i wypchnięty; wdrożenie na prod nie wykonane)
 
 ## Cel bieżący
 Przeniesienie 56 punktów audytu 2026-11 z bliźniaka marketingPortfolioApp (przewodnik:
@@ -17,16 +17,13 @@ Artefakty sesji audytu (dziennik paczek, briefy, raporty, recenzje) leżą poza 
 - 77 commitów + 17 merge; `git log eca0ec8..HEAD` bez atrybucji AI.
 
 ## W toku
-- Właściciel zaakceptował rekomendacje 1-8 (2026-11-12): w toku paczka porządkowa (uwagi minor audytu: Post.hasCaseStudy, queryKeys, log bez e-maila, isAdmin(null), LocaleUtilsTest, docs/api.md, placeholdery AdminSettings, Challenges 7-9 w README), potem testy, sprzątanie worktree, merge audit-2026-11 -> main i push. Wdrożenie na prod NIE zlecone.
-- Smoke compose (dev compose, świeża baza, projekt `sdpa-smoke`) przeszedł: health 200, 401 bez Location, 404 JSON, Flyway V1-V8; stack tylko zatrzymany, do usunięcia `docker compose -p sdpa-smoke -f docker-compose.yml down -v`.
-- Audyt regresji zakończony: 0 critical/important, 55/56 zrobione, pkt 52 częściowo (brak `LocaleUtilsTest`), 14 uwag minor (m.in. martwe `Post.hasCaseStudy()`, nieużywane klucze w `queryKeys.ts`, e-mail odrzuconego konta w logu, `isAdmin(null)` NPE, limit 255 na `rpgClassTitle`).
+- Nic. `main` = 5748bc5 (fast-forward z `audit-2026-11`, wypchnięte na origin). Paczka porządkowa po audycie regresji scalona (e037f7e, 5748bc5): martwe `Post.hasCaseStudy()` i klucze query usunięte, logi odrzuconych logowań bez e-maila, `isAdmin(null)` bezpieczne, `LocaleUtilsTest`, placeholdery neutralne, Challenges 7-9 w README. Testy: backend 0 błędów / 0 pominiętych (Testcontainers), frontend 319, lint 0, build OK.
 
 ## Następne kroki
-1. Decyzja właściciela o uwagach minor z audytu regresji; poprawki nowym commitem na audit-2026-11 (TDD), testy celowane.
-2. Przegląd raportu końcowego audytu przez właściciela (decyzje o zmianach widocznych).
-3. Sprzątanie (po akceptacji): `git worktree remove --force .worktrees/<pkg>` x17 (node_modules są prawdziwymi katalogami, nie junction), `git branch -D audit/<pkg>`,
-   forwarder Dockera w WSL (`sdpa-tc-socat`), katalogi tymczasowe audytu, stack `sdpa-smoke`.
-4. Merge `audit-2026-11` -> `main` i wdrożenie TYLKO na "wdrażaj" (przed: .env prod JWT_SECRET >= 32 B, pg_dump, `up -d --force-recreate nginx`, próbne logowanie).
+1. CI na GitHubie po pushu `main` (pierwszy przebieg `.github/workflows/ci.yml`): sprawdzić wynik, zwłaszcza job backend z Testcontainers.
+2. Wdrożenie na prod TYLKO na "wdrażaj": .env (JWT_SECRET >= 32 B, FRONTEND_URL, 8 wymaganych zmiennych), pg_dump + kopia uploadów (V7/V8), `up -d --build`, `up -d --force-recreate nginx`, weryfikacja z docs/operations.md, próbne logowanie admina.
+3. Uzupełnić `<server>`/`<repo-dir>` w docs/operations.md, gdy znany jest host produkcyjny forka.
+4. Lokalne sprzątanie: stack `sdpa-smoke` (`docker compose -p sdpa-smoke -f docker-compose.yml down -v` w WSL), forwarder `docker rm -f sdpa-tc-socat`, katalogi tymczasowe audytu; gałąź `audit-2026-11` można usunąć (`git branch -d audit-2026-11`).
 
 ## Otwarte decyzje właściciela (do raportu końcowego)
 - Zmiany widoczne: 401 zamiast 302, usunięte publiczne trasy (/api/categories, /{id} dla experiences/interests/achievements/rpg-stats, paged, hashtags, soft-skills),
