@@ -1,9 +1,9 @@
 package com.portfolio.service;
 
-import com.github.slugify.Slugify;
 import com.portfolio.dto.*;
 import com.portfolio.entity.*;
 import com.portfolio.repository.PostRepository;
+import com.portfolio.util.SlugUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -21,57 +22,58 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MediaService mediaService;
-    private final Slugify slugify = Slugify.builder().build();
 
     public List<PostDto> getAllPublishedPosts(String locale) {
         return postRepository.findAllPublished().stream()
-                .map(post -> mapToDto(post, locale, false))
+                .map(post -> mapToDto(post, locale, View.PUBLIC_LIST))
                 .toList();
     }
 
     public List<PostDto> getPostsByCategory(Category category, String locale) {
         return postRepository.findByCategoryAndPublishedTrueOrderByDisplayOrderAsc(category).stream()
-                .map(post -> mapToDto(post, locale, false))
+                .map(post -> mapToDto(post, locale, View.PUBLIC_LIST))
                 .toList();
     }
 
     public List<PostDto> getPostsByHashtag(String hashtag, String locale) {
         return postRepository.findByHashtagAndPublishedTrue(hashtag).stream()
-                .map(post -> mapToDto(post, locale, false))
+                .map(post -> mapToDto(post, locale, View.PUBLIC_LIST))
                 .toList();
     }
 
     public PostDto getPostBySlug(String slug, String locale) {
+        // Public route: a draft answers exactly like a missing slug so a guessed or shared link reveals nothing.
         Post post = postRepository.findBySlug(slug)
+                .filter(found -> Boolean.TRUE.equals(found.getPublished()))
                 .orElseThrow(() -> new EntityNotFoundException("Post not found: " + slug));
-        return mapToDto(post, locale, true);
+        return mapToDto(post, locale, View.PUBLIC_DETAIL);
     }
 
     public PostDto getPostById(UUID id, String locale) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Post not found: " + id));
-        return mapToDto(post, locale, true);
+        return mapToDto(post, locale, View.ADMIN_DETAIL);
     }
 
     // Admin methods
     public List<PostDto> getAllPosts(String locale) {
         return postRepository.findAll().stream()
-                .map(post -> mapToDto(post, locale, false))
+                .map(post -> mapToDto(post, locale, View.ADMIN_LIST))
                 .toList();
     }
 
     public List<PostDto> getAllPostsByCategory(Category category, String locale) {
         return postRepository.findAllByCategory(category).stream()
-                .map(post -> mapToDto(post, locale, false))
+                .map(post -> mapToDto(post, locale, View.ADMIN_LIST))
                 .toList();
     }
 
     @Transactional
     public PostDto createPost(PostCreateRequest request, String locale) {
-        String slug = request.getSlug();
-        if (slug == null || slug.isBlank()) {
-            slug = generateUniqueSlug(request.getTitleEn());
-        }
+        String slugSource = request.getSlug() == null || request.getSlug().isBlank()
+                ? request.getTitleEn()
+                : request.getSlug();
+        String slug = generateUniqueSlug(slugSource);
 
         Post post = Post.builder()
                 .category(request.getCategory())
@@ -101,7 +103,7 @@ public class PostService {
                 .build();
 
         post = postRepository.save(post);
-        return mapToDto(post, locale, true);
+        return mapToDto(post, locale, View.ADMIN_DETAIL);
     }
 
     @Transactional
@@ -118,8 +120,17 @@ public class PostService {
         if (request.getTitlePl() != null) {
             post.setTitlePl(request.getTitlePl());
         }
-        if (request.getSlug() != null) {
-            post.setSlug(request.getSlug());
+        // A cleared or resent slug keeps the current one, so a published URL never silently changes or empties.
+        // The raw comparison comes first: legacy slugs stored before normalization must survive unrelated edits.
+        if (request.getSlug() != null && !request.getSlug().isBlank()
+                && !request.getSlug().equals(post.getSlug())) {
+            String slug = SlugUtils.toSlug(request.getSlug());
+            if (!slug.equals(post.getSlug())) {
+                if (postRepository.existsBySlug(slug)) {
+                    throw new IllegalArgumentException("Slug already in use");
+                }
+                post.setSlug(slug);
+            }
         }
         if (request.getExcerptEn() != null) {
             post.setExcerptEn(request.getExcerptEn());
@@ -181,7 +192,7 @@ public class PostService {
         }
 
         post = postRepository.save(post);
-        return mapToDto(post, locale, true);
+        return mapToDto(post, locale, View.ADMIN_DETAIL);
     }
 
     @Transactional
@@ -199,7 +210,7 @@ public class PostService {
                 .orElseThrow(() -> new EntityNotFoundException("Post not found: " + id));
         post.setPublished(!post.getPublished());
         post = postRepository.save(post);
-        return mapToDto(post, locale, true);
+        return mapToDto(post, locale, View.ADMIN_DETAIL);
     }
 
     @Transactional
@@ -209,8 +220,8 @@ public class PostService {
         }
     }
 
-    private String generateUniqueSlug(String title) {
-        String baseSlug = slugify.slugify(title);
+    private String generateUniqueSlug(String source) {
+        String baseSlug = SlugUtils.toSlug(source);
         String slug = baseSlug;
         int counter = 1;
 
@@ -221,18 +232,37 @@ public class PostService {
         return slug;
     }
 
-    private PostDto mapToDto(Post post, String locale, boolean includeContent) {
+    /**
+     * Public responses carry only the locale-resolved texts: the site never reads the raw *En/*Pl fields, and
+     * lists never show case-study texts or content. Admin responses keep the raw fields the edit form needs.
+     */
+    private enum View {
+        PUBLIC_LIST(false, false), PUBLIC_DETAIL(false, true), ADMIN_LIST(true, false), ADMIN_DETAIL(true, true);
+
+        private final boolean admin;
+        private final boolean detail;
+
+        View(boolean admin, boolean detail) {
+            this.admin = admin;
+            this.detail = detail;
+        }
+    }
+
+    // Checked per locale because the page shows only that locale's fields (no fallback between languages).
+    private static boolean hasCaseStudy(Post post, String locale) {
+        return Stream.of(post.getCaseStudyChallenge(locale), post.getCaseStudySolution(locale),
+                        post.getCaseStudyResults(locale), post.getCaseStudyTestimonial(locale))
+                .anyMatch(text -> text != null && !text.isBlank());
+    }
+
+    private PostDto mapToDto(Post post, String locale, View view) {
         PostDto.PostDtoBuilder builder = PostDto.builder()
                 .id(post.getId())
                 .category(post.getCategory())
                 .categoryLabel(post.getCategory().getLabel(locale))
                 .title(post.getTitle(locale))
-                .titleEn(post.getTitleEn())
-                .titlePl(post.getTitlePl())
                 .slug(post.getSlug())
                 .excerpt(post.getExcerpt(locale))
-                .excerptEn(post.getExcerptEn())
-                .excerptPl(post.getExcerptPl())
                 .featuredImage(post.getFeaturedImage())
                 .githubUrl(post.getGithubUrl())
                 .liveUrl(post.getLiveUrl())
@@ -241,25 +271,37 @@ public class PostService {
                 .hashtags(post.getHashtags() != null ? Arrays.asList(post.getHashtags()) : new ArrayList<>())
                 .createdAt(post.getCreatedAt())
                 .updatedAt(post.getUpdatedAt())
-                .hasCaseStudy(post.hasCaseStudy())
-                .caseStudyChallenge(post.getCaseStudyChallenge(locale))
-                .caseStudyChallengeEn(post.getCaseStudyChallengeEn())
-                .caseStudyChallengePl(post.getCaseStudyChallengePl())
-                .caseStudySolution(post.getCaseStudySolution(locale))
-                .caseStudySolutionEn(post.getCaseStudySolutionEn())
-                .caseStudySolutionPl(post.getCaseStudySolutionPl())
-                .caseStudyResults(post.getCaseStudyResults(locale))
-                .caseStudyResultsEn(post.getCaseStudyResultsEn())
-                .caseStudyResultsPl(post.getCaseStudyResultsPl())
-                .caseStudyTestimonial(post.getCaseStudyTestimonial(locale))
-                .caseStudyTestimonialEn(post.getCaseStudyTestimonialEn())
-                .caseStudyTestimonialPl(post.getCaseStudyTestimonialPl())
-                .caseStudyTestimonialAuthor(post.getCaseStudyTestimonialAuthor());
+                .hasCaseStudy(hasCaseStudy(post, locale));
 
-        if (includeContent) {
-            builder.content(post.getContent(locale))
-                    .contentEn(post.getContentEn())
-                    .contentPl(post.getContentPl());
+        if (view.admin || view.detail) {
+            builder.caseStudyChallenge(post.getCaseStudyChallenge(locale))
+                    .caseStudySolution(post.getCaseStudySolution(locale))
+                    .caseStudyResults(post.getCaseStudyResults(locale))
+                    .caseStudyTestimonial(post.getCaseStudyTestimonial(locale))
+                    .caseStudyTestimonialAuthor(post.getCaseStudyTestimonialAuthor());
+        }
+
+        if (view.admin) {
+            builder.titleEn(post.getTitleEn())
+                    .titlePl(post.getTitlePl())
+                    .excerptEn(post.getExcerptEn())
+                    .excerptPl(post.getExcerptPl())
+                    .caseStudyChallengeEn(post.getCaseStudyChallengeEn())
+                    .caseStudyChallengePl(post.getCaseStudyChallengePl())
+                    .caseStudySolutionEn(post.getCaseStudySolutionEn())
+                    .caseStudySolutionPl(post.getCaseStudySolutionPl())
+                    .caseStudyResultsEn(post.getCaseStudyResultsEn())
+                    .caseStudyResultsPl(post.getCaseStudyResultsPl())
+                    .caseStudyTestimonialEn(post.getCaseStudyTestimonialEn())
+                    .caseStudyTestimonialPl(post.getCaseStudyTestimonialPl());
+        }
+
+        if (view.detail) {
+            builder.content(post.getContent(locale));
+            if (view.admin) {
+                builder.contentEn(post.getContentEn())
+                        .contentPl(post.getContentPl());
+            }
 
             // Map media ordered by displayOrder
             if (post.getMedia() != null && !post.getMedia().isEmpty()) {

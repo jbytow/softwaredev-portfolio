@@ -255,6 +255,27 @@ class AdminPostControllerTest {
     }
 
     @Nested
+    @DisplayName("PUT /api/admin/posts/{id} (slug)")
+    class UpdateSlug {
+
+        @Test
+        @WithMockUser(roles = "ADMIN")
+        @DisplayName("should return 400 when the slug belongs to another post")
+        void shouldReturn400ForDuplicateSlug() throws Exception {
+            UUID postId = UUID.randomUUID();
+            given(postService.updatePost(eq(postId), any(), eq("en")))
+                    .willThrow(new IllegalArgumentException("Slug already in use"));
+
+            mockMvc.perform(put("/api/admin/posts/" + postId)
+                            .with(csrf())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content("{\"slug\":\"taken\"}"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.message").value("Slug already in use"));
+        }
+    }
+
+    @Nested
     @DisplayName("success envelopes")
     class SuccessEnvelope {
 
