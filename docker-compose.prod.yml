@@ -1,40 +1,50 @@
-version: '3.8'
+# Bounded json-file logs, so the VM disk does not depend on host-level rotation
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
 
 services:
   postgres:
+    # No no-new-privileges here: the entrypoint starts as root and drops to the postgres user
+    # itself, so the flag would add little and is not verified for this image
     image: postgres:16-alpine
     container_name: devportfolio-db-prod
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
     volumes:
       - postgres_data_prod:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:?POSTGRES_USER is required}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - devportfolio-network-prod
     restart: unless-stopped
+    logging: *default-logging
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: devportfolio-backend-prod
+    security_opt:
+      - no-new-privileges:true
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER}
-      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      ADMIN_EMAILS: ${ADMIN_EMAILS}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:?POSTGRES_DB is required}
+      SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:?POSTGRES_USER is required}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?GOOGLE_CLIENT_ID is required}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?GOOGLE_CLIENT_SECRET is required}
+      ADMIN_EMAILS: ${ADMIN_EMAILS:?ADMIN_EMAILS is required}
       UPLOAD_PATH: /app/uploads
-      FRONTEND_URL: ${FRONTEND_URL}
+      FRONTEND_URL: ${FRONTEND_URL:?FRONTEND_URL is required}
       MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME:-}
@@ -50,6 +60,7 @@ services:
     networks:
       - devportfolio-network-prod
     restart: unless-stopped
+    logging: *default-logging
 
   frontend:
     build:
@@ -58,6 +69,8 @@ services:
       args:
         VITE_API_URL: ${VITE_API_URL}
     container_name: devportfolio-frontend-prod
+    security_opt:
+      - no-new-privileges:true
     expose:
       - "80"
     depends_on:
@@ -65,22 +78,28 @@ services:
     networks:
       - devportfolio-network-prod
     restart: unless-stopped
+    logging: *default-logging
 
   nginx:
-    image: nginx:alpine
+    # Pinned: upstream "resolve" in nginx/nginx.conf needs nginx >= 1.27.3
+    image: nginx:1.30-alpine
     container_name: devportfolio-nginx
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
+    # TLS terminates at Cloudflare; cloudflared runs on this host and forwards to port 80,
+    # so the edge listens on loopback only (a LAN client cannot bypass Cloudflare or forge
+    # CF-Connecting-IP). No 443 and no ssl mount: nginx.conf has no active TLS listener.
     ports:
-      - "80:80"
-      - "443:443"
+      - "127.0.0.1:80:80"
     depends_on:
       - frontend
       - backend
     networks:
       - devportfolio-network-prod
     restart: unless-stopped
+    logging: *default-logging
 
 volumes:
   postgres_data_prod:
