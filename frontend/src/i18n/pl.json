@@ -43,7 +43,11 @@
     "skills_nerd": "Drzewko umiejętności",
     "contact": "Kontakt",
     "contact_nerd": "Przywołanie",
-    "admin": "Admin"
+    "admin": "Admin",
+    "cycleTheme": "Zmień motyw kolorystyczny",
+    "toggleLanguage": "Zmień język",
+    "toggleMenu": "Menu",
+    "toggleNerdMode": "Tryb nerd"
   },
   "home": {
     "hero": {

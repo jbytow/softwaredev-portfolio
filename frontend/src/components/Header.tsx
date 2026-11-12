@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Globe, Palette } from 'lucide-react';
@@ -25,7 +25,25 @@ export default function Header() {
   const { language, toggleLanguage } = useLanguage();
   const { nerdMode, toggleNerdMode } = useNerdMode();
   const { cycleTheme } = useTheme();
+  const { pathname } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuToggleRef = useRef<HTMLButtonElement>(null);
+
+  // Back/forward and programmatic navigation change the path without a click inside the menu
+  useEffect(() => {
+    setIsMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return;
+      setIsMenuOpen(false);
+      menuToggleRef.current?.focus();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMenuOpen]);
 
   const { data: settingsData } = useQuery({
     queryKey: queryKeys.settings(language),
@@ -39,7 +57,7 @@ export default function Header() {
       <div className="container">
         <nav className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link to="/" className="text-xl md:text-2xl font-display font-bold gradient-text">
+          <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-xl md:text-2xl font-display font-bold gradient-text">
             {settings?.siteName || 'Portfolio'}
           </Link>
 
@@ -69,7 +87,7 @@ export default function Header() {
             <button
               onClick={cycleTheme}
               className="flex items-center px-3 py-2 text-sm font-medium text-dark-300 hover:text-dark-100 rounded-lg hover:bg-dark-800 transition-colors"
-              aria-label="Cycle color theme"
+              aria-label={t('nav.cycleTheme')}
             >
               <Palette className="w-4 h-4" />
             </button>
@@ -78,7 +96,8 @@ export default function Header() {
             <button
               onClick={toggleNerdMode}
               className={clsx('nerd-toggle-pill', nerdMode && 'active')}
-              aria-label="Toggle nerd mode"
+              aria-label={t('nav.toggleNerdMode')}
+              aria-pressed={nerdMode}
             >
               <span className={clsx('nerd-toggle-label', !nerdMode && 'active')}>PRO</span>
               <span className={clsx('nerd-toggle-label', nerdMode && 'active')}>NERD</span>
@@ -89,7 +108,7 @@ export default function Header() {
             <button
               onClick={toggleLanguage}
               className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-dark-300 hover:text-dark-100 rounded-lg hover:bg-dark-800 transition-colors"
-              aria-label="Toggle language"
+              aria-label={t('nav.toggleLanguage')}
             >
               <Globe className="w-4 h-4" />
               <span className="uppercase">{language}</span>
@@ -97,9 +116,11 @@ export default function Header() {
 
             {/* Mobile Menu Button */}
             <button
+              ref={menuToggleRef}
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="lg:hidden p-2 text-dark-300 hover:text-dark-100 rounded-lg hover:bg-dark-800 transition-colors"
-              aria-label="Toggle menu"
+              aria-label={t('nav.toggleMenu')}
+              aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
