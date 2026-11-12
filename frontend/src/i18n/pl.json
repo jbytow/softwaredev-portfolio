@@ -283,5 +283,12 @@
     "quickLinks_nerd": "Punkty nawigacyjne",
     "tagline": "Tworzenie rozwiązań programistycznych w Java, Spring Boot, React i więcej.",
     "tagline_nerd": "Craftowanie artefaktów programistycznych z użyciem tajemnych narzędzi."
+  },
+  "media": {
+    "closeImage": "Zamknij",
+    "goToSlide": "Przejdź do slajdu {{n}}",
+    "playVideo": "Odtwórz film",
+    "videoUnsupported": "Twoja przeglądarka nie obsługuje odtwarzania wideo.",
+    "youtubeVideo": "Film w serwisie YouTube"
   }
 }

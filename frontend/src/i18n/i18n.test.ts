@@ -27,8 +27,6 @@ const PENDING_CONSUMERS: string[] = [
   'common.create',
   'common.filter',
   'common.back',
-  'common.next',
-  'common.previous',
   'common.learnMore',
   'common.downloadCV',
   'nav.admin',

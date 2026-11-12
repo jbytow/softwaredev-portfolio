@@ -283,5 +283,12 @@
     "quickLinks_nerd": "Waypoints",
     "tagline": "Building software solutions with Java, Spring Boot, React, and more.",
     "tagline_nerd": "Crafting software artifacts with arcane tools."
+  },
+  "media": {
+    "closeImage": "Close",
+    "goToSlide": "Go to slide {{n}}",
+    "playVideo": "Play video",
+    "videoUnsupported": "Your browser does not support video playback.",
+    "youtubeVideo": "YouTube video"
   }
 }
