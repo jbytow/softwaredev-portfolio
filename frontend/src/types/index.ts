@@ -121,14 +121,6 @@ export interface Media {
   createdAt: string;
 }
 
-export interface CategoryInfo {
-  value: Category;
-  label: string;
-  labelEn: string;
-  labelPl: string;
-  postCount: number;
-}
-
 export interface SiteSettings {
   heroTitle: string;
   heroTitleEn: string;
