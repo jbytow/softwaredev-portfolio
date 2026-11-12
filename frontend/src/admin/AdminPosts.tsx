@@ -42,10 +42,10 @@ export default function AdminPosts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
       setDeleteTarget(null);
-      toast.success('Post deleted successfully');
+      toast.success(t('admin.posts.deleted'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete post'));
+      toast.error(getApiErrorMessage(error, t('admin.posts.deleteFailed')));
     },
   });
 
@@ -56,10 +56,10 @@ export default function AdminPosts() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.posts() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.post() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.hashtags() });
-      toast.success('Post status updated');
+      toast.success(t('admin.posts.statusUpdated'));
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update post status'));
+      toast.error(getApiErrorMessage(error, t('admin.posts.statusUpdateFailed')));
     },
   });
 
@@ -69,7 +69,7 @@ export default function AdminPosts() {
   );
 
   const handleDelete = (post: Post) => {
-    setDeleteTarget({ id: post.id, message: `Are you sure you want to delete "${post.title}"?` });
+    setDeleteTarget({ id: post.id, message: t('admin.posts.deleteConfirm', { title: post.title }) });
   };
 
   if (isLoading) {
@@ -134,13 +134,13 @@ export default function AdminPosts() {
                     <GripVertical className="w-4 h-4" />
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Title
+                    {t('admin.common.title')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Category
+                    {t('admin.common.category')}
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-dark-400 uppercase tracking-wider">
-                    Status
+                    {t('admin.common.status')}
                   </th>
                   <th className="px-6 py-3 text-right text-xs font-medium text-dark-400 uppercase tracking-wider">
                     {t('common.actions')}
@@ -199,7 +199,7 @@ export default function AdminPosts() {
                           onClick={() => togglePublishMutation.mutate(post.id)}
                           disabled={togglePublishMutation.isPending}
                           className="p-2 text-dark-400 hover:text-primary-400 hover:bg-dark-700 rounded-lg transition-colors disabled:opacity-50"
-                          title={post.published ? 'Unpublish' : 'Publish'}
+                          title={post.published ? t('admin.posts.unpublish') : t('admin.posts.publish')}
                         >
                           {post.published ? (
                             <EyeOff className="w-5 h-5" />

@@ -28,11 +28,11 @@ export default function AdminSkillCategories() {
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.softSkills() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.softSkills() });
-      toast.success('Category deleted successfully');
+      toast.success(t('admin.skillCategories.deleted'));
       setDeleteId(null);
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to delete category'));
+      toast.error(getApiErrorMessage(error, t('admin.skillCategories.deleteFailed')));
     },
   });
 
@@ -109,7 +109,7 @@ export default function AdminSkillCategories() {
       <ConfirmDeleteModal
         open={deleteId !== null}
         title={t('admin.common.confirmDelete')}
-        message="Are you sure you want to delete this category? Skills in this category will become uncategorized."
+        message={t('admin.skillCategories.deleteConfirm')}
         isPending={deleteMutation.isPending}
         onConfirm={() => deleteId && deleteMutation.mutate(deleteId)}
         onCancel={() => setDeleteId(null)}

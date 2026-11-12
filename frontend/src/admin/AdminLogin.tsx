@@ -46,7 +46,7 @@ export default function AdminLogin() {
         >
           <div className="text-center mb-8">
             <h1 className="text-3xl font-display font-bold gradient-text mb-2">
-              Admin Panel
+              {t('admin.layout.title')}
             </h1>
             <p className="text-dark-400">{t('admin.auth.loginWith')}</p>
           </div>
@@ -79,7 +79,7 @@ export default function AdminLogin() {
           </div>
 
           <p className="text-center text-dark-500 text-sm mt-6">
-            Only authorized administrators can access this panel.
+            {t('admin.auth.authorizedOnly')}
           </p>
         </motion.div>
       </div>

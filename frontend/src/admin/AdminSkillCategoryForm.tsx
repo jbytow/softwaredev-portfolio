@@ -51,11 +51,11 @@ export default function AdminSkillCategoryForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
-      toast.success('Category created successfully');
+      toast.success(t('admin.skillCategories.created'));
       navigate('/admin/skill-categories');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to create category'));
+      toast.error(getApiErrorMessage(error, t('admin.skillCategories.createFailed')));
     },
   });
 
@@ -67,11 +67,11 @@ export default function AdminSkillCategoryForm() {
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.skillCategory(id!) });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skillCategories() });
       queryClient.invalidateQueries({ queryKey: queryKeys.prefix.skills() });
-      toast.success('Category updated successfully');
+      toast.success(t('admin.skillCategories.updated'));
       navigate('/admin/skill-categories');
     },
     onError: (error) => {
-      toast.error(getApiErrorMessage(error, 'Failed to update category'));
+      toast.error(getApiErrorMessage(error, t('admin.skillCategories.updateFailed')));
     },
   });
 
@@ -121,10 +121,12 @@ export default function AdminSkillCategoryForm() {
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Names */}
         <div className="card space-y-4">
-          <h3 className="text-lg font-semibold text-dark-100">Names</h3>
+          <h3 className="text-lg font-semibold text-dark-100">
+            {t('admin.skillCategories.namesSection')}
+          </h3>
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Name (English) *</label>
+              <label className="label">{t('admin.skillCategories.nameEn')}</label>
               <input
                 type="text"
                 name="nameEn"
@@ -135,7 +137,7 @@ export default function AdminSkillCategoryForm() {
               />
             </div>
             <div>
-              <label className="label">Name (Polish) *</label>
+              <label className="label">{t('admin.skillCategories.namePl')}</label>
               <input
                 type="text"
                 name="namePl"

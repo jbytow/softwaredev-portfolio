@@ -64,7 +64,7 @@ export default function AdminLayout() {
             className="flex items-center text-dark-400 hover:text-dark-100 transition-colors"
           >
             <ChevronLeft className="w-5 h-5 mr-2" />
-            <span className="text-lg font-display font-bold gradient-text">Admin Panel</span>
+            <span className="text-lg font-display font-bold gradient-text">{t('admin.layout.title')}</span>
           </button>
         </div>
 
