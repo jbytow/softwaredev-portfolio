@@ -1,6 +1,5 @@
 package com.portfolio.entity;
 
-import com.portfolio.config.MediaTypeConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,7 +23,7 @@ public class Media {
     @JoinColumn(name = "post_id")
     private Post post;
 
-    @Convert(converter = MediaTypeConverter.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private MediaType type;
 

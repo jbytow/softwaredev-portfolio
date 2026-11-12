@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.portfolio.config.CategoryConverter;
-
 @Entity
 @Table(name = "posts")
 @Getter
@@ -26,7 +24,7 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Convert(converter = CategoryConverter.class)
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private Category category;
 

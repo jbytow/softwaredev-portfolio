@@ -1,12 +1,20 @@
 package com.portfolio;
 
+import com.portfolio.entity.Category;
+import com.portfolio.entity.Media;
+import com.portfolio.entity.MediaType;
+import com.portfolio.entity.Post;
+import jakarta.persistence.EntityManager;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,6 +38,9 @@ class MigrationSchemaTest extends IntegrationTestBase {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     @DisplayName("application context starts with ddl-auto=validate on the migrated schema")
@@ -74,6 +85,53 @@ class MigrationSchemaTest extends IntegrationTestBase {
                 String.class);
 
         assertThat(nullable).isEqualTo("NO");
+    }
+
+    @ParameterizedTest
+    @EnumSource(Category.class)
+    @Transactional
+    @DisplayName("stores Post.category as its name in the VARCHAR column and reads it back")
+    void roundTripsCategory(Category category) {
+        Post post = newPost(category, "category-" + category.name().toLowerCase());
+        entityManager.persist(post);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT category FROM posts WHERE id = ?", String.class, post.getId()))
+                .isEqualTo(category.name());
+        assertThat(entityManager.find(Post.class, post.getId()).getCategory()).isEqualTo(category);
+    }
+
+    @ParameterizedTest
+    @EnumSource(MediaType.class)
+    @Transactional
+    @DisplayName("stores Media.type as its name in the VARCHAR column and reads it back")
+    void roundTripsMediaType(MediaType type) {
+        Post post = newPost(Category.PERSONAL_PROJECT, "media-" + type.name().toLowerCase());
+        Media media = Media.builder()
+                .post(post)
+                .type(type)
+                .url("https://example.com/media/" + type.name().toLowerCase())
+                .build();
+        entityManager.persist(post);
+        entityManager.persist(media);
+        entityManager.flush();
+        entityManager.clear();
+
+        assertThat(jdbcTemplate.queryForObject(
+                "SELECT type FROM media WHERE id = ?", String.class, media.getId()))
+                .isEqualTo(type.name());
+        assertThat(entityManager.find(Media.class, media.getId()).getType()).isEqualTo(type);
+    }
+
+    private static Post newPost(Category category, String slug) {
+        return Post.builder()
+                .category(category)
+                .titleEn("Enum round trip")
+                .titlePl("Enum round trip")
+                .slug(slug)
+                .build();
     }
 
     private static int highestMigrationVersion() throws IOException {
