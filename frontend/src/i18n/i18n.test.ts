@@ -22,7 +22,6 @@ const NERD_SUFFIX = '_nerd';
 const PENDING_CONSUMERS: string[] = [
   'common.loading',
   'common.error',
-  'common.retry',
   'common.edit',
   'common.create',
   'common.filter',
